@@ -1,0 +1,32 @@
+# Variables de entorno — NUNCA deben subirse.
+# backend/.env contiene MONGO_URL con usuario y contraseña de la base de datos.
+# Este repositorio es público: si se sube, cualquiera puede entrar a la base.
+.env
+.env.*
+!.env.example
+
+# Dependencias
+node_modules/
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# Expo / React Native
+.expo/
+.expo-shared/
+dist/
+web-build/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
