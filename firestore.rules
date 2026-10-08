@@ -1,0 +1,70 @@
+rules_version = '2';
+
+// =============================================================================
+// Reglas de seguridad de Firestore — D.I.R.T. Comunitario
+// -----------------------------------------------------------------------------
+// Cómo aplicarlas:
+//   Consola de Firebase -> Firestore Database -> pestaña "Reglas"
+//   -> pega este contenido -> Publicar.
+//
+// LEE ESTO ANTES DE PUBLICAR LA PÁGINA
+// La app no tiene inicio de sesión, así que estas reglas permiten escribir a
+// cualquiera que tenga el enlace. Es suficiente para una demostración
+// académica y es lo que se pidió, pero los registros contienen nombres y
+// números de documento, que son datos personales.
+//
+// Las reglas de abajo acotan el riesgo de tres maneras:
+//   1. Solo se puede escribir en la colección "movimientos". Nada más.
+//   2. Cada documento debe tener exactamente la forma esperada, así que
+//      nadie puede usar la base como almacenamiento gratuito.
+//   3. No se permite borrar de verdad: el historial solo se marca como
+//      eliminado, y queda registro.
+//
+// Para cerrar la base del todo cuando termine la demostración, reemplaza el
+// contenido del bloque "match /movimientos/{id}" por:  allow read, write: if false;
+// =============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /movimientos/{movimientoId} {
+
+      // Cualquiera con el enlace puede consultar el historial.
+      allow read: if true;
+
+      // Crear: el documento debe tener la forma exacta de un movimiento.
+      allow create: if esMovimientoValido(request.resource.data);
+
+      // Actualizar: solo para el borrado suave. No se puede alterar
+      // un registro ya guardado.
+      allow update: if request.resource.data.diff(resource.data)
+                            .affectedKeys()
+                            .hasOnly(['deleted_at']);
+
+      // Borrado definitivo deshabilitado: el historial no se pierde.
+      allow delete: if false;
+    }
+
+    // Todo lo demás queda cerrado.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+function esMovimientoValido(d) {
+  return d.keys().hasOnly([
+           'tipo', 'nombre', 'documento', 'categoria', 'cantidad',
+           'nota', 'lado', 'compuerta_abierta', 'created_at', 'deleted_at'
+         ])
+      && d.tipo in ['entrada', 'salida']
+      && d.categoria in ['lacteos', 'frutas', 'fritos', 'bebidas']
+      && d.lado in ['frio', 'caliente']
+      && d.nombre is string    && d.nombre.size() >= 2 && d.nombre.size() <= 80
+      && d.documento is string && d.documento.size() >= 3 && d.documento.size() <= 20
+      && d.cantidad is int     && d.cantidad >= 1 && d.cantidad <= 999
+      && (d.nota == null || (d.nota is string && d.nota.size() <= 200))
+      && d.compuerta_abierta is bool
+      && d.deleted_at == null
+      && d.created_at == request.time;
+}
