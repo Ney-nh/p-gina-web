@@ -1,0 +1,16 @@
+# Dependencias y compilados
+node_modules/
+dist/
+build/
+
+# Variables de entorno (por si más adelante se añade un servidor)
+.env
+.env.*
+!.env.example
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
