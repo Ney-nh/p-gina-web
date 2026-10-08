@@ -126,6 +126,13 @@ void loop() {
 
     Serial.println("Pagina desconectada. Cerrando por seguridad.");
     cerrarTodo();
+
+    // Volver a anunciarse explicitamente. Sin esto, tras una desconexion
+    // brusca la placa puede quedar visible en la lista del telefono pero
+    // sin aceptar conexiones, y el navegador responde
+    // "Connection attempt failed".
+    BLE.advertise();
+    Serial.println("Anunciandose de nuevo como DIRT.");
   }
 
   // También se vigila sin conexión, por si la app se cerró de golpe.

@@ -205,7 +205,35 @@ const compuerta = {
   _cuenta: null,
 };
 
-compuerta.conectar = async function () {
+const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Traduce los errores de Web Bluetooth a algo accionable.
+ * "Connection attempt failed" es el más habitual: el Arduino aparece en la
+ * lista pero el enlace GATT no llega a abrirse.
+ */
+function explicarError(e) {
+  const m = String(e?.message || e);
+  if (e?.name === "NotFoundError") return "No se seleccionó ningún dispositivo.";
+  if (/Connection attempt failed|GATT Error|connect/i.test(m)) {
+    return "No se pudo abrir la conexión. Cierra nRF Connect y otras pestañas, "
+         + "quita el DIRT de los dispositivos emparejados del teléfono y "
+         + "reinicia el Arduino.";
+  }
+  if (/No Services matching|Service .* not found/i.test(m)) {
+    return "El dispositivo respondió pero no expone el servicio esperado. "
+         + "¿Está cargado el sketch dirt_dos_compuertas?";
+  }
+  if (/user gesture|permission/i.test(m)) {
+    return "El navegador bloqueó la petición. Vuelve a pulsar el botón.";
+  }
+  if (/globally disabled|turned off|adapter/i.test(m)) {
+    return "El Bluetooth del teléfono está apagado.";
+  }
+  return m;
+}
+
+compuerta.conectar = async function (alProgresar = () => {}) {
   if (!this.soportado) throw new Error("Este navegador no puede usar Bluetooth.");
 
   const dispositivo = await navigator.bluetooth.requestDevice({
@@ -220,7 +248,30 @@ compuerta.conectar = async function () {
     ui.pintarCompuerta("El Arduino se desconectó.");
   });
 
-  const servidor = await dispositivo.gatt.connect();
+  /* En Android el primer intento de conexión GATT falla a menudo, sobre todo
+     justo después del escaneo. Reintentar unas pocas veces resuelve la mayor
+     parte de los "Connection attempt failed". */
+  const INTENTOS = 4;
+  let servidor = null;
+  let ultimo = null;
+
+  for (let i = 1; i <= INTENTOS; i++) {
+    try {
+      alProgresar(i === 1 ? "Abriendo la conexión…" : `Reintentando (${i} de ${INTENTOS})…`);
+      servidor = await dispositivo.gatt.connect();
+      if (servidor.connected) break;
+    } catch (e) {
+      ultimo = e;
+      // El dispositivo puede quedar medio conectado: se suelta antes de
+      // volver a intentarlo, si no el siguiente intento falla igual.
+      try { dispositivo.gatt.disconnect(); } catch { /* ya estaba suelto */ }
+      if (i < INTENTOS) await esperar(400 * i);
+    }
+  }
+
+  if (!servidor?.connected) throw ultimo || new Error("No se pudo abrir la conexión.");
+
+  alProgresar("Leyendo el servicio…");
   const servicio = await servidor.getPrimaryService(BLE.SERVICIO);
   this._comando = await servicio.getCharacteristic(BLE.COMANDO);
 
@@ -791,13 +842,13 @@ function conectarEventos() {
     boton.disabled = true;
     ui.pintarCompuerta("Buscando el Arduino…");
     try {
-      await compuerta.conectar();
+      await compuerta.conectar((paso) => ui.pintarCompuerta(paso));
       ui.pintarCompuerta("Conectado con el Arduino.");
       actualizarBotonGuardar();
       toast("Compuerta conectada");
     } catch (e) {
-      const cancelado = e?.name === "NotFoundError";
-      ui.pintarCompuerta(cancelado ? "No se seleccionó ningún dispositivo." : (e.message || "No se pudo conectar."));
+      console.error("Conexión Bluetooth:", e);
+      ui.pintarCompuerta(explicarError(e));
     } finally {
       boton.disabled = false;
     }
