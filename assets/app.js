@@ -9,6 +9,7 @@
    ========================================================================= */
 
 import { firebaseConfig, sinConfigurar } from "./firebase-config.js";
+import { iniciarBot } from "./bot.js";
 
 /* =========================================================================
    1. CATEGORÍAS Y LADOS DE LA COMPUERTA
@@ -355,8 +356,40 @@ compuerta.abrirConCierre = async function (lado, alContar) {
   }, 1000);
 };
 
+
 /* =========================================================================
-   4. INTERFAZ
+   5. DATOS PARA LA ASISTENTE
+   -------------------------------------------------------------------------
+   Dora responde con los números reales de la despensa, no con un guion.
+   ========================================================================= */
+
+function estadoDespensa() {
+  const movimientos = almacen._cache;
+  let entradasHoy = 0, salidasHoy = 0, total = 0;
+
+  const porCategoria = CATEGORIAS.map((cat) => {
+    const propios = movimientos.filter((m) => m.categoria === cat.id);
+    const ent = propios.filter((m) => m.tipo === "entrada").reduce((a, m) => a + m.cantidad, 0);
+    const sal = propios.filter((m) => m.tipo === "salida").reduce((a, m) => a + m.cantidad, 0);
+    total += ent - sal;
+    return { id: cat.id, nombre: cat.nombre, lado: cat.lado, stock: ent - sal, entradas: ent, salidas: sal };
+  });
+
+  for (const m of movimientos) {
+    if (!esDeHoy(m.created_at)) continue;
+    if (m.tipo === "entrada") entradasHoy += 1; else salidasHoy += 1;
+  }
+
+  return {
+    categorias: porCategoria,
+    total,
+    hoy: { entradas: entradasHoy, salidas: salidasHoy },
+    movimientos: movimientos.length,
+  };
+}
+
+/* =========================================================================
+   6. INTERFAZ
    ========================================================================= */
 
 const $  = (sel) => document.querySelector(sel);
@@ -673,7 +706,7 @@ async function guardar() {
         console.error(e);
       }
     } else {
-      toast(estado.tipo === "entrada" ? "Entrada registrada" : "Salida registrada");
+      toast(agradecer(estado.tipo));
     }
   } catch (e) {
     console.error(e);
@@ -684,17 +717,48 @@ async function guardar() {
   }
 }
 
+/* Un agradecimiento distinto cada vez. Quien dona merece reconocimiento y
+   quien retira merece que nadie le haga sentir que está pidiendo favores:
+   la despensa es de todos, y los dos gestos la sostienen por igual. */
+const GRACIAS = {
+  entrada: [
+    "Gracias por donar",
+    "Gracias, la despensa crece",
+    "Gracias por compartir",
+    "Un aporte más para el barrio",
+    "Gracias, esto alimenta a alguien",
+  ],
+  salida: [
+    "Que te aproveche",
+    "La despensa es tuya también",
+    "Buen provecho",
+    "Vuelve cuando lo necesites",
+    "Para eso está la despensa",
+  ],
+};
+
+const FRASE = {
+  entrada: "Lo que dejas hoy le sirve a alguien mañana.",
+  salida: "Tomar lo que necesitas es parte de cómo funciona esto.",
+};
+
+function agradecer(tipo) {
+  const lista = GRACIAS[tipo];
+  return lista[Math.floor(Math.random() * lista.length)];
+}
+
 function mostrarExito(m) {
   const cat = CAT[m.categoria];
   const lado = LADOS[cat.lado];
 
-  $("#exito-icono").className = "exito-icono" + (m.tipo === "salida" ? " salida" : "");
-  $("#exito-titulo").textContent = m.tipo === "entrada" ? "Entrada registrada" : "Salida registrada";
-  $("#exito-detalle").textContent = `${m.nombre} · T.I. ${m.documento} · ${m.cantidad} ${cat.nombre.toLowerCase()}`;
+  $("#exito-icono").className = "exito-sello" + (m.tipo === "salida" ? " salida" : "");
+  $("#exito-titulo").textContent = agradecer(m.tipo);
+  $("#exito-detalle").textContent =
+    `${m.nombre}, ${m.cantidad} de ${cat.nombre.toLowerCase()}. ${FRASE[m.tipo]}`;
 
   const avisoLado = $("#exito-lado");
-  avisoLado.className = `lado-aviso ${lado.clase}`;
-  avisoLado.innerHTML = `<span>${lado.emoji}</span><span>Abriendo el <b>${lado.nombre.toLowerCase()}</b></span>`;
+  avisoLado.className = `aviso-lado ${lado.clase}`;
+  avisoLado.innerHTML = `<span>${lado.emoji}</span><span>Se abre el <b>${lado.nombre.toLowerCase()}</b></span>`;
 
   $("#exito-cuenta").textContent = "";
   $("#exito").hidden = false;
@@ -908,6 +972,7 @@ async function iniciar() {
   fijarAngulo(90);
   ui.pintarCompuerta("");
   almacen.alCambiar(pintarTodo);
+  iniciarBot({ estadoDespensa });
 
   const r = await almacen.iniciar();
   if (r.ok) {

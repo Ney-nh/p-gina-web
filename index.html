@@ -241,6 +241,55 @@
   </div>
 </div>
 
+<!-- ====================== DORA, LA ASISTENTE ====================== -->
+<button id="bot-lanzador" class="bot-lanzador" aria-expanded="false" aria-controls="bot-panel">
+  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+    <path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4"/>
+  </svg>
+  <span>Pregúntale a Dora</span>
+</button>
+
+<section id="bot-panel" class="bot-panel" hidden aria-label="Asistente de la despensa">
+  <header class="bot-cabecera">
+    <span class="bot-identidad">
+      <span class="bot-avatar">D</span>
+      <span class="bot-nombre">
+        <strong>Dora</strong>
+        <small>Asistente de la despensa</small>
+      </span>
+    </span>
+    <span class="bot-botones">
+      <button id="bot-altavoz" class="bot-icono" aria-label="Silenciar a Dora" title="Silenciar">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5 6 9H2v6h4l5 4z"/>
+          <path class="onda" d="M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14"/>
+          <path class="tachado" d="M22 9l-6 6M16 9l6 6"/>
+        </svg>
+      </button>
+      <button id="bot-cerrar" class="bot-icono" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </span>
+  </header>
+
+  <div id="bot-hilo" class="bot-hilo" role="log" aria-live="polite"></div>
+  <div id="bot-sugerencias" class="bot-sugerencias" hidden></div>
+
+  <form class="bot-barra" onsubmit="return false">
+    <button type="button" id="bot-microfono" class="bot-microfono" aria-label="Hablar">
+      <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+        <path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4"/>
+      </svg>
+    </button>
+    <input id="bot-campo" class="bot-campo" type="text" placeholder="Escribe tu pregunta" autocomplete="off">
+    <button type="button" id="bot-enviar" class="bot-enviar" aria-label="Enviar">
+      <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+  </form>
+</section>
+
 <div id="toast" class="toast" hidden></div>
 
 <script type="module" src="assets/app.js"></script>

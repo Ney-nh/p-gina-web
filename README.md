@@ -136,13 +136,48 @@ versión anterior de un solo servo.
 
 ---
 
-## 5. Estructura
+## 5. Dora, la asistente
+
+El botón **Pregúntale a Dora** abre un chat que responde dudas sobre la
+despensa, por escrito o hablando. Entiende preguntas como «cómo dono», «qué hay
+disponible», «por qué hay dos puertas» o «la compuerta no abre», y responde con
+los **datos reales**: si alguien pregunta si hay frutas, lee el inventario y
+contesta cuántas hay y en qué lado.
+
+La voz sale del propio navegador, así que no cuesta nada y la voz de la persona
+no se manda a ningún servidor. El micrófono pide permiso la primera vez. El
+botón del altavoz silencia las respuestas habladas.
+
+Para añadir o cambiar lo que Dora sabe, edita la lista `TEMAS` al principio de
+`assets/bot.js`. Cada tema son unas palabras que lo disparan y una respuesta;
+copiar un bloque y cambiarlo basta.
+
+### Conectarle un modelo de verdad (opcional)
+
+Dora puede usar **Ollama** corriendo en tu propio computador, sin clave de API
+ni costo. Si Ollama no está o no responde en ocho segundos, vuelve sola a su
+conocimiento propio y nadie lo nota.
+
+1. Instala Ollama desde [ollama.com](https://ollama.com) y descarga un modelo:
+   `ollama pull llama3.2`
+2. Permite que la página le hable. En PowerShell como administrador:
+   `setx OLLAMA_ORIGINS "https://ney-nh.github.io,http://localhost"`
+   Después cierra Ollama desde la bandeja del sistema y vuelve a abrirlo.
+3. En `assets/bot.js`, cambia `activo: false` por `activo: true` dentro de
+   `OLLAMA`.
+
+Ten en cuenta que esto **solo funciona en el computador donde corre Ollama**.
+Quien abra la página desde otro dispositivo seguirá hablando con el Dora
+propio, que responde igual de bien las preguntas de la despensa.
+
+## 6. Estructura
 
 ```
 index.html                          la aplicación entera
 assets/
 ├── app.css                         estilos, modo claro y oscuro
 ├── app.js                          categorías, Firestore, Bluetooth, interfaz
+├── bot.js                          Dora: conocimiento, voz y enlace con Ollama
 └── firebase-config.js              ← aquí va tu configuración
 arduino/
 └── dirt_dos_compuertas/
@@ -153,7 +188,7 @@ docs/HISTORIAL.md                   qué cambió respecto a versiones anteriores
 
 ---
 
-## 6. Seguridad: lo que hay que saber
+## 7. Seguridad: lo que hay que saber
 
 La app no tiene inicio de sesión, tal como se pidió. Eso significa que
 **cualquiera con el enlace puede registrar movimientos y ver el historial.**
