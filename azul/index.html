@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>D1RT · Despensa comunitaria</title>
+<meta name="description" content="Despensa comunitaria de alimentos con compuerta automática de dos lados.">
+<meta name="theme-color" content="#0A51A0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥗</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tema.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="marca">
+      <span class="marca-sigla">D<span class="uno">1</span>RT</span>
+      <span class="marca-tipo">Despensa comunitaria</span>
+    </span>
+    <span id="estado-nube" class="pill pill-muted">
+      <span class="dot"></span><span id="estado-nube-texto">Conectando</span>
+    </span>
+  </div>
+</header>
+
+<div id="aviso-config" class="banner" hidden>
+  Falta la configuración de Firebase. Abre <code>assets/firebase-config.js</code>
+  y pega los datos de tu proyecto. Mientras tanto los registros se guardan solo
+  en este navegador, y la compuerta funciona igual.
+</div>
+
+<main class="wrap">
+
+  <!-- ====================== INICIO ====================== -->
+  <section id="vista-inicio" class="vista" data-vista="inicio">
+
+    <!-- La despensa: dos puertas que se abren de verdad -->
+    <section class="despensa" id="panel-compuerta">
+
+      <div class="despensa-cabecera">
+        <div class="despensa-saludo">
+          <span class="bob-grande" id="bob-grande"></span>
+          <h1 class="despensa-titulo">La despensa<small>Bob resuelve tus dudas</small></h1>
+        </div>
+        <span id="bt-estado" class="pill pill-muted"><span class="dot"></span>Sin conexión</span>
+      </div>
+
+      <div class="mueble" aria-hidden="true">
+        <div class="hueco hueco-frio">
+          <span class="hueco-marca">Frío</span>
+          <span class="hueco-items">🥛 🍎 🧃</span>
+        </div>
+        <div class="hueco hueco-caliente">
+          <span class="hueco-marca">Caliente</span>
+          <span class="hueco-items">🍟</span>
+        </div>
+
+        <div class="puerta puerta-frio" data-lado="frio">
+          <span class="puerta-glifo">❄</span>
+          <span class="puerta-nombre">Frío</span>
+          <span class="puerta-estado" data-estado="frio">Cerrado</span>
+        </div>
+        <div class="puerta puerta-caliente" data-lado="caliente">
+          <span class="puerta-glifo">🔥</span>
+          <span class="puerta-nombre">Caliente</span>
+          <span class="puerta-estado" data-estado="caliente">Cerrado</span>
+        </div>
+      </div>
+
+      <p id="bt-no-soportado" class="despensa-nota" hidden>
+        Este navegador no puede usar Bluetooth. Abre la página en Chrome, en
+        Android o en computador, para accionar la compuerta. El registro de
+        alimentos funciona igual aquí.
+      </p>
+
+      <button id="btn-conectar" class="btn btn-crema btn-ancho">Conectar la compuerta</button>
+
+      <div id="bt-controles" class="despensa-controles" hidden>
+        <div class="angulo-fila">
+          <label for="rango-angulo">Apertura</label>
+          <output id="valor-angulo" class="angulo-valor">90°</output>
+        </div>
+        <input id="rango-angulo" type="range" min="0" max="180" step="5" value="90">
+        <div class="chips chips-oscuros" id="chips-angulo">
+          <button class="chip" data-angulo="45">45°</button>
+          <button class="chip chip-on" data-angulo="90">90°</button>
+          <button class="chip" data-angulo="135">135°</button>
+          <button class="chip" data-angulo="180">180°</button>
+        </div>
+        <div class="fila">
+          <button class="btn btn-frio" id="btn-probar-frio">Probar frío</button>
+          <button class="btn btn-caliente" id="btn-probar-caliente">Probar caliente</button>
+        </div>
+        <div class="fila">
+          <button class="btn btn-linea" id="btn-cerrar-todo">Cerrar todo</button>
+          <button class="btn btn-linea" id="btn-desconectar">Desconectar</button>
+        </div>
+      </div>
+
+      <p id="bt-mensaje" class="despensa-mensaje"></p>
+    </section>
+
+    <!-- Cifras del día, sin cajas -->
+    <section class="cifras">
+      <div class="cifra">
+        <span class="cifra-num cifra-entrada" id="stat-entradas">0</span>
+        <span class="cifra-pie">entradas hoy</span>
+      </div>
+      <div class="cifra">
+        <span class="cifra-num cifra-salida" id="stat-salidas">0</span>
+        <span class="cifra-pie">salidas hoy</span>
+      </div>
+      <div class="cifra">
+        <span class="cifra-num" id="stat-stock">0</span>
+        <span class="cifra-pie">en la despensa</span>
+      </div>
+    </section>
+
+    <div class="acciones">
+      <button class="btn btn-entrada btn-alto" data-abrir-registro="entrada">
+        <span class="accion-flecha">↓</span>
+        <span>Registrar entrada</span>
+        <small>Alguien trae alimentos</small>
+      </button>
+      <button class="btn btn-salida btn-alto" data-abrir-registro="salida">
+        <span class="accion-flecha">↑</span>
+        <span>Registrar salida</span>
+        <small>Alguien retira alimentos</small>
+      </button>
+    </div>
+
+    <section class="bloque">
+      <h2 class="bloque-titulo">Últimos movimientos</h2>
+      <div id="lista-recientes" class="lista"></div>
+    </section>
+  </section>
+
+  <!-- ====================== INVENTARIO ====================== -->
+  <section id="vista-inventario" class="vista" data-vista="inventario" hidden>
+    <h2 class="vista-titulo">Qué hay en la despensa</h2>
+    <div id="grid-inventario" class="inv-grid"></div>
+  </section>
+
+  <!-- ====================== HISTORIAL ====================== -->
+  <section id="vista-historial" class="vista" data-vista="historial" hidden>
+    <h2 class="vista-titulo">Historial</h2>
+    <input id="buscador" class="input" type="search" placeholder="Buscar por nombre o documento" autocomplete="off">
+    <div class="chips" id="filtro-tipo">
+      <button class="chip chip-on" data-tipo="">Todos</button>
+      <button class="chip" data-tipo="entrada">Entradas</button>
+      <button class="chip" data-tipo="salida">Salidas</button>
+    </div>
+    <div class="chips" id="filtro-categoria"></div>
+    <div id="lista-historial" class="lista"></div>
+    <button class="btn btn-linea btn-ancho" id="btn-exportar">Descargar historial en CSV</button>
+  </section>
+
+</main>
+
+<nav class="tabs" role="tablist">
+  <button class="tab tab-on" data-tab="inicio" role="tab" aria-selected="true">
+    <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+    <span>Despensa</span>
+  </button>
+  <button class="tab" data-tab="inventario" role="tab" aria-selected="false">
+    <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>
+    <span>Inventario</span>
+  </button>
+  <button class="tab" data-tab="historial" role="tab" aria-selected="false">
+    <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
+    <span>Historial</span>
+  </button>
+</nav>
+
+<!-- ====================== REGISTRO ====================== -->
+<div id="modal" class="modal" hidden>
+  <div class="hoja" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+
+    <div class="hoja-cabecera">
+      <button class="redondo" id="btn-cerrar-modal" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+      <h2 id="modal-titulo">Registrar movimiento</h2>
+      <span class="redondo" aria-hidden="true"></span>
+    </div>
+
+    <div class="segmento" id="segmento-tipo">
+      <button class="seg seg-on" data-tipo="entrada">Entrada</button>
+      <button class="seg" data-tipo="salida">Salida</button>
+    </div>
+
+    <div class="hoja-cuerpo">
+      <label class="etiqueta" for="in-nombre">Nombre completo</label>
+      <input id="in-nombre" class="input" type="text" placeholder="Escribe el nombre" autocomplete="name">
+
+      <label class="etiqueta" for="in-documento">Número de documento</label>
+      <input id="in-documento" class="input" type="text" inputmode="numeric" placeholder="Solo números" autocomplete="off">
+
+      <label class="etiqueta">Qué alimento</label>
+      <div class="cat-grid" id="grid-categorias"></div>
+
+      <div id="aviso-lado" class="aviso-lado" hidden></div>
+
+      <label class="etiqueta">Cuántas unidades</label>
+      <div class="contador">
+        <button class="contador-btn" id="btn-menos" aria-label="Quitar una unidad">−</button>
+        <output class="contador-num" id="valor-cantidad">1</output>
+        <button class="contador-btn" id="btn-mas" aria-label="Agregar una unidad">+</button>
+      </div>
+      <div class="chips" id="chips-cantidad">
+        <button class="chip chip-on" data-cantidad="1">1</button>
+        <button class="chip" data-cantidad="2">2</button>
+        <button class="chip" data-cantidad="5">5</button>
+        <button class="chip" data-cantidad="10">10</button>
+      </div>
+
+      <label class="etiqueta" for="in-nota">Nota, si hace falta</label>
+      <textarea id="in-nota" class="input input-area" rows="2" placeholder="Dos litros de leche entera"></textarea>
+    </div>
+
+    <div class="hoja-pie">
+      <p id="modal-error" class="error" hidden></p>
+      <button class="btn btn-entrada btn-ancho btn-grande" id="btn-guardar">Guardar entrada</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ====================== ÉXITO ====================== -->
+<div id="exito" class="modal" hidden>
+  <div class="hoja hoja-exito">
+    <div class="exito-sello" id="exito-icono">
+      <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+    </div>
+    <h2 id="exito-titulo">Entrada registrada</h2>
+    <p id="exito-detalle" class="exito-detalle"></p>
+    <div id="exito-lado" class="aviso-lado"></div>
+    <p id="exito-cuenta" class="exito-cuenta"></p>
+    <button class="btn btn-linea btn-ancho" id="btn-cerrar-ahora">Cerrar la compuerta ahora</button>
+    <button class="btn btn-verde btn-ancho btn-grande" id="btn-listo">Listo</button>
+  </div>
+</div>
+
+<!-- ====================== DORA, LA ASISTENTE ====================== -->
+<button id="bot-lanzador" class="bot-lanzador" aria-expanded="false" aria-controls="bot-panel">
+  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+    <path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4"/>
+  </svg>
+  <span>Pregúntale a Bob</span>
+</button>
+
+<section id="bot-panel" class="bot-panel" hidden aria-label="Asistente de la despensa">
+  <header class="bot-cabecera">
+    <span class="bot-identidad">
+      <span class="bot-avatar" id="bob-casa"></span>
+      <span class="bot-nombre">
+        <strong>Bob</strong>
+        <small>Asistente de la despensa</small>
+      </span>
+    </span>
+    <span class="bot-botones">
+      <button id="bot-altavoz" class="bot-icono" aria-label="Silenciar a Bob" title="Silenciar">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5 6 9H2v6h4l5 4z"/>
+          <path class="onda" d="M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14"/>
+          <path class="tachado" d="M22 9l-6 6M16 9l6 6"/>
+        </svg>
+      </button>
+      <button id="bot-cerrar" class="bot-icono" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </span>
+  </header>
+
+  <div id="bot-hilo" class="bot-hilo" role="log" aria-live="polite"></div>
+  <div id="bot-sugerencias" class="bot-sugerencias" hidden></div>
+
+  <form class="bot-barra" onsubmit="return false">
+    <button type="button" id="bot-microfono" class="bot-microfono" aria-label="Hablar">
+      <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+        <path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4"/>
+      </svg>
+    </button>
+    <input id="bot-campo" class="bot-campo" type="text" placeholder="Escribe tu pregunta" autocomplete="off">
+    <button type="button" id="bot-enviar" class="bot-enviar" aria-label="Enviar">
+      <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+  </form>
+</section>
+
+<div id="toast" class="toast" hidden></div>
+
+<script type="module" src="../assets/app.js"></script>
+<script type="module">
+  import { plantarBob } from "./bob.js";
+  plantarBob("#bob-casa");
+  plantarBob("#bob-grande");
+</script>
+</body>
+</html>

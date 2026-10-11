@@ -636,3 +636,16 @@ button { font-family: inherit; font-size: inherit; cursor: pointer; }
   .bot-cabecera { border-radius: var(--r-g) var(--r-g) 0 0; }
   .bot-lanzador { bottom: 20px; right: 20px; }
 }
+
+/* La píldora de estado podía quedarse sin sitio cuando la tipografía
+   terminaba de cargar y el texto crecía unos píxeles. Dejar que encoja y
+   recorte evita el desborde con cualquier fuente y en cualquier ancho. */
+.topbar-inner .pill { flex: 0 1 auto; overflow: hidden; }
+.topbar-inner .pill span:last-child { overflow: hidden; text-overflow: ellipsis; }
+
+/* En pantallas angostas la cabecera de la despensa (título + estado, y en
+   el tema azul también el dibujo de Bob) no cabía en una línea. */
+.despensa-cabecera { flex-wrap: wrap; }
+.despensa-cabecera .pill { flex: 0 1 auto; overflow: hidden; }
+.despensa-cabecera .pill span:last-child { overflow: hidden; text-overflow: ellipsis; }
+.despensa-titulo { min-width: 0; }

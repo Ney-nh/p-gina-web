@@ -228,8 +228,8 @@ const TEMAS = [
     claves: ["hola", "buenas", "buenos dias", "buenas tardes", "buenas noches",
              "que tal", "saludos", "hey"],
     respuesta:
-      "Hola. Soy Dora, la asistente de la despensa. Puedo explicarte cómo donar, " +
-      "cómo retirar alimentos, o decirte qué hay disponible ahora mismo.",
+      "Hola. Soy la asistente de la despensa. Puedo explicarte cómo donar, cómo " +
+      "retirar alimentos, o decirte qué hay disponible ahora mismo.",
   },
   {
     id: "gracias",
@@ -405,7 +405,7 @@ function instrucciones(datos) {
     .map((c) => `${c.nombre}: ${c.stock} unidades (lado ${c.lado})`)
     .join("; ");
   return (
-    "Eres Dora, la asistente de una despensa comunitaria de alimentos llamada " +
+    `Eres ${typeof document !== "undefined" ? (document.querySelector(".bot-nombre strong")?.textContent.trim() || "Dora") : "Dora"}, la asistente de una despensa comunitaria de alimentos llamada ` + +
     "D.I.R.T. Comunitario, en Santa Marta, Colombia. Respondes en español, en dos " +
     "o tres frases como máximo, con calidez y sin tecnicismos. Nunca inventes datos.\n\n" +
     "Cómo funciona la despensa: cualquiera puede dejar alimentos o tomar los que " +
@@ -475,6 +475,12 @@ function elegirVoz() {
   );
 }
 
+/* Avisa cuándo empieza y termina de hablar, por si la página tiene un
+   personaje que deba mover la boca. Si no lo hay, no pasa nada. */
+function avisar(nombre) {
+  document.dispatchEvent(new CustomEvent(nombre));
+}
+
 function hablar(texto, alTerminar = () => {}) {
   if (!vozDisponible) { alTerminar(); return; }
   speechSynthesis.cancel();
@@ -484,13 +490,16 @@ function hablar(texto, alTerminar = () => {}) {
   frase.lang = vozElegida?.lang || "es-CO";
   frase.rate = 1.02;
   frase.pitch = 1.0;
-  frase.onend = alTerminar;
-  frase.onerror = alTerminar;
+  const fin = () => { avisar("dora:calla"); alTerminar(); };
+  frase.onend = fin;
+  frase.onerror = fin;
+  avisar("dora:habla");
   speechSynthesis.speak(frase);
 }
 
 function callar() {
   if (vozDisponible) speechSynthesis.cancel();
+  avisar("dora:calla");
 }
 
 /* =========================================================================
@@ -510,6 +519,10 @@ export function iniciarBot({ estadoDespensa }) {
   const altavoz    = $("#bot-altavoz");
   const sugerencias = $("#bot-sugerencias");
   if (!panel) return;
+
+  // El nombre sale de la propia página, así cada tema puede llamarla
+  // como quiera sin tocar este archivo.
+  const NOMBRE = $(".bot-nombre strong")?.textContent.trim() || "Dora";
 
   let hablando = true;           // responder también en voz alta
   let escuchando = false;
@@ -635,8 +648,8 @@ export function iniciarBot({ estadoDespensa }) {
     panel.hidden = false;
     lanzador.setAttribute("aria-expanded", "true");
     if (!hilo.childElementCount) {
-      burbuja("Hola, soy Dora. Te ayudo con la despensa: cómo donar, cómo retirar, " +
-              "o qué hay disponible ahora.", "dora");
+      burbuja(`Hola, soy ${NOMBRE}. Te ayudo con la despensa: cómo donar, cómo ` +
+              "retirar, o qué hay disponible ahora.", "dora");
       pintarSugerencias();
       sugerencias.hidden = false;
     }
