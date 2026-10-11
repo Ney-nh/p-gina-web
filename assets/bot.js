@@ -75,13 +75,119 @@ const TEMAS = [
   },
   {
     id: "compuerta_problema",
-    claves: ["no abre", "no funciona", "no se abre", "no conecta", "falla", "error",
-             "no responde", "atascada", "no sirve"],
+    claves: ["no abre", "no se abre", "la compuerta no", "no abrio", "no se abrio",
+             "atascada", "trabada", "sigue cerrada", "no quiere abrir"],
     respuesta:
-      "Si la compuerta no abre: revisa arriba que diga Conectada. Si dice Sin " +
-      "conexión, toca Conectar la compuerta y elige DIRT en la lista. Si aun así no " +
-      "abre, el registro igual quedó guardado y puedes avisarle a quien esté " +
-      "encargado.",
+      "Si la compuerta no abre, mira arriba si dice Conectada. Si dice Sin conexión, " +
+      "toca Conectar la compuerta y elige DIRT. Si ya está conectada y aun así no " +
+      "abre, revisa que los servos tengan corriente: con dos servos hace falta una " +
+      "fuente externa, no alcanza con el USB. Tu registro quedó guardado de todas " +
+      "formas.",
+  },
+  {
+    id: "no_conecta_bluetooth",
+    claves: ["no se conecta", "no conecta", "no encuentra", "no aparece", "error de conexion",
+             "connection failed", "no lo detecta", "no sale en la lista", "fallo la conexion",
+             "no se enlaza", "arduino no conecta", "no me conecta"],
+    respuesta:
+      "Lo más común es que el Arduino esté emparejado en los ajustes del teléfono. " +
+      "Entra a Ajustes, Bluetooth, busca DIRT y desvincúlalo. Esta página no necesita " +
+      "emparejar nada: lo encuentra sola. Después apaga y enciende el Bluetooth, " +
+      "reinicia el Arduino y vuelve a intentar.",
+  },
+  {
+    id: "navegador",
+    claves: ["que navegador", "safari", "iphone", "firefox", "edge", "chrome",
+             "no me sale el boton", "no veo el boton de conectar", "desde mi iphone",
+             "funciona en iphone", "ios"],
+    respuesta:
+      "La compuerta solo se puede accionar desde Chrome o Edge, en Android o en " +
+      "computador. En iPhone y en Safari no existe la función de Bluetooth del " +
+      "navegador. Desde cualquier teléfono sí se puede registrar y consultar el " +
+      "inventario, que es la mayor parte.",
+  },
+  {
+    id: "permiso_bluetooth",
+    claves: ["permiso", "no me deja", "bloqueo", "me pide permiso", "dispositivos cercanos",
+             "no tengo permiso", "denegado"],
+    respuesta:
+      "En Android 12 o más nuevo hace falta el permiso de Dispositivos cercanos. Si lo " +
+      "negaste sin querer, entra a Ajustes, Aplicaciones, busca el navegador y " +
+      "concédeselo. Luego recarga la página.",
+  },
+  {
+    id: "como_funciona",
+    claves: ["como funciona por dentro", "que tecnologia", "como esta hecho", "arduino",
+             "como lo hicieron", "que usa", "servo", "programacion", "como esta programado",
+             "que lleva por dentro", "tecnicamente"],
+    respuesta:
+      "La página habla por Bluetooth con un Arduino UNO R4 WiFi que mueve dos servos, " +
+      "uno por cada compartimento. Los registros se guardan en Firestore, así que se " +
+      "ven al instante en cualquier teléfono. La página es estática: no hay servidor " +
+      "que mantener.",
+  },
+  {
+    id: "sin_luz",
+    claves: ["se va la luz", "sin luz", "sin energia", "apagon", "sin internet",
+             "sin señal", "sin datos", "no hay wifi"],
+    respuesta:
+      "Sin internet la compuerta sigue funcionando, porque el Bluetooth no lo necesita. " +
+      "Lo que no se puede es guardar en la nube hasta que vuelva la conexión. Si se va " +
+      "la luz, el Arduino se apaga y la compuerta queda cerrada.",
+  },
+  {
+    id: "comida_estado",
+    claves: ["esta buena", "en buen estado", "vencida", "caducada", "fecha de vencimiento",
+             "se daña", "esta fresca", "cuanto dura", "mal estado"],
+    respuesta:
+      "Antes de donar, revisa la fecha de vencimiento y que el empaque esté cerrado. " +
+      "No se recibe comida preparada ni abierta, porque no hay forma de saber cómo se " +
+      "guardó. Si algo se ve en mal estado, mejor avisarle a quien esté encargado.",
+  },
+  {
+    id: "que_no_donar",
+    claves: ["que no puedo donar", "que no reciben", "no aceptan", "prohibido",
+             "puedo donar comida hecha", "comida preparada", "sobras"],
+    respuesta:
+      "No se reciben sobras ni comida preparada, ni paquetes abiertos, ni nada vencido. " +
+      "Sí se reciben alimentos sellados y dentro de su fecha: lácteos, frutas, fritos y " +
+      "bebidas.",
+  },
+  {
+    id: "quien_mantiene",
+    claves: ["quien la cuida", "quien mantiene", "quien la maneja", "de quien es",
+             "quien responde", "quien la hizo", "quien administra", "encargado"],
+    respuesta:
+      "La despensa la sostiene la comunidad: funciona con lo que la gente deja. El " +
+      "registro de cada movimiento permite saber qué se está acabando y reponerlo a " +
+      "tiempo.",
+  },
+  {
+    id: "dos_servos",
+    claves: ["dos servos", "como sabe que lado", "quien elige el lado", "por que ese lado",
+             "como decide", "abre sola"],
+    respuesta:
+      "No lo eliges tú. Al marcar la categoría del alimento, la aplicación envía al " +
+      "Arduino la orden del lado que corresponde: lácteos, frutas y bebidas al frío; " +
+      "fritos al caliente. Así nadie guarda algo donde no va.",
+  },
+  {
+    id: "seguridad_cierre",
+    claves: ["se queda abierta", "y si no cierra", "que pasa si", "se olvida abierta",
+             "no se cierra"],
+    respuesta:
+      "Hay tres cierres encadenados. La página cierra a los cinco segundos. Si eso " +
+      "falla, el Arduino cierra cualquier lado que lleve más de quince segundos " +
+      "abierto. Y si se pierde la conexión, cierra todo de inmediato.",
+  },
+  {
+    id: "borrar_registro",
+    claves: ["me equivoque", "borrar", "eliminar registro", "corregir", "esta mal",
+             "puse mal", "deshacer"],
+    respuesta:
+      "En la pestaña Historial cada registro tiene un botón para eliminarlo. El dato no " +
+      "se pierde del todo: queda marcado como eliminado, para que el conteo no se " +
+      "descuadre.",
   },
   {
     id: "tiempo",
@@ -158,6 +264,8 @@ const SUGERENCIAS = [
   "¿Cómo retiro algo?",
   "¿Qué hay disponible?",
   "¿Por qué hay dos puertas?",
+  "El Arduino no se conecta",
+  "¿Qué no se puede donar?",
 ];
 
 /* =========================================================================
