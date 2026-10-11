@@ -430,11 +430,11 @@ ui.pintarCompuerta = function (mensaje) {
   $("#bt-no-soportado").hidden = compuerta.soportado;
 
   for (const lado of ["frio", "caliente"]) {
-    const caja = document.querySelector(`.lado[data-lado="${lado}"]`);
+    const puerta = document.querySelector(`.puerta[data-lado="${lado}"]`);
     const abierto = compuerta.abiertos[lado];
-    caja.classList.toggle("abierto", abierto);
-    caja.querySelector(`[data-estado="${lado}"]`).textContent =
-      abierto ? `Abierto · ${Math.round(compuerta.angulo)}°` : "Cerrado";
+    puerta.classList.toggle("abierta", abierto);
+    puerta.querySelector(`[data-estado="${lado}"]`).textContent =
+      abierto ? `Abierta a ${Math.round(compuerta.angulo)}°` : "Cerrada";
   }
 
   if (mensaje !== undefined) $("#bt-mensaje").textContent = mensaje;
@@ -465,29 +465,28 @@ function irA(tab) {
 /* ------------------------------ movimientos ----------------------------- */
 
 function tarjetaMovimiento(m, conBorrar) {
-  const cat = CAT[m.categoria] || { nombre: m.categoria, emoji: "📦", color: "var(--texto-3)" };
+  const cat = CAT[m.categoria] || { nombre: m.categoria, emoji: "📦", color: "var(--tinta-3)" };
   const signo = m.tipo === "entrada" ? "+" : "−";
   const lado = LADOS[m.lado];
 
   const item = document.createElement("div");
-  item.className = "item";
+  item.className = "fila-mov";
+  item.style.setProperty("--c", cat.color);
   item.innerHTML = `
-    <div class="item-icono" style="background: color-mix(in srgb, ${cat.color} 15%, transparent)">
-      ${cat.emoji}
-    </div>
-    <div class="item-cuerpo">
-      <span class="item-titulo">${escapar(m.nombre)}</span>
-      <span class="item-sub">
-        ${cat.nombre} · T.I. ${escapar(m.documento)} · ${fechaCorta(m.created_at)}
-        ${m.compuerta_abierta && lado ? ` · ${lado.emoji} ${lado.nombre.toLowerCase()}` : ""}
+    <span class="mov-emoji">${cat.emoji}</span>
+    <span class="mov-cuerpo">
+      <span class="mov-nombre">${escapar(m.nombre)}</span>
+      <span class="mov-meta">
+        ${cat.nombre}, documento ${escapar(m.documento)}${m.compuerta_abierta && lado ? `, ${lado.emoji} lado ${m.lado}` : ""}
+        <br>${fechaCorta(m.created_at)}
       </span>
-    </div>
-    <span class="item-cant ${m.tipo}">${signo}${m.cantidad}</span>
+    </span>
+    <span class="mov-cant ${m.tipo}">${signo}${m.cantidad}</span>
   `;
 
   if (conBorrar) {
     const boton = document.createElement("button");
-    boton.className = "item-borrar";
+    boton.className = "mov-borrar";
     boton.setAttribute("aria-label", "Eliminar registro");
     boton.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>`;
     boton.onclick = async () => {
@@ -549,10 +548,8 @@ function pintarTodo(movimientos) {
     card.innerHTML = `
       <div class="inv-top"><span>${cat.emoji}</span><span class="inv-nombre">${cat.nombre}</span></div>
       <span class="inv-stock">${entradas - salidas}</span>
-      <span class="inv-detalle">${entradas} entradas · ${salidas} salidas</span>
-      <span class="inv-lado" style="color:${cat.lado === "frio" ? "var(--frio)" : "var(--caliente)"}">
-        ${lado.emoji} ${lado.nombre}
-      </span>
+      <span class="inv-detalle">${entradas} entraron, ${salidas} salieron</span>
+      <span class="inv-lado ${cat.lado}">${lado.emoji} ${lado.nombre}</span>
     `;
     grid.appendChild(card);
   }
