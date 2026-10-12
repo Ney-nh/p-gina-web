@@ -27,12 +27,7 @@
    ========================================================================= */
 
 export const TEMAS = [
- {
-    id: "modales",
-    claves: ["hola como estas","y que mas", "q tal", "cmo estas", "que tal bro", "buenas tardes como estas", "buenos dias como estas"],
-    respuesta:
-      "Hola, bienvenido usuario, soy D.I.R.T, la despensa comunitaria " +
-      "¿En que te puedo ayudar el día de hoy?.",
+ 
   },
    {
     id: "donar",
@@ -235,7 +230,8 @@ export const TEMAS = [
     claves: ["hola como estas","y que mas", "q tal", "cmo estas", "que tal bro", "buenas tardes como estas", "buenos dias como estas", "hola", "buenas", "buenos dias", "buenas tardes", "buenas noches",
              "que tal", "saludos", "hey"],
     respuesta:
-      "Hola. Soy la asistente de la despensa. Puedo explicarte cómo donar, cómo " +
+      "Hola, bienvenido usuario, soy D.I.R.T, la despensa comunitaria " +
+      "¿En que te puedo ayudar el día de hoy?.", "Puedo explicarte cómo donar, cómo " +
       "retirar alimentos, o decirte qué hay disponible ahora mismo.",
   },
   {
