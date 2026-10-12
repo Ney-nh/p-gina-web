@@ -232,7 +232,7 @@ export const TEMAS = [
   },
   {
     id: "saludo",
-    claves: ["hola", "buenas", "buenos dias", "buenas tardes", "buenas noches",
+    claves: ["hola como estas","y que mas", "q tal", "cmo estas", "que tal bro", "buenas tardes como estas", "buenos dias como estas", "hola", "buenas", "buenos dias", "buenas tardes", "buenas noches",
              "que tal", "saludos", "hey"],
     respuesta:
       "Hola. Soy la asistente de la despensa. Puedo explicarte cómo donar, cómo " +
@@ -240,13 +240,13 @@ export const TEMAS = [
   },
   {
     id: "gracias",
-    claves: ["gracias", "muchas gracias", "te pasaste", "genial", "perfecto", "listo"],
-    respuesta: "Con mucho gusto. Si te queda otra duda, aquí estoy.",
+    claves: ["gracias Dirt", "muchas gracias", "te pasaste", "genial", "perfecto", "listo muchas gracias"],
+    respuesta: "Con mucho gusto, gracias por usar D.I.R.T. Si te queda alguna otra duda, aquí estoy para ayudarte.",
   },
   {
     id: "despedida",
     claves: ["adios", "chao", "hasta luego", "nos vemos", "bye"],
-    respuesta: "Hasta luego. Que te vaya bien.",
+    respuesta: "Hasta luego, ha sido un gusto poder ayudarte, espero disfrutes tú experiencia en D.I.R.T. Que te vaya muy bien!!.",
   },
 ];
 
