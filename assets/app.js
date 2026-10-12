@@ -113,10 +113,14 @@ almacen.iniciar = async function () {
           .filter((m) => !m.deleted_at);
         // hasPendingWrites marca lo que todavía no llegó al servidor.
         this.pendientes = snap.docs.filter((d) => d.metadata.hasPendingWrites).length;
-        ui.estadoNube(
-          this.pendientes ? "pendiente" : "ok",
-          this.pendientes ? `${this.pendientes} sin subir` : "Firebase",
-        );
+        if (this.fallo) {
+          ui.estadoNube("error", "No se guardó");
+        } else {
+          ui.estadoNube(
+            this.pendientes ? "pendiente" : "ok",
+            this.pendientes ? `${this.pendientes} sin subir` : "Firebase",
+          );
+        }
         emitir();
       },
       (err) => {
@@ -187,9 +191,17 @@ almacen.crear = async function (datos) {
       ...registro,
       created_at: serverTimestamp(),
     });
+    envio.then(() => { this.fallo = null; });
     envio.catch((e) => {
       console.error("No se pudo guardar en Firestore:", e);
-      ui.estadoNube("error", "Error al guardar");
+      // Un guardado rechazado no puede parecerse a uno correcto: queda
+      // anotado para que la escucha no lo borre al siguiente refresco, y se
+      // avisa en pantalla con qué hacer.
+      this.fallo = /permission|insufficient/i.test(String(e))
+        ? "Firestore rechazó el registro. Publica las reglas de firestore.rules."
+        : "No se pudo guardar en la nube.";
+      ui.estadoNube("error", "No se guardó");
+      toast(this.fallo);
     });
 
     return { ...registro, id: null, created_at: new Date() };
@@ -499,9 +511,12 @@ ui.estadoNube = function (tipo, texto) {
   const clases = { ok: "pill-ok", error: "pill-warn", pendiente: "pill-warn" };
   const pill = $("#estado-nube");
   pill.className = "pill " + (clases[tipo] || "pill-muted");
-  pill.title = tipo === "pendiente"
-    ? "Hay registros guardados en el teléfono que subirán cuando vuelva la conexión"
-    : "";
+  pill.title =
+    tipo === "pendiente"
+      ? "Hay registros guardados en el teléfono que subirán cuando vuelva la conexión"
+      : tipo === "error"
+        ? (almacen.fallo || "Hubo un problema con la nube")
+        : "";
   $("#estado-nube-texto").textContent = texto;
 };
 
