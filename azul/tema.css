@@ -815,3 +815,24 @@ h1, h2 { font-weight: 600; letter-spacing: -.005em; }
 @media (max-width: 400px) {
   .despensa-cabecera .pill { order: 3; }
 }
+
+/* =========================================================================
+   IMÁGENES PROPIAS
+   Si hay archivos en azul/marca/, sustituyen al logotipo de texto y al
+   pelícano dibujado.
+   ========================================================================= */
+
+.marca-logo { height: 34px; width: auto; max-width: 150px; object-fit: contain; display: block; }
+
+.bob-propio { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+/* Una imagen fija no puede abrir el pico, así que se balancea entera
+   mientras dura la voz. */
+@media (prefers-reduced-motion: no-preference) {
+  .bob-propio { transition: transform .2s; }
+  .bob-propio.hablando { animation: bob-propio-habla .5s ease-in-out infinite; }
+  @keyframes bob-propio-habla {
+    0%, 100% { transform: rotate(-2.5deg) translateY(0) }
+    50%      { transform: rotate(2.5deg) translateY(-3px) }
+  }
+}

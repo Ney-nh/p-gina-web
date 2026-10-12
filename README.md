@@ -148,9 +148,18 @@ La voz sale del propio navegador, así que no cuesta nada y la voz de la persona
 no se manda a ningún servidor. El micrófono pide permiso la primera vez. El
 botón del altavoz silencia las respuestas habladas.
 
-Para añadir o cambiar lo que Dora sabe, edita la lista `TEMAS` al principio de
-`assets/bot.js`. Cada tema son unas palabras que lo disparan y una respuesta;
-copiar un bloque y cambiarlo basta.
+La lista completa de lo que sabe está en **[docs/PREGUNTAS.md](docs/PREGUNTAS.md)**,
+con la respuesta de cada tema y las palabras que lo disparan.
+
+Para añadir o cambiar un tema, edita la lista `TEMAS` al principio de
+`assets/bot.js` y vuelve a generar el documento:
+
+```
+node herramientas/generar-preguntas.mjs
+```
+
+El documento se arma leyendo el propio código, así que nunca se desfasa del
+bot.
 
 ### Conectarle un modelo de verdad (opcional)
 
@@ -183,7 +192,12 @@ arduino/
 └── dirt_dos_compuertas/
     └── dirt_dos_compuertas.ino     sketch de los dos servos
 firestore.rules                     reglas de seguridad de la base
-docs/HISTORIAL.md                   qué cambió respecto a versiones anteriores
+docs/
+├── PREGUNTAS.md                    todo lo que la asistente sabe responder
+└── HISTORIAL.md                    qué cambió respecto a versiones anteriores
+herramientas/
+└── generar-preguntas.mjs           rehace PREGUNTAS.md desde bot.js
+azul/                               tema azul con Bob, experimento aparte
 ```
 
 ---

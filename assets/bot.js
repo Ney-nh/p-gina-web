@@ -26,7 +26,7 @@
    la comparación las ignora.
    ========================================================================= */
 
-const TEMAS = [
+export const TEMAS = [
   {
     id: "donar",
     claves: ["donar", "dejar", "aportar", "entregar", "traer", "regalar", "dar comida",
@@ -244,22 +244,22 @@ const TEMAS = [
 ];
 
 /* Temas que no se responden con texto fijo, sino con los datos de verdad. */
-const CLAVES_INVENTARIO = [
+export const CLAVES_INVENTARIO = [
   "que hay", "hay comida", "hay algo", "disponible", "inventario", "stock",
   "cuanto hay", "que tienen", "queda", "hay frutas", "hay lacteos", "hay bebidas",
   "hay fritos", "esta vacia", "esta llena",
 ];
 
-const CLAVES_MOVIMIENTOS = [
+export const CLAVES_MOVIMIENTOS = [
   "cuantas personas", "cuanta gente", "hoy", "movimientos", "registros",
   "cuantos donaron", "estadisticas", "actividad",
 ];
 
-const SIN_RESPUESTA =
+export const SIN_RESPUESTA =
   "No estoy segura de eso. Puedo ayudarte con cómo donar, cómo retirar alimentos, " +
   "qué hay disponible, o por qué la despensa tiene dos lados.";
 
-const SUGERENCIAS = [
+export const SUGERENCIAS = [
   "¿Cómo dono alimentos?",
   "¿Cómo retiro algo?",
   "¿Qué hay disponible?",

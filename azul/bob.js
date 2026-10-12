@@ -65,16 +65,48 @@ export const BOB_SVG = `
   </g>
 </svg>`;
 
+/** Carga una imagen y dice si existe, sin dejar error en la consola. */
+function existeImagen(ruta) {
+  return new Promise((listo) => {
+    if (!ruta) { listo(false); return; }
+    const img = new Image();
+    img.onload = () => listo(true);
+    img.onerror = () => listo(false);
+    img.src = ruta;
+  });
+}
+
 /**
- * Deja a Bob dentro de un contenedor y lo pone a mover la bolsa del pico
- * mientras la asistente habla.
+ * Deja la mascota dentro de un contenedor y la pone a moverse mientras la
+ * asistente habla.
+ *
+ * Si hay una imagen propia en azul/marca/, la usa; si no, dibuja al
+ * pelícano. El dibujo abre la bolsa del pico; una imagen fija no puede,
+ * así que se balancea entera mientras dura la voz.
  */
-export function plantarBob(selector) {
+export async function plantarBob(selector, rutaImagen) {
   const casa = document.querySelector(selector);
   if (!casa) return;
-  casa.innerHTML = BOB_SVG;
-  const bob = casa.querySelector(".bob");
 
+  if (await existeImagen(rutaImagen)) {
+    casa.innerHTML = `<img class="bob bob-propio" src="${rutaImagen}" alt="Mascota de la despensa">`;
+  } else {
+    casa.innerHTML = BOB_SVG;
+  }
+
+  const bob = casa.querySelector(".bob");
   document.addEventListener("dora:habla", () => bob.classList.add("hablando"));
   document.addEventListener("dora:calla", () => bob.classList.remove("hablando"));
+}
+
+/** Cambia el logotipo de texto por una imagen propia, si la hay. */
+export async function plantarLogo(rutaImagen) {
+  if (!(await existeImagen(rutaImagen))) return;
+  const img = document.querySelector("#marca-logo");
+  const texto = document.querySelector("#marca-texto");
+  if (!img) return;
+  img.src = rutaImagen;
+  img.alt = "D1RT";
+  img.hidden = false;
+  if (texto) texto.hidden = true;
 }

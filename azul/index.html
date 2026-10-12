@@ -17,7 +17,8 @@
 <header class="topbar">
   <div class="topbar-inner">
     <span class="marca">
-      <span class="marca-sigla">D<span class="uno">1</span>RT</span>
+      <img class="marca-logo" id="marca-logo" alt="" hidden>
+      <span class="marca-sigla" id="marca-texto">D<span class="uno">1</span>RT</span>
       <span class="marca-tipo">Despensa comunitaria</span>
     </span>
     <span id="estado-nube" class="pill pill-muted">
@@ -43,7 +44,7 @@
       <div class="despensa-cabecera">
         <div class="despensa-saludo">
           <span class="bob-grande" id="bob-grande"></span>
-          <h1 class="despensa-titulo">La despensa<small>Bob resuelve tus dudas</small></h1>
+          <h1 class="despensa-titulo">D<span class="uno">1</span>RT<small>Bob resuelve tus dudas</small></h1>
         </div>
         <span id="bt-estado" class="pill pill-muted"><span class="dot"></span>Sin conexión</span>
       </div>
@@ -297,9 +298,11 @@
 
 <script type="module" src="../assets/app.js"></script>
 <script type="module">
-  import { plantarBob } from "./bob.js";
-  plantarBob("#bob-casa");
-  plantarBob("#bob-grande");
+  import { plantarBob, plantarLogo } from "./bob.js";
+  import { MARCA } from "./marca/config.js";
+  plantarBob("#bob-casa", MARCA.mascota);
+  plantarBob("#bob-grande", MARCA.mascota);
+  plantarLogo(MARCA.logo);
 </script>
 </body>
 </html>
