@@ -20,12 +20,50 @@ rules_version = '2';
 //   3. No se permite borrar de verdad: el historial solo se marca como
 //      eliminado, y queda registro.
 //
-// Para cerrar la base del todo cuando termine la demostración, reemplaza el
-// contenido del bloque "match /movimientos/{id}" por:  allow read, write: if false;
+// Para cerrar la base del todo cuando termine la demostración, cambia el
+// cuerpo de "match /movimientos/{movimientoId}" por:
+//      allow read, write: if false;
 // =============================================================================
 
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Las funciones van DENTRO del bloque match. Declararlas fuera hace que
+    // el archivo entero no parsee, y la consola lo reporta como un error en
+    // la línea 1, que despista.
+    function esMovimientoValido(d) {
+      return d.keys().hasOnly([
+               'tipo', 'nombre', 'documento', 'categoria', 'cantidad',
+               'nota', 'lado', 'compuerta_abierta', 'created_at', 'deleted_at'
+             ])
+          && d.keys().hasAll([
+               'tipo', 'nombre', 'documento', 'categoria', 'cantidad',
+               'lado', 'compuerta_abierta', 'created_at'
+             ])
+          && d.tipo in ['entrada', 'salida']
+          && d.categoria in ['lacteos', 'frutas', 'fritos', 'bebidas']
+          && d.lado in ['frio', 'caliente']
+          && d.nombre is string
+          && d.nombre.size() >= 2
+          && d.nombre.size() <= 80
+          && d.documento is string
+          && d.documento.size() >= 3
+          && d.documento.size() <= 20
+          && d.cantidad is int
+          && d.cantidad >= 1
+          && d.cantidad <= 999
+          && d.compuerta_abierta is bool
+          && notaValida(d)
+          && (!('deleted_at' in d) || d.deleted_at == null)
+          && d.created_at == request.time;
+    }
+
+    // La nota es opcional: puede no venir, venir nula, o venir como texto.
+    function notaValida(d) {
+      return !('nota' in d)
+          || d.nota == null
+          || (d.nota is string && d.nota.size() <= 200);
+    }
 
     match /movimientos/{movimientoId} {
 
@@ -35,8 +73,8 @@ service cloud.firestore {
       // Crear: el documento debe tener la forma exacta de un movimiento.
       allow create: if esMovimientoValido(request.resource.data);
 
-      // Actualizar: solo para el borrado suave. No se puede alterar
-      // un registro ya guardado.
+      // Actualizar: solo para el borrado suave. No se puede alterar un
+      // registro ya guardado.
       allow update: if request.resource.data.diff(resource.data)
                             .affectedKeys()
                             .hasOnly(['deleted_at']);
@@ -45,26 +83,11 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // Todo lo demás queda cerrado.
+    // Todo lo demás queda cerrado. En Firestore el acceso se deniega por
+    // defecto, así que este bloque no añade protección: está para dejar la
+    // intención por escrito.
     match /{document=**} {
       allow read, write: if false;
     }
   }
-}
-
-function esMovimientoValido(d) {
-  return d.keys().hasOnly([
-           'tipo', 'nombre', 'documento', 'categoria', 'cantidad',
-           'nota', 'lado', 'compuerta_abierta', 'created_at', 'deleted_at'
-         ])
-      && d.tipo in ['entrada', 'salida']
-      && d.categoria in ['lacteos', 'frutas', 'fritos', 'bebidas']
-      && d.lado in ['frio', 'caliente']
-      && d.nombre is string    && d.nombre.size() >= 2 && d.nombre.size() <= 80
-      && d.documento is string && d.documento.size() >= 3 && d.documento.size() <= 20
-      && d.cantidad is int     && d.cantidad >= 1 && d.cantidad <= 999
-      && (d.nota == null || (d.nota is string && d.nota.size() <= 200))
-      && d.compuerta_abierta is bool
-      && d.deleted_at == null
-      && d.created_at == request.time;
 }

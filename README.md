@@ -196,7 +196,8 @@ docs/
 ├── PREGUNTAS.md                    todo lo que la asistente sabe responder
 └── HISTORIAL.md                    qué cambió respecto a versiones anteriores
 herramientas/
-└── generar-preguntas.mjs           rehace PREGUNTAS.md desde bot.js
+├── generar-preguntas.mjs           rehace PREGUNTAS.md desde bot.js
+└── reglas/                         prueba firestore.rules con el emulador
 azul/                               tema azul con Bob, experimento aparte
 ```
 
