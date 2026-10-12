@@ -24,12 +24,12 @@
    ========================================================================= */
 
 export const firebaseConfig = {
-  apiKey:            "PEGA_AQUI_TU_API_KEY",
-  authDomain:        "PEGA_AQUI_TU_PROYECTO.firebaseapp.com",
-  projectId:         "PEGA_AQUI_TU_PROJECT_ID",
-  storageBucket:     "PEGA_AQUI_TU_PROYECTO.appspot.com",
-  messagingSenderId: "PEGA_AQUI_TU_SENDER_ID",
-  appId:             "PEGA_AQUI_TU_APP_ID",
+  apiKey:            "AIzaSyCT1qsm1xXnH2lL9FsDC5aMJLXST9JcCrQ",
+  authDomain:        "dirt-240c5.firebaseapp.com",
+  projectId:         "dirt-240c5",
+  storageBucket:     "dirt-240c5.firebasestorage.app",
+  messagingSenderId: "85212427379",
+  appId:             "1:85212427379:web:01d451302ef0906574a606",
 };
 
 /** true cuando la configuración todavía tiene los valores de ejemplo. */
