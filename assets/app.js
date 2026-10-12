@@ -78,7 +78,23 @@ almacen.iniciar = async function () {
       import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js"),
     ]);
     const app = initializeApp(firebaseConfig);
-    const db = fs.getFirestore(app);
+
+    // Caché local persistente: la app sigue funcionando sin internet y los
+    // registros se sincronizan solos cuando vuelve. Sin esto, una caída de
+    // red en mitad de una demostración deja la página inservible.
+    let db;
+    try {
+      db = fs.initializeFirestore(app, {
+        localCache: fs.persistentLocalCache({
+          tabManager: fs.persistentMultipleTabManager(),
+        }),
+      });
+    } catch (e) {
+      // Puede fallar en navegación privada o si otra pestaña ya la abrió.
+      console.warn("Sin caché persistente, se sigue en memoria:", e.message);
+      db = fs.getFirestore(app);
+    }
+
     this._fs = { ...fs, db };
     this.modo = "firestore";
 
@@ -90,10 +106,17 @@ almacen.iniciar = async function () {
     );
     fs.onSnapshot(
       consulta,
+      { includeMetadataChanges: true },
       (snap) => {
         this._cache = snap.docs
           .map((d) => this._normalizar(d.id, d.data()))
           .filter((m) => !m.deleted_at);
+        // hasPendingWrites marca lo que todavía no llegó al servidor.
+        this.pendientes = snap.docs.filter((d) => d.metadata.hasPendingWrites).length;
+        ui.estadoNube(
+          this.pendientes ? "pendiente" : "ok",
+          this.pendientes ? `${this.pendientes} sin subir` : "Firebase",
+        );
         emitir();
       },
       (err) => {
@@ -154,12 +177,21 @@ almacen.crear = async function (datos) {
 
   if (this.modo === "firestore") {
     const { db, collection, addDoc, serverTimestamp } = this._fs;
-    const ref = await addDoc(collection(db, COLECCION), {
+
+    // No se espera la confirmación del servidor. Firestore aplica la
+    // escritura en local de inmediato, la escucha la refleja en pantalla al
+    // instante, y la sube sola cuando haya red. Si se esperara, una caída
+    // de internet dejaría el botón colgado en "Guardando" para siempre.
+    const envio = addDoc(collection(db, COLECCION), {
       ...registro,
       created_at: serverTimestamp(),
     });
-    // onSnapshot refrescará la lista; devolvemos una copia para la pantalla.
-    return { ...registro, id: ref.id, created_at: new Date() };
+    envio.catch((e) => {
+      console.error("No se pudo guardar en Firestore:", e);
+      ui.estadoNube("error", "Error al guardar");
+    });
+
+    return { ...registro, id: null, created_at: new Date() };
   }
 
   const guardado = { ...registro, id: `local_${Date.now()}`, created_at: new Date() };
@@ -444,8 +476,12 @@ function toast(texto) {
 /* ------------------------------- cabecera ------------------------------- */
 
 ui.estadoNube = function (tipo, texto) {
+  const clases = { ok: "pill-ok", error: "pill-warn", pendiente: "pill-warn" };
   const pill = $("#estado-nube");
-  pill.className = "pill " + (tipo === "ok" ? "pill-ok" : tipo === "error" ? "pill-warn" : "pill-muted");
+  pill.className = "pill " + (clases[tipo] || "pill-muted");
+  pill.title = tipo === "pendiente"
+    ? "Hay registros guardados en el teléfono que subirán cuando vuelva la conexión"
+    : "";
   $("#estado-nube-texto").textContent = texto;
 };
 
