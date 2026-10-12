@@ -17,6 +17,9 @@ rules_version = '2';
 //   1. Solo se puede escribir en la colección "movimientos". Nada más.
 //   2. Cada documento debe tener exactamente la forma esperada, así que
 //      nadie puede usar la base como almacenamiento gratuito.
+//   2b. Del número de identidad solo se aceptan los últimos cuatro dígitos.
+//      La página ya recorta antes de enviar; esta regla impide que alguien
+//      escriba el número completo saltándose la página.
 //   3. No se permite borrar de verdad: el historial solo se marca como
 //      eliminado, y queda registro.
 //
@@ -33,8 +36,9 @@ service cloud.firestore {
     // la línea 1, que despista.
     function esMovimientoValido(d) {
       return d.keys().hasOnly([
-               'tipo', 'nombre', 'documento', 'categoria', 'cantidad',
-               'nota', 'lado', 'compuerta_abierta', 'created_at', 'deleted_at'
+               'tipo', 'nombre', 'documento', 'documento_largo', 'categoria',
+               'cantidad', 'nota', 'lado', 'compuerta_abierta',
+               'created_at', 'deleted_at'
              ])
           && d.keys().hasAll([
                'tipo', 'nombre', 'documento', 'categoria', 'cantidad',
@@ -46,9 +50,16 @@ service cloud.firestore {
           && d.nombre is string
           && d.nombre.size() >= 2
           && d.nombre.size() <= 80
+          // Solo se aceptan los últimos dígitos. Si alguien intenta escribir
+          // un documento completo desde fuera de la página, se rechaza: la
+          // base nunca debe contener números de identidad enteros.
           && d.documento is string
-          && d.documento.size() >= 3
-          && d.documento.size() <= 20
+          && d.documento.size() <= 4
+          && d.documento.size() >= 1
+          && (!('documento_largo' in d)
+              || (d.documento_largo is int
+                  && d.documento_largo >= 4
+                  && d.documento_largo <= 20))
           && d.cantidad is int
           && d.cantidad >= 1
           && d.cantidad <= 999

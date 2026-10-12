@@ -219,6 +219,25 @@ herramientas/
 
 ## 8. Seguridad: lo que hay que saber
 
+### El número de documento nunca se guarda completo
+
+La persona escribe su T.I. entera, pero **solo los últimos cuatro dígitos
+salen del dispositivo**. En la base queda `5432` y la longitud del número
+original, que sirve nada más para pintar la cantidad correcta de asteriscos:
+en pantalla se lee `******5432`.
+
+Esto importa porque enmascarar solo al mostrar no protege nada: el número
+completo seguiría en la base, legible por cualquiera con el enlace desde la
+consola del navegador. Aquí no llega nunca.
+
+Las reglas de Firestore rechazan un documento de más de cuatro caracteres,
+así que tampoco se puede escribir uno completo saltándose la página.
+
+Buscar sigue funcionando con el número entero: la página lo recorta y compara
+por el final.
+
+### Lo demás
+
 La app no tiene inicio de sesión, tal como se pidió. Eso significa que
 **cualquiera con el enlace puede registrar movimientos y ver el historial.**
 

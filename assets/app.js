@@ -166,7 +166,8 @@ almacen.crear = async function (datos) {
   const registro = {
     tipo: datos.tipo,
     nombre: datos.nombre,
-    documento: datos.documento,
+    documento: datos.documento,          // solo los últimos dígitos
+    documento_largo: datos.documento_largo,
     categoria: datos.categoria,
     cantidad: datos.cantidad,
     nota: datos.nota || null,
@@ -443,6 +444,25 @@ const ui = {};
 
 const dosDigitos = (n) => String(n).padStart(2, "0");
 
+/** Cuántos dígitos finales del documento se conservan y se muestran. */
+export const DIGITOS_VISIBLES = 4;
+const ASTERISCO = "*";
+
+/**
+ * Pinta un documento como asteriscos más los últimos dígitos.
+ *
+ * Solo la cola se guarda en la base de datos; `largo` dice cuántos dígitos
+ * tenía el número original, y sirve nada más para dibujar la cantidad
+ * correcta de asteriscos. Los registros viejos traen el número entero, así
+ * que también se recortan aquí.
+ */
+function enmascararDocumento(cola, largo) {
+  const visible = String(cola ?? "").slice(-DIGITOS_VISIBLES);
+  const total = Number(largo) || String(cola ?? "").length;
+  const ocultos = Math.max(0, total - visible.length);
+  return ASTERISCO.repeat(ocultos) + visible;
+}
+
 function fechaCorta(d) {
   const hoy = new Date();
   const mismoDia =
@@ -546,7 +566,7 @@ function tarjetaMovimiento(m, conBorrar) {
     <span class="mov-cuerpo">
       <span class="mov-nombre">${escapar(m.nombre)}</span>
       <span class="mov-meta">
-        ${cat.nombre}, documento ${escapar(m.documento)}${m.compuerta_abierta && lado ? `, ${lado.emoji} lado ${m.lado}` : ""}
+        ${cat.nombre}, documento ${escapar(enmascararDocumento(m.documento, m.documento_largo))}${m.compuerta_abierta && lado ? `, ${lado.emoji} lado ${m.lado}` : ""}
         <br>${fechaCorta(m.created_at)}
       </span>
     </span>
@@ -628,7 +648,17 @@ function pintarTodo(movimientos) {
   const filtrados = movimientos.filter((m) => {
     if (estado.filtroTipo && m.tipo !== estado.filtroTipo) return false;
     if (estado.filtroCategoria && m.categoria !== estado.filtroCategoria) return false;
-    if (texto && !(`${m.nombre} ${m.documento}`.toLowerCase().includes(texto))) return false;
+    if (texto) {
+      // Al guardarse solo la cola del documento, buscar por el número
+      // completo también debe funcionar: se compara por su final.
+      const soloDigitos = texto.replace(/\D/g, "");
+      const cola = soloDigitos.length > DIGITOS_VISIBLES
+        ? soloDigitos.slice(-DIGITOS_VISIBLES)
+        : soloDigitos;
+      const porNombre = m.nombre.toLowerCase().includes(texto);
+      const porDocumento = cola.length > 0 && String(m.documento).includes(cola);
+      if (!porNombre && !porDocumento) return false;
+    }
     return true;
   });
 
@@ -706,7 +736,8 @@ async function guardar() {
   };
 
   if (nombre.length < 2)     return fallar("Escribe el nombre completo.");
-  if (documento.length < 3)  return fallar("Escribe el número de documento (mínimo 3 dígitos).");
+  if (documento.length < DIGITOS_VISIBLES)
+    return fallar(`Escribe el número de documento (mínimo ${DIGITOS_VISIBLES} dígitos).`);
   if (!estado.categoria)     return fallar("Elige la categoría del alimento.");
   error.hidden = true;
 
@@ -718,7 +749,11 @@ async function guardar() {
     const movimiento = await almacen.crear({
       tipo: estado.tipo,
       nombre,
-      documento,
+      // Solo los últimos dígitos salen del dispositivo. El número completo
+      // nunca llega a la base de datos; se guarda su longitud únicamente
+      // para pintar la cantidad correcta de asteriscos.
+      documento: documento.slice(-DIGITOS_VISIBLES),
+      documento_largo: documento.length,
       categoria: estado.categoria,
       cantidad: estado.cantidad,
       nota: $("#in-nota").value.trim() || null,
@@ -814,7 +849,7 @@ function exportarCSV() {
     filas.push([
       m.tipo,
       m.nombre,
-      m.documento,
+      enmascararDocumento(m.documento, m.documento_largo),
       CAT[m.categoria]?.nombre ?? m.categoria,
       LADOS[m.lado]?.nombre ?? "",
       m.cantidad,
