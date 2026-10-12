@@ -1,76 +1,92 @@
 /* =========================================================================
-   D.I.R.T. Comunitario
+   D1RT — tema azul, blanco y amarillo
    -------------------------------------------------------------------------
-   La página se organiza sobre la dualidad que define el proyecto: un lado
-   frío y un lado caliente. Los colores salen del Caribe colombiano — hoja
-   de plátano, mar de Santa Marta, mango maduro — y no de una paleta de
-   interfaz genérica.
+   Variante de la despensa física: azul institucional, cielo y amarillo del
+   letrero. Hereda toda la estructura del tema principal y solo cambia la
+   capa de identidad — colores, tipografías y lo propio de Bob.
 
-   Fraunces para los títulos, Archivo para la interfaz.
+   Fredoka para los títulos, Nunito para el texto. Las dos son redondeadas
+   y sin remates, para que acompañen al personaje sin competir con él.
    ========================================================================= */
 
 :root {
-  /* Verdes de la marca: hoja de plátano */
-  --hoja-900: #072E21;
-  --hoja-800: #0E4733;
-  --hoja-700: #15624A;
-  --hoja-500: #1E8A65;
-  --hoja-100: #CFE6DB;
-  --hoja-50:  #E9F3EE;
+  /* Azules de la despensa física */
+  --mar-900: #063A72;
+  --mar-800: #084A92;
+  --mar-700: #0A51A0;
+  --mar-400: #2FA8D8;
+  --cielo:   #87DBEF;
+  --cielo-50:#E4F6FC;
+
+  /* Amarillo del letrero */
+  --sol:     #F2D849;
+  --sol-700: #A8880A;
+  --sol-50:  #FDF6D6;
 
   /* Los dos lados de la despensa */
-  --frio-700:     #0F4C66;
-  --frio:         #1C7FA8;
-  --frio-100:     #D3E8F2;
-  --caliente-700: #9A3A0C;
-  --caliente:     #E0611C;
-  --caliente-100: #FBE0CF;
+  --frio-700:     #0A4C73;
+  --frio:         #1B88C4;
+  --frio-100:     #D6EEF9;
+  --caliente-700: #8A5A06;
+  --caliente:     #EFA216;
+  --caliente-100: #FCEDC8;
 
-  /* Movimiento */
-  --entrada: #1E8A65;
-  --salida:  #C2410C;
+  /* Movimiento: los mismos colores de los botones del diseño */
+  --entrada: #2FA8D8;
+  --salida:  #0A51A0;
 
-  /* Categorías, tomadas del alimento */
-  --cat-lacteos: #2E6FB7;
-  --cat-frutas:  #B8300F;
-  --cat-fritos:  #B8700C;
-  --cat-bebidas: #6B3FA0;
+  /* Categorías */
+  --cat-lacteos: #1B88C4;
+  --cat-frutas:  #D4453B;
+  --cat-fritos:  #C98A0B;
+  --cat-bebidas: #2E7D6E;
 
   /* Superficies */
-  --papel:    #F6F4EE;
+  --papel:    #F2F8FC;
   --blanco:   #FFFFFF;
-  --hueso:    #EDEAE1;
-  --linea:    #DCD8CC;
+  --hueso:    #E3EEF5;
+  --linea:    #CFE0EC;
 
-  --tinta:    #1A1A17;
-  --tinta-2:  #55544D;
-  --tinta-3:  #86847A;
+  --tinta:    #0C2135;
+  --tinta-2:  #46606F;
+  --tinta-3:  #7E97A6;
 
-  --alerta:   #B3261E;
+  --alerta:   #C0392B;
 
-  --r:        14px;
-  --r-g:      20px;
+  --r:        16px;
+  --r-g:      24px;
   --barra:    66px;
 
-  --sans:     "Archivo", system-ui, -apple-system, sans-serif;
-  --display:  "Fraunces", Georgia, serif;
+  --sans:     "Nunito", system-ui, -apple-system, sans-serif;
+  --display:  "Fredoka", "Nunito", sans-serif;
+
+  /* Nombres que el resto de la hoja espera */
+  --hoja-900: var(--mar-900);
+  --hoja-800: var(--mar-800);
+  --hoja-700: var(--mar-700);
+  --hoja-500: var(--mar-400);
+  --hoja-100: var(--cielo);
+  --hoja-50:  var(--cielo-50);
 }
+
+
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --hoja-100: #1C4D3C;
-    --hoja-50:  #12362A;
-    --frio-100: #11374A;
-    --caliente-100: #45200C;
+    --cielo-50: #0B3A5C;
+    --sol-50:   #3A3008;
+    --frio-100: #0C3A55;
+    --caliente-100: #3E2C07;
 
-    --papel:  #15150F;
-    --blanco: #1E1E18;
-    --hueso:  #272720;
-    --linea:  #35352C;
+    --papel:  #081623;
+    --blanco: #0F2234;
+    --hueso:  #17304520;
+    --hueso:  #152C40;
+    --linea:  #1E3C54;
 
-    --tinta:   #F2F0E6;
-    --tinta-2: #B6B4A8;
-    --tinta-3: #8A887E;
+    --tinta:   #EAF4FA;
+    --tinta-2: #A8C2D2;
+    --tinta-3: #7A94A5;
   }
 }
 
@@ -637,6 +653,151 @@ button { font-family: inherit; font-size: inherit; cursor: pointer; }
   .bot-lanzador { bottom: 20px; right: 20px; }
 }
 
+/* =========================================================================
+   IDENTIDAD DEL TEMA AZUL
+   ========================================================================= */
+
+/* El "1" del logotipo, amarillo sobre el azul de la barra. */
+.marca-sigla { letter-spacing: .04em; }
+.marca-sigla .uno {
+  color: var(--sol);
+  -webkit-text-stroke: 1px rgba(0,0,0,.12);
+}
+.marca-tipo { color: var(--cielo); }
+
+/* Fredoka es más ancha que Fraunces: los títulos bajan un punto. */
+h1, h2 { font-weight: 600; letter-spacing: -.005em; }
+.despensa-titulo { font-size: 22px; }
+.vista-titulo { font-size: 23px; }
+.cifra-num { font-size: 35px; font-weight: 700; letter-spacing: 0; }
+.inv-stock { font-size: 37px; }
+
+/* El mueble: tablero amarillo sobre el azul, como el letrero. */
+.despensa {
+  background: linear-gradient(170deg, var(--mar-700), var(--mar-900));
+  border: 3px solid var(--sol);
+}
+.despensa-titulo { color: var(--sol); }
+
+.hueco-frio     { background: #0B3A58; }
+.hueco-caliente { background: #6E4A06; }
+
+.puerta-frio     { background: linear-gradient(150deg, #42B6E4, #15719F); }
+.puerta-caliente { background: linear-gradient(150deg, #F6C44A, #C58508); }
+.puerta-caliente .puerta-nombre,
+.puerta-caliente .puerta-estado { color: #3B2A02; }
+.puerta-caliente .puerta-estado { color: rgba(59,42,2,.78); }
+
+.btn-crema { background: var(--sol); color: var(--mar-900); }
+#rango-angulo { accent-color: var(--sol); }
+.chips-oscuros .chip-on { background: var(--sol); border-color: var(--sol); color: var(--mar-900); }
+.angulo-valor { color: var(--sol); }
+
+/* Botones de acción: el claro para donar, el oscuro para retirar,
+   tal como el diseño de la despensa física. */
+.btn-entrada { background: var(--entrada); color: #06283D; }
+.btn-salida  { background: var(--salida);  color: #fff; }
+.btn-alto    { border: 3px solid rgba(0,0,0,.06); }
+.seg-on[data-tipo="entrada"] { background: var(--entrada); color: #06283D; }
+.exito-sello { background: var(--entrada); color: #06283D; }
+.exito-sello.salida { background: var(--salida); color: #fff; }
+.cifra-entrada { color: #1B88C4; }
+.cifra-salida  { color: var(--mar-700); }
+
+.chip-on { background: var(--mar-700); border-color: var(--mar-700); }
+.tab-on  { color: var(--mar-700); }
+.contador-btn { background: var(--mar-700); }
+.bot-lanzador { background: var(--mar-700); box-shadow: 0 6px 20px rgba(6,58,114,.4); }
+.toast { background: var(--mar-900); }
+.modal { background: rgba(6,58,114,.55); }
+
+/* =========================================================================
+   BOB
+   ========================================================================= */
+
+.bot-avatar {
+  width: 46px; height: 46px; background: var(--cielo);
+  overflow: visible; padding: 0;
+}
+.bot-cabecera { padding: 11px 15px; }
+.bob { width: 100%; height: 100%; display: block; overflow: visible; }
+
+.bob-sombra      { fill: rgba(0,0,0,.16); }
+.bob-cuerpo      { fill: #FFFFFF; stroke: #0A51A0; stroke-width: 4; }
+.bob-pecho       { fill: #EAF6FC; }
+.bob-ala         { fill: #DCEEF8; stroke: #0A51A0; stroke-width: 3.5; stroke-linejoin: round; }
+.bob-gorra       { fill: #0A51A0; }
+.bob-gorra-visera{ fill: #063A72; }
+.bob-gorra-boton { fill: #F2D849; }
+.bob-ojo         { fill: #FFFFFF; stroke: #0A51A0; stroke-width: 2.5; }
+.bob-pupila      { fill: #0C2135; }
+.bob-brillo      { fill: #FFFFFF; }
+.bob-parpado     { fill: #FFFFFF; stroke: #0A51A0; stroke-width: 2.5; transform-box: fill-box; transform-origin: center bottom; transform: scaleY(0); }
+.bob-pico-sup    { fill: #F2D849; stroke: #A8880A; stroke-width: 3.5; stroke-linejoin: round; }
+.bob-bolsa       { fill: #F0A81E; stroke: #A8880A; stroke-width: 3.5; stroke-linejoin: round; }
+.bob-bolsa-luz   { fill: #F8C64E; }
+.bob-pata        { stroke: #EFA216; stroke-width: 5; stroke-linecap: round; fill: none; }
+
+/* La bolsa se infla y se vacía desde donde nace el pico. */
+.bob-bolsa-g {
+  transform-box: fill-box;
+  transform-origin: left top;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bob-flota { animation: bob-flotar 3.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center bottom; }
+  @keyframes bob-flotar { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-3px) } }
+
+  .bob-parpado { animation: bob-parpadeo 5.2s infinite; }
+  @keyframes bob-parpadeo {
+    0%, 92%, 100% { transform: scaleY(0) }
+    95%           { transform: scaleY(1) }
+  }
+
+  .bob.hablando .bob-bolsa-g { animation: bob-habla .26s ease-in-out infinite; }
+  @keyframes bob-habla {
+    0%, 100% { transform: scaleY(1)    rotate(0deg) }
+    50%      { transform: scaleY(1.22) rotate(3deg) }
+  }
+  .bob.hablando .bob-flota { animation-duration: 1.8s; }
+}
+
+/* Bob grande, saludando desde el encabezado de la despensa. */
+.bob-grande {
+  width: 76px; height: 76px; flex: none;
+  filter: drop-shadow(0 4px 10px rgba(6,58,114,.3));
+}
+.despensa-cabecera { align-items: flex-start; }
+.despensa-saludo { display: flex; align-items: center; gap: 12px; }
+.despensa-saludo .despensa-titulo { line-height: 1.1; }
+.despensa-saludo small {
+  display: block; font-family: var(--sans); font-size: 12px;
+  font-weight: 600; color: var(--cielo);
+}
+
+
+/* =========================================================================
+   AJUSTES DE ENCAJE
+   ========================================================================= */
+
+/* Fredoka es más ancha que la tipografía del tema principal y en pantallas
+   de 320 px empujaba la píldora de estado fuera del borde. */
+.topbar-inner { padding: 11px 14px; gap: 10px; }
+.marca { overflow: hidden; }
+.marca-sigla, .marca-tipo { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pill { min-width: 0; }
+.pill span:last-child { overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 359px) {
+  .marca-tipo { display: none; }
+  .bob-grande { width: 74px; height: 74px; }
+}
+
+/* El saludo de Bob: el título no se parte raro al lado del dibujo. */
+.despensa-saludo { align-items: center; }
+.despensa-saludo .despensa-titulo { font-size: 21px; }
+.despensa-cabecera { align-items: center; gap: 10px; }
+
 /* La píldora de estado podía quedarse sin sitio cuando la tipografía
    terminaba de cargar y el texto crecía unos píxeles. Dejar que encoja y
    recorte evita el desborde con cualquier fuente y en cualquier ancho. */
@@ -649,3 +810,29 @@ button { font-family: inherit; font-size: inherit; cursor: pointer; }
 .despensa-cabecera .pill { flex: 0 1 auto; overflow: hidden; }
 .despensa-cabecera .pill span:last-child { overflow: hidden; text-overflow: ellipsis; }
 .despensa-titulo { min-width: 0; }
+.despensa-saludo { flex: 1 1 auto; min-width: 0; }
+
+@media (max-width: 400px) {
+  .despensa-cabecera .pill { order: 3; }
+}
+
+/* =========================================================================
+   IMÁGENES PROPIAS
+   Si hay archivos en azul/marca/, sustituyen al logotipo de texto y al
+   pelícano dibujado.
+   ========================================================================= */
+
+.marca-logo { height: 34px; width: auto; max-width: 150px; object-fit: contain; display: block; }
+
+.bob-propio { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+/* Una imagen fija no puede abrir el pico, así que se balancea entera
+   mientras dura la voz. */
+@media (prefers-reduced-motion: no-preference) {
+  .bob-propio { transition: transform .2s; }
+  .bob-propio.hablando { animation: bob-propio-habla .5s ease-in-out infinite; }
+  @keyframes bob-propio-habla {
+    0%, 100% { transform: rotate(-2.5deg) translateY(0) }
+    50%      { transform: rotate(2.5deg) translateY(-3px) }
+  }
+}

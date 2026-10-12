@@ -27,9 +27,7 @@
    ========================================================================= */
 
 export const TEMAS = [
- 
-  },
-   {
+  {
     id: "donar",
     claves: ["donar", "dejar", "aportar", "entregar", "traer", "regalar", "dar comida",
              "quiero ayudar", "como dono", "contribuir"],
@@ -230,19 +228,20 @@ export const TEMAS = [
     claves: ["hola como estas","y que mas", "q tal", "cmo estas", "que tal bro", "buenas tardes como estas", "buenos dias como estas", "hola", "buenas", "buenos dias", "buenas tardes", "buenas noches",
              "que tal", "saludos", "hey"],
     respuesta:
-      "Hola, bienvenido usuario, soy D.I.R.T, la despensa comunitaria " +
-      "¿En que te puedo ayudar el día de hoy?.", "Puedo explicarte cómo donar, cómo " +
+      "Hola, bienvenido. Soy D.I.R.T., la despensa comunitaria. " +
+      "¿En qué te puedo ayudar hoy? Puedo explicarte cómo donar, cómo " +
       "retirar alimentos, o decirte qué hay disponible ahora mismo.",
   },
   {
     id: "gracias",
-    claves: ["gracias Dirt", "muchas gracias", "te pasaste", "genial", "perfecto", "listo muchas gracias"],
+    claves: ["gracias", "gracias dirt", "muchas gracias", "te pasaste", "genial",
+             "perfecto", "listo", "listo muchas gracias", "excelente"],
     respuesta: "Con mucho gusto, gracias por usar D.I.R.T. Si te queda alguna otra duda, aquí estoy para ayudarte.",
   },
   {
     id: "despedida",
     claves: ["adios", "chao", "hasta luego", "nos vemos", "bye"],
-    respuesta: "Hasta luego, ha sido un gusto poder ayudarte, espero disfrutes tú experiencia en D.I.R.T. Que te vaya muy bien!!.",
+    respuesta: "Hasta luego, ha sido un gusto ayudarte. Espero que disfrutes tu experiencia en D.I.R.T. ¡Que te vaya muy bien!",
   },
 ];
 

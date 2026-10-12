@@ -218,29 +218,29 @@ No hay un límite fijo. La idea es que tomes lo que necesitas y dejes para los q
 
 </details>
 
-## Hola
+## Hola como estas
 
-Hola. Soy la asistente de la despensa. Puedo explicarte cómo donar, cómo retirar alimentos, o decirte qué hay disponible ahora mismo.
+Hola, bienvenido. Soy D.I.R.T., la despensa comunitaria. ¿En qué te puedo ayudar hoy? Puedo explicarte cómo donar, cómo retirar alimentos, o decirte qué hay disponible ahora mismo.
 
 <details><summary>Cómo se reconoce la pregunta</summary>
 
-`hola` · `buenas` · `buenos dias` · `buenas tardes` · `buenas noches` · `que tal` · `saludos` · `hey`
+`hola como estas` · `y que mas` · `q tal` · `cmo estas` · `que tal bro` · `buenas tardes como estas` · `buenos dias como estas` · `hola` · `buenas` · `buenos dias` · `buenas tardes` · `buenas noches` · `que tal` · `saludos` · `hey`
 
 </details>
 
 ## Gracias
 
-Con mucho gusto. Si te queda otra duda, aquí estoy.
+Con mucho gusto, gracias por usar D.I.R.T. Si te queda alguna otra duda, aquí estoy para ayudarte.
 
 <details><summary>Cómo se reconoce la pregunta</summary>
 
-`gracias` · `muchas gracias` · `te pasaste` · `genial` · `perfecto` · `listo`
+`gracias` · `gracias dirt` · `muchas gracias` · `te pasaste` · `genial` · `perfecto` · `listo` · `listo muchas gracias` · `excelente`
 
 </details>
 
 ## Adios
 
-Hasta luego. Que te vaya bien.
+Hasta luego, ha sido un gusto ayudarte. Espero que disfrutes tu experiencia en D.I.R.T. ¡Que te vaya muy bien!
 
 <details><summary>Cómo se reconoce la pregunta</summary>
 

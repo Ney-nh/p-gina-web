@@ -9,7 +9,18 @@ la compuerta.
 
 ---
 
-## 1. Cómo funciona
+## 1. Las dos versiones
+
+| | Dirección | Para qué |
+|---|---|---|
+| **Principal** | https://ney-nh.github.io/p-gina-web/ | Azul y amarillo, con Bob el pelícano |
+| Respaldo | https://ney-nh.github.io/p-gina-web/verde/ | La versión verde anterior |
+
+Comparten `assets/app.js`, `assets/bot.js` y `assets/firebase-config.js`, así
+que **escriben en la misma base de datos** y un arreglo de lógica llega a las
+dos. Lo único propio de cada una es su hoja de estilos y su `index.html`.
+
+## 2. Cómo funciona
 
 ```
    Navegador (Chrome)
@@ -39,9 +50,9 @@ después se mueve el servo.** Si el servo falla, el dato ya quedó guardado.
 
 ---
 
-## 2. Puesta en marcha
+## 3. Puesta en marcha
 
-### 2.1 Firebase
+### 3.1 Firebase
 
 1. Entra a [console.firebase.google.com](https://console.firebase.google.com) y crea un proyecto.
 2. **Compilación → Firestore Database → Crear base de datos.** Elige la región
@@ -56,7 +67,7 @@ Hasta que pegues la configuración, la app arranca en **modo local**: los
 registros se guardan solo en ese navegador y la compuerta funciona igual. Sirve
 para probar sin tener Firebase listo.
 
-### 2.2 Arduino
+### 3.2 Arduino
 
 1. Abre `arduino/dirt_dos_compuertas/dirt_dos_compuertas.ino` en el IDE.
 2. Instala la librería **ArduinoBLE** desde Herramientas → Administrar Bibliotecas.
@@ -76,7 +87,7 @@ La masa común entre la fuente y el Arduino es obligatoria. Con dos servos el
 consumo se duplica: no los alimentes desde el pin de 5 V de la placa, y pon un
 capacitor de 1000 µF entre los rieles, cerca de los servos.
 
-### 2.3 Publicar la página
+### 3.3 Publicar la página
 
 En GitHub: **Settings → Pages → Source: Deploy from a branch → `main` / `(root)`.**
 A los dos minutos la página queda en `https://ney-nh.github.io/p-gina-web/`.
@@ -85,7 +96,7 @@ No hay nada que compilar: lo que está en el repositorio es lo que se sirve.
 
 ---
 
-## 3. Dónde funciona el Bluetooth
+## 4. Dónde funciona el Bluetooth
 
 El control usa **Web Bluetooth**, que solo existe en navegadores Chromium.
 
@@ -106,7 +117,7 @@ levanta un servidor local con `python3 -m http.server`.
 
 ---
 
-## 4. Protocolo Bluetooth
+## 5. Protocolo Bluetooth
 
 | Elemento | Valor |
 |---|---|
@@ -136,9 +147,9 @@ versión anterior de un solo servo.
 
 ---
 
-## 5. Dora, la asistente
+## 6. El bot
 
-El botón **Pregúntale a Dora** abre un chat que responde dudas sobre la
+El botón **Pregúntale a Bob** abre un chat que responde dudas sobre la
 despensa, por escrito o hablando. Entiende preguntas como «cómo dono», «qué hay
 disponible», «por qué hay dos puertas» o «la compuerta no abre», y responde con
 los **datos reales**: si alguien pregunta si hay frutas, lee el inventario y
@@ -179,15 +190,18 @@ Ten en cuenta que esto **solo funciona en el computador donde corre Ollama**.
 Quien abra la página desde otro dispositivo seguirá hablando con el Dora
 propio, que responde igual de bien las preguntas de la despensa.
 
-## 6. Estructura
+## 7. Estructura
 
 ```
-index.html                          la aplicación entera
+index.html                          la aplicación: tema azul con Bob
 assets/
-├── app.css                         estilos, modo claro y oscuro
+├── app.css                         estilos del tema azul, claro y oscuro
 ├── app.js                          categorías, Firestore, Bluetooth, interfaz
-├── bot.js                          Dora: conocimiento, voz y enlace con Ollama
+├── bot.js                          el bot: conocimiento, voz y enlace con Ollama
+├── bob.js                          el pelícano en SVG y su animación
 └── firebase-config.js              ← aquí va tu configuración
+marca/                              tus imágenes propias, si las pones
+verde/                              la versión verde anterior, de respaldo
 arduino/
 └── dirt_dos_compuertas/
     └── dirt_dos_compuertas.ino     sketch de los dos servos
@@ -196,14 +210,14 @@ docs/
 ├── PREGUNTAS.md                    todo lo que la asistente sabe responder
 └── HISTORIAL.md                    qué cambió respecto a versiones anteriores
 herramientas/
+├── revisar.mjs                     comprueba la sintaxis antes de subir
 ├── generar-preguntas.mjs           rehace PREGUNTAS.md desde bot.js
 └── reglas/                         prueba firestore.rules con el emulador
-azul/                               tema azul con Bob, experimento aparte
 ```
 
 ---
 
-## 7. Seguridad: lo que hay que saber
+## 8. Seguridad: lo que hay que saber
 
 La app no tiene inicio de sesión, tal como se pidió. Eso significa que
 **cualquiera con el enlace puede registrar movimientos y ver el historial.**
@@ -223,3 +237,15 @@ Cuando termine la demostración, puedes cerrar la base cambiando el bloque
 Sobre la `apiKey` que queda visible en el repositorio: en Firebase para web
 **no es un secreto**. Identifica al proyecto, no autoriza nada por sí sola.
 Lo que protege los datos son las reglas de Firestore.
+
+
+## 9. Antes de subir cambios
+
+```
+node herramientas/revisar.mjs
+```
+
+Comprueba la sintaxis de todos los módulos y que `docs/PREGUNTAS.md` esté al
+día. Un error de sintaxis en un solo archivo deja la página entera sin
+funcionar, y en el navegador solo se ve una línea en la consola que nadie
+mira.
