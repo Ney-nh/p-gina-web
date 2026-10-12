@@ -28,9 +28,8 @@
 
 export const TEMAS = [
  {
-    id: "Modales",
-    claves: ["hola como estas","y que mas", "q tal", "cmo estas", "que tal bro", "buenas tardes como estas", "buenos dias como estas",
-             ],
+    id: "modales",
+    claves: ["hola como estas","y que mas", "q tal", "cmo estas", "que tal bro", "buenas tardes como estas", "buenos dias como estas"],
     respuesta:
       "Hola, bienvenido usuario, soy D.I.R.T, la despensa comunitaria " +
       "¿En que te puedo ayudar el día de hoy?.",
