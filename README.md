@@ -87,6 +87,10 @@ La masa común entre la fuente y el Arduino es obligatoria. Con dos servos el
 consumo se duplica: no los alimentes desde el pin de 5 V de la placa, y pon un
 capacitor de 1000 µF entre los rieles, cerca de los servos.
 
+El diagrama de la protoboard, hueco por hueco, está en
+**[docs/conexion-servos.svg](docs/conexion-servos.svg)**. Es vectorial, así que
+se puede ampliar o imprimir sin que se pixele.
+
 ### 3.3 Publicar la página
 
 En GitHub: **Settings → Pages → Source: Deploy from a branch → `main` / `(root)`.**
