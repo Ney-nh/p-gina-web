@@ -80,7 +80,7 @@ Conexiones:
 |---|---|
 | Servo frío, señal | D9 |
 | Servo caliente, señal | D10 |
-| Ambos servos, +5 V | fuente externa de 5 V · 2 A |
+| Ambos servos, +5 V | fuente externa de 5 V · 2 A (dos SG90) |
 | Ambos servos, GND | riel negativo, unido al GND del Arduino |
 
 La masa común entre la fuente y el Arduino es obligatoria. Con dos servos el
