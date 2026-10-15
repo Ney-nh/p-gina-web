@@ -506,18 +506,50 @@
 <path d="M 210 192 L 210 240 L 210 288" fill="none" stroke="#23262b" stroke-width="5.0" stroke-linecap="round" stroke-linejoin="round"/>
 <circle cx="210" cy="288" r="5.4" fill="#fff"/>
 <circle cx="210" cy="288" r="4.0" fill="#23262b"/>
-<path d="M 266 268 L 266 234" stroke="#8a8f98" stroke-width="3" fill="none"/>
-<path d="M 280 288 L 280 234" stroke="#8a8f98" stroke-width="3" fill="none"/>
-<rect x="249" y="202" width="50" height="34" rx="8" fill="#1f2a36"/>
-<rect x="291" y="202" width="8" height="34" fill="#aab4c0"/>
-<text x="270" y="217" font-size="10" font-weight="700" fill="#fff" text-anchor="middle">1000</text>
-<text x="270" y="229" font-size="10" font-weight="700" fill="#fff" text-anchor="middle">µF</text>
-<text x="257" y="197" font-size="13" font-weight="700" fill="#15202b" text-anchor="middle">+</text>
-<text x="295" y="197" font-size="13" font-weight="700" fill="#15202b" text-anchor="middle">−</text>
-<circle cx="266" cy="268" r="5.4" fill="#fff"/>
-<circle cx="266" cy="268" r="4.0" fill="#d94a3d"/>
-<circle cx="280" cy="288" r="5.4" fill="#fff"/>
-<circle cx="280" cy="288" r="4.0" fill="#2a63a8"/>
+<path d="M 238 268 L 238 236" stroke="#8a8f98" stroke-width="2.6" fill="none"/>
+<path d="M 252 288 L 252 236" stroke="#8a8f98" stroke-width="2.6" fill="none"/>
+<rect x="230" y="204" width="30" height="34" rx="7" fill="#1f2a36"/>
+<rect x="253" y="204" width="7" height="34" fill="#aab4c0"/>
+<text x="242" y="219" font-size="9.5" font-weight="700" fill="#fff" text-anchor="middle">100</text>
+<text x="242" y="231" font-size="9.5" font-weight="700" fill="#fff" text-anchor="middle">µF</text>
+<text x="238" y="199" font-size="12" font-weight="700" fill="#15202b" text-anchor="middle">+</text>
+<circle cx="238" cy="268" r="5.4" fill="#fff"/>
+<circle cx="238" cy="268" r="4.0" fill="#d94a3d"/>
+<circle cx="252" cy="288" r="5.4" fill="#fff"/>
+<circle cx="252" cy="288" r="4.0" fill="#2a63a8"/>
+<path d="M 280 268 L 280 236" stroke="#8a8f98" stroke-width="2.6" fill="none"/>
+<path d="M 294 288 L 294 236" stroke="#8a8f98" stroke-width="2.6" fill="none"/>
+<rect x="272" y="204" width="30" height="34" rx="7" fill="#1f2a36"/>
+<rect x="295" y="204" width="7" height="34" fill="#aab4c0"/>
+<text x="284" y="219" font-size="9.5" font-weight="700" fill="#fff" text-anchor="middle">100</text>
+<text x="284" y="231" font-size="9.5" font-weight="700" fill="#fff" text-anchor="middle">µF</text>
+<text x="280" y="199" font-size="12" font-weight="700" fill="#15202b" text-anchor="middle">+</text>
+<circle cx="280" cy="268" r="5.4" fill="#fff"/>
+<circle cx="280" cy="268" r="4.0" fill="#d94a3d"/>
+<circle cx="294" cy="288" r="5.4" fill="#fff"/>
+<circle cx="294" cy="288" r="4.0" fill="#2a63a8"/>
+<path d="M 406 268 L 406 236" stroke="#8a8f98" stroke-width="2.6" fill="none"/>
+<path d="M 420 288 L 420 236" stroke="#8a8f98" stroke-width="2.6" fill="none"/>
+<rect x="398" y="204" width="30" height="34" rx="7" fill="#1f2a36"/>
+<rect x="421" y="204" width="7" height="34" fill="#aab4c0"/>
+<text x="410" y="219" font-size="9.5" font-weight="700" fill="#fff" text-anchor="middle">100</text>
+<text x="410" y="231" font-size="9.5" font-weight="700" fill="#fff" text-anchor="middle">µF</text>
+<text x="406" y="199" font-size="12" font-weight="700" fill="#15202b" text-anchor="middle">+</text>
+<circle cx="406" cy="268" r="5.4" fill="#fff"/>
+<circle cx="406" cy="268" r="4.0" fill="#d94a3d"/>
+<circle cx="420" cy="288" r="5.4" fill="#fff"/>
+<circle cx="420" cy="288" r="4.0" fill="#2a63a8"/>
+<path d="M 448 268 L 448 236" stroke="#8a8f98" stroke-width="2.6" fill="none"/>
+<path d="M 462 288 L 462 236" stroke="#8a8f98" stroke-width="2.6" fill="none"/>
+<rect x="440" y="204" width="30" height="34" rx="7" fill="#1f2a36"/>
+<rect x="463" y="204" width="7" height="34" fill="#aab4c0"/>
+<text x="452" y="219" font-size="9.5" font-weight="700" fill="#fff" text-anchor="middle">100</text>
+<text x="452" y="231" font-size="9.5" font-weight="700" fill="#fff" text-anchor="middle">µF</text>
+<text x="448" y="199" font-size="12" font-weight="700" fill="#15202b" text-anchor="middle">+</text>
+<circle cx="448" cy="268" r="5.4" fill="#fff"/>
+<circle cx="448" cy="268" r="4.0" fill="#d94a3d"/>
+<circle cx="462" cy="288" r="5.4" fill="#fff"/>
+<circle cx="462" cy="288" r="4.0" fill="#2a63a8"/>
 <path d="M 322 192 L 322 399" fill="none" stroke="#ffffff" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M 322 192 L 322 399" fill="none" stroke="#f2900d" stroke-width="5.0" stroke-linecap="round" stroke-linejoin="round"/>
 <circle cx="322" cy="399" r="5.4" fill="#fff"/>
@@ -532,37 +564,40 @@
 <path d="M 392 192 L 392 288" fill="none" stroke="#6b4423" stroke-width="5.0" stroke-linecap="round" stroke-linejoin="round"/>
 <circle cx="392" cy="288" r="5.4" fill="#fff"/>
 <circle cx="392" cy="288" r="4.0" fill="#6b4423"/>
-<path d="M 462 192 L 462 399" fill="none" stroke="#ffffff" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M 462 192 L 462 399" fill="none" stroke="#f2900d" stroke-width="5.0" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="462" cy="399" r="5.4" fill="#fff"/>
-<circle cx="462" cy="399" r="4.0" fill="#f2900d"/>
-<rect x="481.6" y="389" width="28.799999999999997" height="18" rx="5" fill="#ffffff" stroke="#cfd6de" stroke-width="1"/>
-<text x="496" y="402.5" font-size="11.5" font-weight="700" fill="#15202b" text-anchor="middle">e24</text>
-<path d="M 504 192 L 504 268" fill="none" stroke="#ffffff" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M 504 192 L 504 268" fill="none" stroke="#e0342a" stroke-width="5.0" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="504" cy="268" r="5.4" fill="#fff"/>
-<circle cx="504" cy="268" r="4.0" fill="#e0342a"/>
-<path d="M 532 192 L 532 288" fill="none" stroke="#ffffff" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M 532 192 L 532 288" fill="none" stroke="#6b4423" stroke-width="5.0" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="532" cy="288" r="5.4" fill="#fff"/>
-<circle cx="532" cy="288" r="4.0" fill="#6b4423"/>
+<path d="M 490 192 L 490 399" fill="none" stroke="#ffffff" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 490 192 L 490 399" fill="none" stroke="#f2900d" stroke-width="5.0" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="490" cy="399" r="5.4" fill="#fff"/>
+<circle cx="490" cy="399" r="4.0" fill="#f2900d"/>
+<rect x="509.6" y="389" width="28.799999999999997" height="18" rx="5" fill="#ffffff" stroke="#cfd6de" stroke-width="1"/>
+<text x="524" y="402.5" font-size="11.5" font-weight="700" fill="#15202b" text-anchor="middle">e26</text>
+<path d="M 518 192 L 518 268" fill="none" stroke="#ffffff" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 518 192 L 518 268" fill="none" stroke="#e0342a" stroke-width="5.0" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="518" cy="268" r="5.4" fill="#fff"/>
+<circle cx="518" cy="268" r="4.0" fill="#e0342a"/>
+<path d="M 546 192 L 546 288" fill="none" stroke="#ffffff" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 546 192 L 546 288" fill="none" stroke="#6b4423" stroke-width="5.0" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="546" cy="288" r="5.4" fill="#fff"/>
+<circle cx="546" cy="288" r="4.0" fill="#6b4423"/>
 <path d="M 320 603 L 320 545 L 322 545 L 322 455" fill="none" stroke="#ffffff" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M 320 603 L 320 545 L 322 545 L 322 455" fill="none" stroke="#f2900d" stroke-width="5.0" stroke-linecap="round" stroke-linejoin="round"/>
 <circle cx="322" cy="455" r="5.4" fill="#fff"/>
 <circle cx="322" cy="455" r="4.0" fill="#f2900d"/>
 <rect x="275.6" y="445" width="28.799999999999997" height="18" rx="5" fill="#ffffff" stroke="#cfd6de" stroke-width="1"/>
 <text x="290" y="458.5" font-size="11.5" font-weight="700" fill="#15202b" text-anchor="middle">a14</text>
-<path d="M 390 603 L 390 568 L 462 568 L 462 455" fill="none" stroke="#ffffff" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M 390 603 L 390 568 L 462 568 L 462 455" fill="none" stroke="#f2900d" stroke-width="5.0" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="462" cy="455" r="5.4" fill="#fff"/>
-<circle cx="462" cy="455" r="4.0" fill="#f2900d"/>
-<rect x="481.6" y="445" width="28.799999999999997" height="18" rx="5" fill="#ffffff" stroke="#cfd6de" stroke-width="1"/>
-<text x="496" y="458.5" font-size="11.5" font-weight="700" fill="#15202b" text-anchor="middle">a24</text>
+<path d="M 390 603 L 390 568 L 490 568 L 490 455" fill="none" stroke="#ffffff" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 390 603 L 390 568 L 490 568 L 490 455" fill="none" stroke="#f2900d" stroke-width="5.0" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="490" cy="455" r="5.4" fill="#fff"/>
+<circle cx="490" cy="455" r="4.0" fill="#f2900d"/>
+<rect x="509.6" y="445" width="28.799999999999997" height="18" rx="5" fill="#ffffff" stroke="#cfd6de" stroke-width="1"/>
+<text x="524" y="458.5" font-size="11.5" font-weight="700" fill="#15202b" text-anchor="middle">a26</text>
 <path d="M 190 603 L 190 592 L 84 592 L 84 288 L 140 288" fill="none" stroke="#ffffff" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M 190 603 L 190 592 L 84 592 L 84 288 L 140 288" fill="none" stroke="#23262b" stroke-width="5.0" stroke-linecap="round" stroke-linejoin="round"/>
 <circle cx="140" cy="288" r="5.4" fill="#fff"/>
 <circle cx="140" cy="288" r="4.0" fill="#23262b"/>
 <text x="62" y="400" font-size="12.5" font-weight="700" fill="#15202b" transform="rotate(-90 62 400)" text-anchor="middle">MASA COMÚN · obligatoria</text>
+<text x="136" y="480" font-size="12.5" fill="#15202b">Los 4 van EN PARALELO: 4 × 100 µF = 400 µF.</text>
+<text x="136" y="499" font-size="12.5" fill="#15202b">Todas las patas largas al riel +,</text>
+<text x="136" y="518" font-size="12.5" fill="#15202b">todas las de la franja al riel −.</text>
 <text x="660" y="108" font-size="16.5" font-weight="700" fill="#15202b">Qué va en cada hueco</text>
 <rect x="660" y="121" width="470" height="26" rx="5" fill="#f7f9fb"/>
 <rect x="660" y="121" width="4.5" height="26" rx="2" fill="#e0342a"/>
@@ -574,12 +609,12 @@
 <text x="1120" y="169" font-size="12.8" font-weight="700" fill="#5b6673" text-anchor="end">riel −  (línea azul de arriba)</text>
 <rect x="660" y="181" width="470" height="26" rx="5" fill="#f7f9fb"/>
 <rect x="660" y="181" width="4.5" height="26" rx="2" fill="#d94a3d"/>
-<text x="675" y="199" font-size="12.8" fill="#15202b">Capacitor 1000 µF · pata larga +</text>
-<text x="1120" y="199" font-size="12.8" font-weight="700" fill="#5b6673" text-anchor="end">riel +  · fila 10</text>
+<text x="675" y="199" font-size="12.8" fill="#15202b">4 capacitores de 100 µF · patas largas +</text>
+<text x="1120" y="199" font-size="12.8" font-weight="700" fill="#5b6673" text-anchor="end">riel +  · filas 8, 11, 20, 23</text>
 <rect x="660" y="211" width="470" height="26" rx="5" fill="#f7f9fb"/>
 <rect x="660" y="211" width="4.5" height="26" rx="2" fill="#2a63a8"/>
-<text x="675" y="229" font-size="12.8" fill="#15202b">Capacitor 1000 µF · pata de la franja −</text>
-<text x="1120" y="229" font-size="12.8" font-weight="700" fill="#5b6673" text-anchor="end">riel −  · fila 11</text>
+<text x="675" y="229" font-size="12.8" fill="#15202b">Los mismos 4 · patas de la franja −</text>
+<text x="1120" y="229" font-size="12.8" font-weight="700" fill="#5b6673" text-anchor="end">riel −  · filas 9, 12, 21, 24</text>
 <line x1="660" y1="256" x2="1130" y2="256" stroke="#e3e7ec" stroke-width="1.4"/>
 <rect x="660" y="256" width="470" height="26" rx="5" fill="#f7f9fb"/>
 <rect x="660" y="256" width="4.5" height="26" rx="2" fill="#e0342a"/>
@@ -601,18 +636,18 @@
 <rect x="660" y="391" width="470" height="26" rx="5" fill="#f7f9fb"/>
 <rect x="660" y="391" width="4.5" height="26" rx="2" fill="#e0342a"/>
 <text x="675" y="409" font-size="12.8" fill="#15202b">Servo CALIENTE · rojo</text>
-<text x="1120" y="409" font-size="12.8" font-weight="700" fill="#5b6673" text-anchor="end">riel +  · fila 27</text>
+<text x="1120" y="409" font-size="12.8" font-weight="700" fill="#5b6673" text-anchor="end">riel +  · fila 28</text>
 <rect x="660" y="421" width="470" height="26" rx="5" fill="#f7f9fb"/>
 <rect x="660" y="421" width="4.5" height="26" rx="2" fill="#6b4423"/>
 <text x="675" y="439" font-size="12.8" fill="#15202b">Servo CALIENTE · marrón o negro</text>
-<text x="1120" y="439" font-size="12.8" font-weight="700" fill="#5b6673" text-anchor="end">riel −  · fila 29</text>
+<text x="1120" y="439" font-size="12.8" font-weight="700" fill="#5b6673" text-anchor="end">riel −  · fila 30</text>
 <rect x="660" y="451" width="470" height="26" rx="5" fill="#f7f9fb"/>
 <rect x="660" y="451" width="4.5" height="26" rx="2" fill="#f2900d"/>
 <text x="675" y="469" font-size="12.8" fill="#15202b">Servo CALIENTE · naranja o amarillo</text>
-<text x="1120" y="469" font-size="12.8" font-weight="700" fill="#5b6673" text-anchor="end">fila 24, columna e</text>
+<text x="1120" y="469" font-size="12.8" font-weight="700" fill="#5b6673" text-anchor="end">fila 26, columna e</text>
 <rect x="660" y="481" width="470" height="26" rx="5" fill="#f7f9fb"/>
 <rect x="660" y="481" width="4.5" height="26" rx="2" fill="#f2900d"/>
-<text x="675" y="499" font-size="12.8" fill="#15202b">Puente  fila 24, columna a</text>
+<text x="675" y="499" font-size="12.8" fill="#15202b">Puente  fila 26, columna a</text>
 <text x="1120" y="499" font-size="12.8" font-weight="700" fill="#5b6673" text-anchor="end">→ pin D10 del Arduino</text>
 <line x1="660" y1="526" x2="1130" y2="526" stroke="#e3e7ec" stroke-width="1.4"/>
 <rect x="660" y="526" width="470" height="26" rx="5" fill="#f7f9fb"/>
