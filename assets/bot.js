@@ -29,10 +29,10 @@
    ========================================================================= */
 
 export const PROYECTO = {
-  equipo: [],          // ej: ["Ana Pérez", "Luis Gómez", "María Ruiz"]
-  institucion: "",     // ej: "la Universidad del Magdalena"
-  curso: "",           // ej: "el curso de Sistemas Embebidos"
-  siglas: "",          // qué significa D.I.R.T., letra por letra
+  equipo: ["Mateo Urzola", "Thaimy Brid", "Dayana Oyaga"],
+  institucion: "el IED Liceo Samario",
+  curso: "Tecnología, Innovación e Informática",
+  siglas: "Despensa Inteligente Reutilizable y Transportable",
 };
 
 /* =========================================================================
@@ -52,6 +52,11 @@ export const PROYECTO = {
 const FEMENINOS = new Set(["Dora"]);
 function genero(nombre, el, ella) {
   return FEMENINOS.has(nombre) ? ella : el;
+}
+
+function procedencia() {
+  const partes = [PROYECTO.curso, PROYECTO.institucion].filter(Boolean);
+  return partes.join(" de ").replace(/\bde el\b/g, "del");
 }
 
 function listar(xs) {
@@ -213,10 +218,8 @@ export const TEMAS = [
              "versiones anteriores", "como evoluciono", "cuentame la historia", "la historia",
              "por que decidieron", "como empezaron", "que los motivo", "como se les vino la idea"],
     respuesta: ({ nombre }) => {
-      const para = [PROYECTO.curso, PROYECTO.institucion].filter(Boolean);
-      const inicio = para.length
-        ? `El proyecto se desarrolló para ${para.join(" de ")}. `
-        : "";
+      const donde = procedencia();
+      const inicio = donde ? `El proyecto se desarrolló para ${donde}. ` : "";
       return inicio +
         "Empezó como una aplicación móvil con inicio de sesión, un servidor propio y una " +
         "compuerta de un solo servo. Para que cualquiera pudiera usarla desde el " +
@@ -237,8 +240,8 @@ export const TEMAS = [
              "quien lo programo", "nombres del equipo", "quienes estan detras", "detras del proyecto",
              "como se llaman los creadores", "nombres de los creadores", "quienes lo presentan"],
     respuesta: () => {
-      const para = [PROYECTO.curso, PROYECTO.institucion].filter(Boolean);
-      const contexto = para.length ? `, para ${para.join(" de ")}` : "";
+      const donde = procedencia();
+      const contexto = donde ? `, para ${donde}` : "";
       if (PROYECTO.equipo.length) {
         return `D.I.R.T. lo crearon ${listar(PROYECTO.equipo)}${contexto}.`;
       }
