@@ -612,6 +612,9 @@ button { font-family: inherit; font-size: inherit; cursor: pointer; }
   text-align: left;
 }
 .bot-sug:hover { border-color: var(--hoja-500); color: var(--hoja-700); }
+/* "¿Te refieres a…?": las opciones van dentro de la conversación */
+.bot-hilo .bot-opciones { padding: 0; }
+.bot-opciones .bot-sug { cursor: pointer; }
 
 .bot-barra {
   display: flex; align-items: center; gap: 8px;

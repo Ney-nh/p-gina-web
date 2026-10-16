@@ -154,33 +154,66 @@ versión anterior de un solo servo.
 ## 6. El bot
 
 El botón **Pregúntale a Bob** abre un chat que responde dudas sobre la
-despensa, por escrito o hablando. Entiende preguntas como «cómo dono», «qué hay
-disponible», «por qué hay dos puertas» o «la compuerta no abre», y responde con
-los **datos reales**: si alguien pregunta si hay frutas, lee el inventario y
-contesta cuántas hay y en qué lado.
+despensa y sobre el proyecto, por escrito o hablando. Entiende preguntas como
+«cómo dono», «qué hay disponible», «por qué hay dos puertas», «cómo se creó el
+proyecto» o «la compuerta no abre», y responde con los **datos reales**: si
+alguien pregunta si hay frutas (o leche, o jugos), lee el inventario y contesta
+cuántas hay y en qué lado.
 
-La voz sale del propio navegador, así que no cuesta nada y la voz de la persona
-no se manda a ningún servidor. El micrófono pide permiso la primera vez. El
-botón del altavoz silencia las respuestas habladas.
+### Cómo entiende
 
-La lista completa de lo que sabe está en **[docs/PREGUNTAS.md](docs/PREGUNTAS.md)**,
-con la respuesta de cada tema y las palabras que lo disparan.
+| Capa | Qué hace | Ejemplo |
+|---|---|---|
+| 1. Normaliza | Quita tildes, signos y mayúsculas, letras estiradas, abreviaturas, muletillas, el nombre al inicio y palabras repetidas | «Oye Bob, ¿cómo cómo se creóóó?» → «como se creo» |
+| 2. Tolera errores | Compara por raíz, por sonido y con uno o dos errores de letra | «komo se kreo el proyeto» → creación |
+| 3. Catálogo | 34 temas y unas 580 frases clave | ver [docs/PREGUNTAS.md](docs/PREGUNTAS.md) |
+| 4. Rescate | Si no está seguro, pregunta «¿Te refieres a…?» con botones y entiende un «sí» | «la idea» → ¿Te refieres a cómo se creó el proyecto? |
 
-Para añadir o cambiar un tema, edita la lista `TEMAS` al principio de
-`assets/bot.js` y vuelve a generar el documento:
+Nunca inventa: si nada se acerca, lo dice y ofrece los temas que sí conoce.
+Las preguntas que no entendió quedan anotadas en ese navegador; para verlas,
+en la consola: `JSON.parse(localStorage.getItem("bot:sin-respuesta"))`.
+
+La voz la pone el propio navegador, así que no cuesta nada. Para transcribir
+lo que se dice, Chrome usa el servicio de reconocimiento de voz de Google. El
+micrófono pide permiso la primera vez. El botón del altavoz silencia las
+respuestas habladas.
+
+### Datos del proyecto
+
+Al inicio de `assets/bot.js` está el bloque `PROYECTO`: nombres del equipo,
+institución, curso y el significado de las siglas. Lo que quede vacío no se
+dice; el bot responde sin ese dato en vez de inventarlo.
+
+### Añadir o cambiar un tema
+
+Edita la lista `TEMAS` en `assets/bot.js`. Cada tema tiene un `titulo` (cómo
+se ofrece en «¿Te refieres a…?»), una `pregunta` (la que se envía al tocar el
+botón), sus `claves` y la `respuesta`. No hace falta escribir variantes sin
+tilde, en plural ni con errores: ya se toleran. Sí conviene poner formas
+distintas de decir lo mismo.
+
+Después:
 
 ```
-node herramientas/generar-preguntas.mjs
+node herramientas/probar-bot.mjs         # que siga entendiendo todo
+node herramientas/generar-preguntas.mjs  # rehace docs/PREGUNTAS.md
 ```
 
-El documento se arma leyendo el propio código, así que nunca se desfasa del
-bot.
+Si alguien hace una pregunta que no entiende, agrégala a
+`herramientas/probar-bot.mjs` con el tema esperado y ajusta las claves hasta
+que pase. Para ver por qué una frase cae en un tema:
+
+```
+node -e 'import("./assets/bot.js").then(m => console.log(m.explicar("tu frase")))'
+```
 
 ### Conectarle un modelo de verdad (opcional)
 
-Dora puede usar **Ollama** corriendo en tu propio computador, sin clave de API
-ni costo. Si Ollama no está o no responde en ocho segundos, vuelve sola a su
-conocimiento propio y nadie lo nota.
+El bot puede usar **Ollama** corriendo en tu propio computador, sin clave de
+API ni costo. Solo se le consulta cuando el conocimiento propio **no está
+seguro**, y lleva como contexto todas las respuestas del bot con la orden de no
+salirse de ellas. Si Ollama no está o no responde en ocho segundos, se sigue
+con el «¿Te refieres a…?» y nadie lo nota.
 
 1. Instala Ollama desde [ollama.com](https://ollama.com) y descarga un modelo:
    `ollama pull llama3.2`
@@ -191,8 +224,8 @@ conocimiento propio y nadie lo nota.
    `OLLAMA`.
 
 Ten en cuenta que esto **solo funciona en el computador donde corre Ollama**.
-Quien abra la página desde otro dispositivo seguirá hablando con el Dora
-propio, que responde igual de bien las preguntas de la despensa.
+Quien abra la página desde otro dispositivo sigue hablando con el bot propio,
+que responde igual las preguntas del catálogo.
 
 ## 7. Estructura
 
@@ -201,7 +234,7 @@ index.html                          la aplicación: tema azul con Bob
 assets/
 ├── app.css                         estilos del tema azul, claro y oscuro
 ├── app.js                          categorías, Firestore, Bluetooth, interfaz
-├── bot.js                          el bot: conocimiento, voz y enlace con Ollama
+├── bot.js                          el bot: datos del proyecto, catálogo, voz y Ollama
 ├── bob.js                          el pelícano en SVG y su animación
 └── firebase-config.js              ← aquí va tu configuración
 marca/                              tus imágenes propias, si las pones
@@ -211,10 +244,11 @@ arduino/
     └── dirt_dos_compuertas.ino     sketch de los dos servos
 firestore.rules                     reglas de seguridad de la base
 docs/
-├── PREGUNTAS.md                    todo lo que la asistente sabe responder
+├── PREGUNTAS.md                    todo lo que el bot sabe responder
 └── HISTORIAL.md                    qué cambió respecto a versiones anteriores
 herramientas/
-├── revisar.mjs                     comprueba la sintaxis antes de subir
+├── revisar.mjs                     sintaxis, documento al día y pruebas del bot
+├── probar-bot.mjs                  110 preguntas reales que el bot debe entender
 ├── generar-preguntas.mjs           rehace PREGUNTAS.md desde bot.js
 └── reglas/                         prueba firestore.rules con el emulador
 ```
@@ -268,7 +302,7 @@ Lo que protege los datos son las reglas de Firestore.
 node herramientas/revisar.mjs
 ```
 
-Comprueba la sintaxis de todos los módulos y que `docs/PREGUNTAS.md` esté al
-día. Un error de sintaxis en un solo archivo deja la página entera sin
+Comprueba la sintaxis de todos los módulos, que `docs/PREGUNTAS.md` esté al
+día y que el bot siga entendiendo las preguntas del banco de pruebas. Un error de sintaxis en un solo archivo deja la página entera sin
 funcionar, y en el navegador solo se ve una línea en la consola que nadie
 mira.

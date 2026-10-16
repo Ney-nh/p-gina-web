@@ -1,5 +1,26 @@
 # Historial de cambios
 
+## Bot: entiende preguntas con errores y sabe del proyecto
+
+Tras la presentación, Bob respondió «no estoy segura» a «¿cómo se creó el
+proyecto?». Había dos causas: no existía ningún tema sobre el proyecto en sí, y
+la comparación exigía las palabras exactas.
+
+- **Normalización**: letras estiradas, abreviaturas de chat, muletillas, el
+  nombre al inicio («oye Bob») y palabras repetidas.
+- **Tolerancia a errores**: raíz, sonido y distancia de edición por palabra.
+- **Catálogo**: de 24 a 34 temas y de unas 200 a unas 580 frases. Temas nuevos:
+  creación del proyecto, equipo, objetivo, siglas, quién es Bob, ayuda, cómo
+  entiende, materiales, dónde se guardan los datos y mejoras a futuro.
+- **Rescate**: «¿Te refieres a…?» con botones, y un «sí» lo confirma.
+- **Datos del proyecto** en el bloque `PROYECTO`: lo vacío no se dice.
+- Bob habla en masculino y Dora en femenino.
+- Ollama ahora solo se consulta cuando el bot no está seguro, con todas las
+  respuestas como contexto. Se corrigió un error que metía «NaN» en sus
+  instrucciones.
+- Banco de 110 preguntas en `herramientas/probar-bot.mjs`, que corre también
+  dentro de `revisar.mjs`.
+
 ## Versión actual — página web estática con Firestore y compuerta doble
 
 ### Qué se quitó

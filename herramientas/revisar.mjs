@@ -5,6 +5,8 @@
    funcionar, y en el navegador solo se ve una línea en la consola que nadie
    mira. Correr esto antes de subir cambios evita publicar una página rota.
 
+   También corre el banco de pruebas del asistente (probar-bot.mjs).
+
    Uso:  node herramientas/revisar.mjs
 */
 import { readFileSync, readdirSync, statSync } from "node:fs";
@@ -60,6 +62,17 @@ if (temasEnBot === temasEnDoc) {
   console.log(`  VIEJO  el bot tiene ${temasEnBot} temas y el documento ${temasEnDoc}`);
   console.log("         corre: node herramientas/generar-preguntas.mjs");
   problemas.push("docs/PREGUNTAS.md");
+}
+
+// El asistente debe seguir entendiendo las preguntas del banco de pruebas.
+console.log("\nAsistente:");
+try {
+  const salida = execFileSync(process.execPath, [join(raiz, "herramientas/probar-bot.mjs")],
+                              { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+  console.log("  bien  " + salida.split("\n")[0]);
+} catch (e) {
+  console.log("  FALLA " + String(e.stdout || e.message).trim().split("\n").join("\n        "));
+  problemas.push("herramientas/probar-bot.mjs");
 }
 
 console.log("\n" + (problemas.length
