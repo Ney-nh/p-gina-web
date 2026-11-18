@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/app.css">
+<link rel="stylesheet" href="assets/nutricion.css">
 <style>
   .cinta-prueba { background: #C0392B; color: #fff; text-align: center;
                   font: 700 12.5px/1.4 system-ui, sans-serif; padding: 6px 12px; }
@@ -167,6 +168,13 @@
     <button class="btn btn-linea btn-ancho" id="btn-exportar">Descargar historial en CSV</button>
   </section>
 
+  <!-- ====================== NUTRICIÓN (prueba) ====================== -->
+  <section id="vista-nutricion" class="vista" data-vista="nutricion" hidden>
+    <h2 class="vista-titulo">Información nutricional</h2>
+    <p class="nut-intro">Qué aporta cada alimento de la despensa, para elegir bien lo que llevas.</p>
+    <div id="nutricion-contenido"></div>
+  </section>
+
 </main>
 
 <nav class="tabs" role="tablist">
@@ -181,6 +189,10 @@
   <button class="tab" data-tab="historial" role="tab" aria-selected="false">
     <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
     <span>Historial</span>
+  </button>
+  <button class="tab" data-tab="nutricion" role="tab" aria-selected="false">
+    <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7c-2-2-7-2-7 4 0 5 4 10 7 10s7-5 7-10c0-6-5-6-7-4z"/><path d="M12 7c0-2 1-4 3-5"/><path d="M9 4c1 0 3 1 3 3"/></svg>
+    <span>Nutrición</span>
   </button>
 </nav>
 
@@ -311,6 +323,10 @@
   plantarBob("#bob-casa", MARCA.mascota);
   plantarBob("#bob-grande", MARCA.mascota);
   plantarLogo(MARCA.logo);
+</script>
+<script type="module">
+  import { iniciarNutricion } from "./assets/nutricion.js";
+  iniciarNutricion();
 </script>
 </body>
 </html>

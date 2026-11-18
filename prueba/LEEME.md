@@ -23,6 +23,7 @@ cambia. Lo demás lo carga de la página real:
 |---|---|
 | `index.html` | propio (`prueba/index.html`) |
 | `app.js` | propio (`prueba/assets/app.js`) |
+| `nutricion.js`, `nutricion.css` | propio, nuevo: pestaña **Nutrición** (aún no está en la real) |
 | `app.css`, `bot.js`, `bob.js`, `firebase-config.js`, `marca/config.js` | compartido (`../assets/`, `../marca/`) |
 
 **Para probar un cambio en un archivo compartido**, primero se copia a
