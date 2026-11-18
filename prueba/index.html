@@ -12,7 +12,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/app.css">
+<!-- three.js para el Bob 3D (Beta). Si no carga, queda el Bob dibujado. -->
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
 <link rel="stylesheet" href="assets/nutricion.css">
+<link rel="stylesheet" href="assets/bob3d.css">
 <style>
   .cinta-prueba { background: #C0392B; color: #fff; text-align: center;
                   font: 700 12.5px/1.4 system-ui, sans-serif; padding: 6px 12px; }
@@ -297,6 +305,10 @@
     </span>
   </header>
 
+  <div id="bob3d" class="bob3d" hidden title="Toca a Bob para que se gire">
+    <span class="bob3d-beta">Beta 3D</span>
+  </div>
+
   <div id="bot-hilo" class="bot-hilo" role="log" aria-live="polite"></div>
   <div id="bot-sugerencias" class="bot-sugerencias" hidden></div>
 
@@ -327,6 +339,13 @@
 <script type="module">
   import { iniciarNutricion } from "./assets/nutricion.js";
   iniciarNutricion();
+</script>
+<script type="module">
+  // Beta: voz de Bob con la boca sincronizada, y Bob en 3D dentro del chat.
+  import { iniciarVozBob } from "./assets/voz-bob.js";
+  import { iniciarBob3D } from "./assets/bob3d.js";
+  iniciarVozBob();
+  iniciarBob3D();
 </script>
 </body>
 </html>

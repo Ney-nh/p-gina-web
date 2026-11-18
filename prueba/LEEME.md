@@ -24,6 +24,7 @@ cambia. Lo demás lo carga de la página real:
 | `index.html` | propio (`prueba/index.html`) |
 | `app.js` | propio (`prueba/assets/app.js`) |
 | `nutricion.js`, `nutricion.css` | propio, nuevo: pestaña **Nutrición** (aún no está en la real) |
+| `voz-bob.js`, `bob3d.js`, `bob3d.css` | propio, nuevo: **Bob 3D y boca sincronizada (Beta)** |
 | `app.css`, `bot.js`, `bob.js`, `firebase-config.js`, `marca/config.js` | compartido (`../assets/`, `../marca/`) |
 
 **Para probar un cambio en un archivo compartido**, primero se copia a
@@ -41,3 +42,26 @@ diferencia a la prueba:
 
 Si el archivo pasa a ser idéntico en las dos, se borra la copia de `prueba/`
 y se vuelve a cargar el compartido.
+
+## Bob 3D (Beta)
+
+Al abrir el chat aparece Bob en 3D arriba de la conversación, y abre el pico
+al ritmo de lo que dice. El Bob dibujado también abre la bolsa al mismo ritmo.
+
+- `voz-bob.js` pone la voz de Bob (más grave: `VOZ_BOB.tono`) y calcula, sílaba
+  por sílaba, cuánto se abre la boca. No modifica `assets/bot.js`.
+- `bob3d.js` dibuja a Bob con three.js, que se descarga de jsDelivr. Si no
+  carga (sin internet o sin WebGL), el escenario se esconde y queda el dibujo.
+- Mientras no haya modelo de Meshy, se ve un **Bob provisional** armado con
+  esferas y conos.
+
+### Poner el modelo de Meshy
+
+1. En Meshy: *Download → GLB*.
+2. En Blender, separar el pico de abajo (con la bolsa) como pieza aparte,
+   llamarla `mandibula` y poner su origen en la bisagra del pico. Exportar
+   como GLB. Otra opción: una *shape key* llamada `boca` con el pico abierto.
+3. Guardar el archivo como `prueba/modelos/bob.glb` (ideal: menos de 4 MB).
+4. En `prueba/assets/bob3d.js`, poner `url: "modelos/bob.glb"` en `MODELO_3D`.
+
+La consola del navegador dice qué piezas encontró: `[Bob 3D] modelo cargado…`.

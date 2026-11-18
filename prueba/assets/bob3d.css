@@ -1,0 +1,37 @@
+/* Bob 3D y boca sincronizada — Beta, solo en la página de prueba. */
+
+/* Escenario 3D arriba de la conversación. */
+.bob3d {
+  position: relative; flex: none;
+  height: 190px;
+  background: radial-gradient(ellipse at 50% 85%, var(--cielo-50) 0%, var(--papel) 70%);
+  border-bottom: 1.5px solid var(--linea);
+  cursor: pointer;
+}
+.bob3d canvas { width: 100%; height: 100%; display: block; }
+.bob3d-beta {
+  position: absolute; top: 9px; right: 10px;
+  background: var(--sol); color: var(--mar-900);
+  font-size: 10.5px; font-weight: 800; letter-spacing: .04em;
+  padding: 2px 8px; border-radius: 999px;
+}
+
+/* Con el escenario, el panel crece para que la conversación no se apriete. */
+.con-bob3d .bot-panel { height: 640px; max-height: 92vh; }
+@media (min-width: 620px) {
+  .con-bob3d .bot-panel { height: 680px; }
+}
+@media (max-height: 640px) {
+  .bob3d { height: 140px; }
+}
+
+/* El Bob dibujado también abre la bolsa al ritmo real de la voz, en lugar
+   del vaivén fijo. --boca (0 a 1) lo pone voz-bob.js en cada cuadro. */
+.bob.hablando .bob-bolsa-g {
+  animation: none;
+  transform: scaleY(calc(1 + var(--boca, 0) * 0.32)) rotate(calc(var(--boca, 0) * 7deg));
+}
+.bob-propio.hablando {
+  animation: none;
+  transform: rotate(calc(var(--boca, 0) * 4deg)) translateY(calc(var(--boca, 0) * -4px));
+}
