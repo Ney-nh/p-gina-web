@@ -94,6 +94,17 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // Página de prueba (/prueba/): mismas reglas, colección aparte, para que
+    // los registros de prueba no se mezclen con los reales.
+    match /movimientos_prueba/{movimientoId} {
+      allow read: if true;
+      allow create: if esMovimientoValido(request.resource.data);
+      allow update: if request.resource.data.diff(resource.data)
+                            .affectedKeys()
+                            .hasOnly(['deleted_at']);
+      allow delete: if false;
+    }
+
     // Todo lo demás queda cerrado. En Firestore el acceso se deniega por
     // defecto, así que este bloque no añade protección: está para dejar la
     // intención por escrito.
