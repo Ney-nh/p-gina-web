@@ -25,6 +25,7 @@ cambia. Lo demás lo carga de la página real:
 | `app.js` | propio (`prueba/assets/app.js`) |
 | `nutricion.js`, `nutricion.css` | propio, nuevo: pestaña **Nutrición** (aún no está en la real) |
 | `voz-bob.js`, `bob3d.js`, `bob3d.css` | propio, nuevo: **Bob 3D y boca sincronizada (Beta)** |
+| `vivo.js`, `vivo.css` | propio, nuevo: **modo en vivo (Beta)** |
 | `app.css`, `bot.js`, `bob.js`, `firebase-config.js`, `marca/config.js` | compartido (`../assets/`, `../marca/`) |
 
 **Para probar un cambio en un archivo compartido**, primero se copia a
@@ -65,3 +66,22 @@ al ritmo de lo que dice. El Bob dibujado también abre la bolsa al mismo ritmo.
 4. En `prueba/assets/bob3d.js`, poner `url: "modelos/bob.glb"` en `MODELO_3D`.
 
 La consola del navegador dice qué piezas encontró: `[Bob 3D] modelo cargado…`.
+
+## Modo en vivo (Beta)
+
+Pantalla completa para conversar con Bob por voz. Se abre con el botón
+**Hablar en vivo** (sobre Bob 3D, en el chat), con el ícono de ondas en la
+cabecera del chat, o directo con `prueba/?vivo`.
+
+- Tocas el micrófono (o a Bob), hablas, Bob **escucha** → **piensa** →
+  **habla**, y con *Conversación continua* vuelve a escucharte solo.
+- Tocar a Bob mientras habla lo interrumpe.
+- Bob 3D cambia de gesto en cada estado: se inclina y ladea la cabeza al
+  escuchar, mira hacia arriba al pensar y abre el pico al hablar. Un anillo
+  en el piso cambia de color: azul (escucha), amarillo (piensa), naranja
+  (habla). Si el 3D no carga, aparece el Bob dibujado con ondas.
+- **No usa IA**: responde con el mismo cerebro programado del chat
+  (`entender()` de `assets/bot.js`). Para conectar una IA después, solo se
+  cambia `obtenerRespuesta()` en `vivo.js`.
+- El micrófono funciona en Chrome (Android y computador). En iPhone y
+  Firefox no hay reconocimiento de voz: se escribe o se tocan las preguntas.

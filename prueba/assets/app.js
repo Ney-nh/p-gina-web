@@ -1077,3 +1077,6 @@ async function iniciar() {
 }
 
 iniciar();
+
+// El modo en vivo (vivo.js) responde con el mismo inventario.
+export { estadoDespensa };

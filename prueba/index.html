@@ -21,6 +21,7 @@
 </script>
 <link rel="stylesheet" href="assets/nutricion.css">
 <link rel="stylesheet" href="assets/bob3d.css">
+<link rel="stylesheet" href="assets/vivo.css">
 <style>
   .cinta-prueba { background: #C0392B; color: #fff; text-align: center;
                   font: 700 12.5px/1.4 system-ui, sans-serif; padding: 6px 12px; }
@@ -292,6 +293,9 @@
       </span>
     </span>
     <span class="bot-botones">
+      <button class="bot-icono" data-abre-vivo type="button" aria-label="Hablar con Bob en vivo" title="Modo en vivo">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="2.2" fill="currentColor"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg>
+      </button>
       <button id="bot-altavoz" class="bot-icono" aria-label="Silenciar a Bob" title="Silenciar">
         <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5 6 9H2v6h4l5 4z"/>
@@ -307,6 +311,7 @@
 
   <div id="bob3d" class="bob3d" hidden title="Toca a Bob para que se gire">
     <span class="bob3d-beta">Beta 3D</span>
+    <button class="vivo-abrir" data-abre-vivo type="button"><span class="vivo-abrir-luz"></span> Hablar en vivo</button>
   </div>
 
   <div id="bot-hilo" class="bot-hilo" role="log" aria-live="polite"></div>
@@ -344,8 +349,10 @@
   // Beta: voz de Bob con la boca sincronizada, y Bob en 3D dentro del chat.
   import { iniciarVozBob } from "./assets/voz-bob.js";
   import { iniciarBob3D } from "./assets/bob3d.js";
+  import { iniciarVivo } from "./assets/vivo.js";
   iniciarVozBob();
   iniciarBob3D();
+  iniciarVivo();   // modo en vivo: botón en el chat, o prueba/?vivo
 </script>
 </body>
 </html>
