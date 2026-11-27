@@ -73,10 +73,10 @@ const CASOS = [
   ["kiero sacar comida", "retirar"],
   ["necesito comida", "retirar"],
   ["por que hay dos puertas", "lados"],
-  ["porq hay dos compuertas", "lados"],
+  ["por que hay dos lados", "lados"],
+  ["que materiales usaron", "materiales"],
+  ["como pruebo la conexion con el arduino", "no_conecta_bluetooth"],
   ["para que es el lado frio", "lados"],
-  ["la compuerta no abre", "compuerta_problema"],
-  ["la conpuerta no se abre", "compuerta_problema"],
   ["el arduino no se conecta", "no_conecta_bluetooth"],
   ["el arduno no conecta", "no_conecta_bluetooth"],
   ["funciona en iphone", "navegador"],
@@ -87,9 +87,7 @@ const CASOS = [
   ["funciona sin internet", "sin_luz"],
   ["que no se puede donar", "que_no_donar"],
   ["puedo donar comida preparada", "que_no_donar"],
-  ["y si la compuerta se queda abierta", "seguridad_cierre"],
   ["me equivoque en un registro", "borrar_registro"],
-  ["cuanto tiempo queda abierta", "tiempo"],
   ["que es dirt", "que_es"],
   ["de que se trata", "que_es"],
   ["cuanto cuesta", "costo"],
@@ -114,11 +112,7 @@ const CASOS = [
   ["quienes estan detras de esto", "equipo"],
   ["que motivo el proyecto", "objetivo"],
   ["que hace el arduino", "como_funciona"],
-  ["que servos usaron", "materiales"],
-  ["que es un servo", "materiales"],
   ["que significa D.I.R.T.", "nombre_dirt"],
-  ["por que se abre solo un lado", "dos_servos"],
-  ["la compuerta esta trabada", "compuerta_problema"],
   ["como conecto el arduino", "no_conecta_bluetooth"],
   ["eres un robot?", "quien_eres"],
   ["bob", "saludo"],
@@ -135,7 +129,6 @@ const CASOS = [
   ["cuantas donaciones van hoy", "movimientos"],
 
   // no deben confundirse
-  ["cuanto tiempo dura abierta la compuerta", "tiempo"],
   ["cuanto cuesta la leche", "costo"],
 
   // rescate: algo cercano pero sin certeza

@@ -1,5 +1,5 @@
 /* =========================================================================
-   BOB 3D — Beta, solo en la página de prueba
+   BOB 3D — Beta
    -------------------------------------------------------------------------
    Dibuja a Bob en 3D y lo anima según lo que esté haciendo:
 
@@ -14,12 +14,12 @@
    Se usa en dos lugares: el escenario pequeño del chat (iniciarBob3D) y
    la pantalla del modo en vivo (vivo.js, con crearBob3D).
 
-   three.js se descarga de jsDelivr (importmap en prueba/index.html). Si no
+   three.js se descarga de jsDelivr (importmap en index.html). Si no
    carga —sin internet, sin WebGL—, crearBob3D devuelve null y quien lo usa
    muestra el Bob dibujado.
 
    MODELO DE MESHY
-   Pon el GLB en prueba/modelos/ y su ruta en MODELO_3D.url. Para que mueva
+   Pon el GLB en la carpeta modelos/ y su ruta en MODELO_3D.url. Para que mueva
    la boca necesita el pico de abajo como pieza aparte (nombre con
    "mandibula", "jaw" o "pico_inf", origen en la bisagra) o una forma de
    boca llamada "boca", "mouth", "open" o "jaw_open". Los gestos de los
@@ -29,7 +29,7 @@
 import { boca } from "./voz-bob.js";
 
 export const MODELO_3D = {
-  url: "",                       // ej. "modelos/bob.glb"
+  url: "",                       // ruta desde assets/, ej. "../modelos/bob.glb"
   nombreMandibula: /mandibula|mand[ií]bula|jaw|pico_?inf|lower/i,
   nombreForma: /^(boca|mouth|open|jaw_?open|abrir)/i,
   ejeMandibula: "x",             // eje de giro de la pieza del pico
@@ -261,7 +261,7 @@ export async function crearBob3D(caja, { anillo = false } = {}) {
 
   let bob = null;
   if (MODELO_3D.url) {
-    try { bob = await cargarModelo(THREE, MODELO_3D.url); }
+    try { bob = await cargarModelo(THREE, new URL(MODELO_3D.url, import.meta.url).href); }
     catch (e) { console.warn("[Bob 3D] No se pudo cargar el modelo; uso el provisional.", e); }
   }
   bob ??= armarBobProvisional(THREE);

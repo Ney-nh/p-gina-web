@@ -1,5 +1,47 @@
 # Historial de cambios
 
+## Versión de la presentación — sin compuertas, con Bob en vivo
+
+Lo que se probó en `prueba/` pasó a la página real, y se retiró la compuerta.
+
+### Qué se quitó
+
+- **Las compuertas y los servomotores**: el panel para conectar la compuerta,
+  el control del ángulo, los botones de abrir y cerrar, las puertas animadas,
+  la cuenta regresiva de cinco segundos y el botón «Cerrar la compuerta
+  ahora». También el sketch `dirt_dos_compuertas` y el diagrama de los servos.
+- **La versión verde** (`verde/`), que dependía del panel de la compuerta.
+  Sigue en el historial de git.
+- **Del bot**, los temas «la compuerta no abre», «cómo sabe qué lado abrir»,
+  «¿y si se queda abierta?» y «cuánto tiempo queda abierta». Las respuestas que
+  mencionaban la compuerta o los servos se reescribieron.
+
+### Qué queda del Arduino
+
+Una **prueba de conexión**: la página lo busca por Bluetooth, le manda `?` y
+muestra su respuesta y cuánto tardó. El sketch nuevo es
+`arduino/dirt_conexion/dirt_conexion.ino` y no necesita nada conectado.
+
+### Qué se añadió
+
+- **Mensaje distinto en cada registro**: diez para quien dona y diez para
+  quien retira, sin repetir hasta que salen todos. La pantalla de éxito
+  aparece siempre y dice en qué lado va el alimento.
+- **Pestaña Nutrición**, **Bob 3D**, **boca sincronizada con la voz** y
+  **modo en vivo**, que antes estaban solo en la página de prueba.
+- La página de prueba ahora carga el mismo código que la real y solo cambia
+  la colección de datos (`window.DIRT_CONFIG`).
+
+### Arreglos
+
+- El botón Guardar perdía su ancho y su tamaño después del primer registro.
+- El aviso «va en el lado frío/caliente» del formulario salía sin estilo.
+
+### Datos
+
+Los registros nuevos traen `compuerta_abierta: false`, porque las reglas
+publicadas de Firestore exigen el campo. No hace falta publicar reglas nuevas.
+
 ## Bot: entiende preguntas con errores y sabe del proyecto
 
 Tras la presentación, Bob respondió «no estoy segura» a «¿cómo se creó el

@@ -4,14 +4,10 @@ Este documento se genera solo a partir de `assets/bot.js`.
 No lo edites a mano: cambia los temas en ese archivo y vuelve a correr
 `node herramientas/generar-preguntas.mjs`.
 
-Última generación: 2026-10-16 · 34 temas · 580 frases clave
+Última generación: 2026-11-27 · 30 temas · 537 frases clave
 
 Las respuestas se muestran como las dice Bob; en la versión verde las dice
 Dora, con el nombre y el género ajustados.
-
-> **Datos del proyecto sin llenar** en `PROYECTO`, al inicio de `assets/bot.js`:
-> nombres del equipo (equipo), institución (institucion), curso (curso), significado de las siglas (siglas).
-> Mientras estén vacíos, el asistente responde sin ellos y no inventa nada.
 
 ## Cómo entiende una pregunta
 
@@ -31,7 +27,7 @@ Para verlas, en la consola: `JSON.parse(localStorage.getItem("bot:sin-respuesta"
 
 ## ¿Cómo dono alimentos?
 
-Para donar: toca el botón verde Registrar entrada, escribe tu nombre y tu número de documento, elige qué alimento traes y cuántas unidades. Al guardar, la compuerta se abre sola del lado que corresponde y tienes cinco segundos para dejar los alimentos dentro.
+Para donar: toca el botón verde Registrar entrada, escribe tu nombre y tu número de documento, elige qué alimento traes y cuántas unidades, y guarda. La página te dice en qué lado va: lácteos, frutas y bebidas al frío; los fritos al caliente.
 
 <details><summary>Cómo se reconoce (25 frases)</summary>
 
@@ -41,7 +37,7 @@ Para donar: toca el botón verde Registrar entrada, escribe tu nombre y tu núme
 
 ## ¿Cómo retiro algo?
 
-Para retirar: toca el botón naranja Registrar salida, escribe tu nombre y tu documento, y elige qué vas a llevar. La compuerta se abre y tienes cinco segundos. No tienes que pedir permiso a nadie: la despensa está para eso.
+Para retirar: toca el botón naranja Registrar salida, escribe tu nombre y tu documento, elige qué vas a llevar y guarda. No tienes que pedir permiso ni explicarle nada a nadie: la despensa está para eso.
 
 <details><summary>Cómo se reconoce (22 frases)</summary>
 
@@ -49,13 +45,13 @@ Para retirar: toca el botón naranja Registrar salida, escribe tu nombre y tu do
 
 </details>
 
-## ¿Por qué hay dos puertas?
+## ¿Por qué hay dos lados?
 
-La despensa tiene dos compartimentos. El lado frío guarda lo que necesita conservarse fresco: lácteos, frutas y bebidas. El lado caliente guarda lo seco y lo frito. Tú no eliges: al marcar el alimento, la aplicación abre el lado correcto por su cuenta.
+La despensa tiene dos compartimentos. El lado frío guarda lo que necesita conservarse fresco: lácteos, frutas y bebidas. El lado caliente guarda lo seco y lo frito. Al marcar el alimento, la página te dice en qué lado va, para que cada cosa se conserve mejor.
 
-<details><summary>Cómo se reconoce (20 frases)</summary>
+<details><summary>Cómo se reconoce (19 frases)</summary>
 
-`lado` · `lado frio` · `lado caliente` · `dos puertas` · `dos compuertas` · `por que dos` · `cual puerta` · `que puerta` · `compartimento` · `compartimentos` · `nevera` · `dos lados` · `por que tiene dos` · `frio y caliente` · `donde va cada cosa` · `donde se guarda` · `en que lado` · `dos compartimentos` · `parte fria` · `parte caliente`
+`lado` · `lado frio` · `lado caliente` · `dos puertas` · `por que dos` · `cual puerta` · `que puerta` · `compartimento` · `compartimentos` · `nevera` · `dos lados` · `por que tiene dos` · `frio y caliente` · `donde va cada cosa` · `donde se guarda` · `en que lado` · `dos compartimentos` · `parte fria` · `parte caliente`
 
 </details>
 
@@ -79,33 +75,23 @@ Se pide el nombre y el documento para llevar la cuenta de lo que entra y sale, y
 
 </details>
 
-## La compuerta no abre
-
-Si la compuerta no abre, mira arriba si dice Conectada. Si dice Sin conexión, toca Conectar la compuerta y elige DIRT. Si ya está conectada y aun así no abre, revisa que los servos tengan corriente: con dos servos hace falta una fuente externa, no alcanza con el USB. Tu registro quedó guardado de todas formas.
-
-<details><summary>Cómo se reconoce (15 frases)</summary>
-
-`no abre` · `no se abre` · `la compuerta no` · `no abrio` · `no se abrio` · `atascada` · `trabada` · `sigue cerrada` · `no quiere abrir` · `no se mueve` · `el servo no se mueve` · `no funciona la compuerta` · `la puerta no abre` · `no hace nada` · `no responde la compuerta`
-
-</details>
-
 ## El Arduino no se conecta
 
-Lo más común es que el Arduino esté emparejado en los ajustes del teléfono. Entra a Ajustes, Bluetooth, busca DIRT y desvincúlalo. Esta página no necesita emparejar nada: lo encuentra sola. Después apaga y enciende el Bluetooth, reinicia el Arduino y vuelve a intentar.
+Lo más común es que el Arduino esté emparejado en los ajustes del teléfono. Entra a Ajustes, Bluetooth, busca DIRT y desvincúlalo. Esta página no necesita emparejar nada: lo encuentra sola. Después apaga y enciende el Bluetooth, reinicia el Arduino y vuelve a tocar Probar conexión.
 
-<details><summary>Cómo se reconoce (18 frases)</summary>
+<details><summary>Cómo se reconoce (24 frases)</summary>
 
-`no se conecta` · `no conecta` · `no encuentra` · `no aparece` · `error de conexion` · `connection failed` · `no lo detecta` · `no sale en la lista` · `fallo la conexion` · `no se enlaza` · `arduino no conecta` · `no me conecta` · `bluetooth no funciona` · `no encuentra el arduino` · `como conecto` · `como me conecto` · `conectar bluetooth` · `no aparece dirt`
+`no se conecta` · `no conecta` · `no encuentra` · `no aparece` · `error de conexion` · `connection failed` · `no lo detecta` · `no sale en la lista` · `fallo la conexion` · `no se enlaza` · `arduino no conecta` · `no me conecta` · `bluetooth no funciona` · `no encuentra el arduino` · `como conecto` · `como me conecto` · `conectar bluetooth` · `no aparece dirt` · `probar conexion` · `prueba de conexion` · `como pruebo la conexion` · `probar el arduino` · `conexion con el arduino` · `esta conectado el arduino`
 
 </details>
 
 ## ¿En qué navegador funciona?
 
-La compuerta solo se puede accionar desde Chrome o Edge, en Android o en computador. En iPhone y en Safari no existe la función de Bluetooth del navegador. Desde cualquier teléfono sí se puede registrar y consultar el inventario, que es la mayor parte.
+La página funciona en cualquier teléfono o computador: desde ahí se registra y se consulta el inventario. Solo la prueba de conexión con el Arduino necesita Chrome o Edge, en Android o en computador, porque en iPhone y en Safari no existe la función de Bluetooth del navegador.
 
 <details><summary>Cómo se reconoce (15 frases)</summary>
 
-`que navegador` · `safari` · `iphone` · `firefox` · `edge` · `chrome` · `no me sale el boton` · `no veo el boton de conectar` · `desde mi iphone` · `funciona en iphone` · `ios` · `funciona en celular` · `desde el celular` · `en que telefono funciona` · `android`
+`que navegador` · `safari` · `iphone` · `firefox` · `edge` · `chrome` · `no me sale el boton` · `no veo el boton de probar conexion` · `desde mi iphone` · `funciona en iphone` · `ios` · `funciona en celular` · `desde el celular` · `en que telefono funciona` · `android`
 
 </details>
 
@@ -121,17 +107,17 @@ En Android 12 o más nuevo hace falta el permiso de Dispositivos cercanos. Si lo
 
 ## ¿Cómo funciona por dentro?
 
-La página habla por Bluetooth con un Arduino UNO R4 WiFi que mueve dos servos, uno por cada compartimento. Los registros se guardan en Firestore, así que se ven al instante en cualquier teléfono. La página está hecha en HTML, CSS y JavaScript y es estática: no hay servidor que mantener.
+La página se comunica por Bluetooth con un Arduino UNO R4 WiFi y tiene una prueba para comprobar que esa conexión responde. Los registros se guardan en Firestore, así que se ven al instante en cualquier teléfono. La página está hecha en HTML, CSS y JavaScript y es estática: no hay servidor que mantener.
 
-<details><summary>Cómo se reconoce (22 frases)</summary>
+<details><summary>Cómo se reconoce (21 frases)</summary>
 
-`como funciona por dentro` · `que tecnologia` · `como esta hecho` · `arduino` · `que usa` · `programacion` · `como esta programado` · `que lleva por dentro` · `tecnicamente` · `como funciona` · `como funciona el sistema` · `arquitectura` · `que lenguaje` · `en que esta programado` · `como se comunica` · `que tecnologias usaron` · `funcionamiento` · `explicacion tecnica` · `bluetooth` · `que hace el arduino` · `para que el arduino` · `como se mueve la compuerta`
+`como funciona por dentro` · `que tecnologia` · `como esta hecho` · `arduino` · `que usa` · `programacion` · `como esta programado` · `que lleva por dentro` · `tecnicamente` · `como funciona` · `como funciona el sistema` · `arquitectura` · `que lenguaje` · `en que esta programado` · `como se comunica` · `que tecnologias usaron` · `funcionamiento` · `explicacion tecnica` · `bluetooth` · `que hace el arduino` · `para que el arduino`
 
 </details>
 
 ## ¿Cómo se creó el proyecto?
 
-Empezó como una aplicación móvil con inicio de sesión, un servidor propio y una compuerta de un solo servo. Para que cualquiera pudiera usarla desde el teléfono sin instalar nada, se rehízo como página web: los datos pasaron a Firestore, la compuerta pasó a tener dos lados, frío y caliente, cada uno con su servo controlado por un Arduino por Bluetooth, y al final se sumó Bob para resolver dudas por voz o por escrito.
+El proyecto se desarrolló para Tecnología, Innovación e Informática del IED Liceo Samario. Empezó como una aplicación móvil con inicio de sesión y un servidor propio. Para que cualquiera pudiera usarla desde el teléfono sin instalar nada, se rehízo como página web: los datos pasaron a Firestore, la despensa se organizó en dos lados, frío y caliente, se conectó con un Arduino por Bluetooth, y al final se sumó Bob para resolver dudas por voz o por escrito.
 
 <details><summary>Cómo se reconoce (36 frases)</summary>
 
@@ -141,7 +127,7 @@ Empezó como una aplicación móvil con inicio de sesión, un servidor propio y 
 
 ## ¿Quiénes hicieron el proyecto?
 
-D.I.R.T. lo creó el equipo que te lo está presentando. Con gusto te cuentan quién hizo cada parte.
+D.I.R.T. lo crearon Mateo Urzola, Thaimy Brid y Dayana Oyaga, para Tecnología, Innovación e Informática del IED Liceo Samario.
 
 <details><summary>Cómo se reconoce (23 frases)</summary>
 
@@ -151,7 +137,7 @@ D.I.R.T. lo creó el equipo que te lo está presentando. Con gusto te cuentan qu
 
 ## ¿Cuál es el objetivo del proyecto?
 
-Que los alimentos que a unos les sobran lleguen a quienes los necesitan, sin trámites ni costo. La aplicación lleva la cuenta de lo que entra y sale para saber qué hace falta reponer, y la compuerta guarda cada alimento en el compartimento correcto, frío o caliente, para que se conserve mejor.
+Que los alimentos que a unos les sobran lleguen a quienes los necesitan, sin trámites ni costo. La aplicación lleva la cuenta de lo que entra y sale para saber qué hace falta reponer, y cada alimento va en el compartimento correcto, frío o caliente, para que se conserve mejor.
 
 <details><summary>Cómo se reconoce (21 frases)</summary>
 
@@ -161,7 +147,7 @@ Que los alimentos que a unos les sobran lleguen a quienes los necesitan, sin tr�
 
 ## ¿Qué significa D.I.R.T.?
 
-D.I.R.T. Comunitario es el nombre de esta despensa compartida. El significado de cada letra te lo cuenta mejor el equipo que la creó.
+D.I.R.T. significa Despensa Inteligente Reutilizable y Transportable.
 
 <details><summary>Cómo se reconoce (11 frases)</summary>
 
@@ -181,7 +167,7 @@ Soy Bob, el asistente de D.I.R.T. Comunitario. Te ayudo a donar, a retirar alime
 
 ## ¿En qué me puedes ayudar?
 
-Te puedo explicar cómo donar o retirar alimentos, decirte qué hay disponible ahora mismo, por qué la despensa tiene dos lados, qué hacer si la compuerta o el Bluetooth fallan, y contarte cómo se creó el proyecto y cómo funciona por dentro.
+Te puedo explicar cómo donar o retirar alimentos, decirte qué hay disponible ahora mismo, por qué la despensa tiene dos lados, qué hacer si el Arduino no se conecta, y contarte cómo se creó el proyecto y cómo funciona por dentro.
 
 <details><summary>Cómo se reconoce (15 frases)</summary>
 
@@ -201,11 +187,11 @@ Comparo tu pregunta con una lista de temas y de frases que los disparan. Antes d
 
 ## ¿Qué materiales usaron?
 
-Por dentro lleva un Arduino UNO R4 WiFi, dos servos SG90, uno por compartimento, una fuente externa de 5 voltios y 2 amperios para los servos y cuatro capacitores de 100 microfaradios en paralelo que estabilizan la alimentación, montados en protoboard. Por software: esta página web, Firestore para los datos y Bluetooth de baja energía para hablar con el Arduino.
+La despensa tiene dos compartimentos, uno frío con recubrimiento térmico y uno caliente, y un Arduino UNO R4 WiFi que se conecta por Bluetooth de baja energía. Por software: esta página web, que se abre en una tableta o en cualquier teléfono, y Firestore para guardar los datos.
 
-<details><summary>Cómo se reconoce (19 frases)</summary>
+<details><summary>Cómo se reconoce (13 frases)</summary>
 
-`materiales` · `componentes` · `que materiales usaron` · `que componentes` · `hardware` · `que se necesita para armarlo` · `lista de materiales` · `que piezas` · `servomotor` · `servomotores` · `servo` · `sg90` · `fuente de poder` · `capacitor` · `que arduino` · `electronica` · `circuito` · `protoboard` · `conexiones`
+`materiales` · `componentes` · `que materiales usaron` · `que componentes` · `hardware` · `que se necesita para armarlo` · `lista de materiales` · `que piezas` · `que arduino` · `electronica` · `circuito` · `protoboard` · `conexiones`
 
 </details>
 
@@ -221,7 +207,7 @@ Cada registro se guarda en Firestore, la base de datos en la nube de Firebase, y
 
 ## ¿Qué mejoras tendría a futuro?
 
-Lo siguiente sería añadir inicio de sesión para quien administra: hoy cualquiera con el enlace puede registrar y ver el historial, lo cual sirve para una demostración, pero con datos reales de personas haría falta controlar el acceso. Otra mejora sería poder accionar la compuerta desde iPhone, que hoy no permite Bluetooth desde el navegador.
+Lo siguiente sería añadir inicio de sesión para quien administra: hoy cualquiera con el enlace puede registrar y ver el historial, lo cual sirve para una demostración, pero con datos reales de personas haría falta controlar el acceso. Otra mejora sería entrenar un modelo de inteligencia artificial que compare lo que dice la base de datos con lo que de verdad hay en los compartimentos.
 
 <details><summary>Cómo se reconoce (17 frases)</summary>
 
@@ -231,7 +217,7 @@ Lo siguiente sería añadir inicio de sesión para quien administra: hoy cualqui
 
 ## ¿Qué pasa si se va la luz?
 
-Sin internet la compuerta sigue funcionando, porque el Bluetooth no lo necesita. Lo que no se puede es guardar en la nube hasta que vuelva la conexión. Si se va la luz, el Arduino se apaga y la compuerta queda cerrada.
+Sin internet la página sigue registrando: guarda en el teléfono y sube los registros solos cuando vuelve la conexión. Si se va la luz, el Arduino se apaga, pero los alimentos siguen en la despensa y los registros no se pierden.
 
 <details><summary>Cómo se reconoce (13 frases)</summary>
 
@@ -269,26 +255,6 @@ La despensa la sostiene la comunidad: funciona con lo que la gente deja. El regi
 
 </details>
 
-## ¿Cómo sabe qué lado abrir?
-
-No lo eliges tú. Al marcar la categoría del alimento, la aplicación envía al Arduino la orden del lado que corresponde: lácteos, frutas y bebidas al frío; fritos al caliente. Así nadie guarda algo donde no va.
-
-<details><summary>Cómo se reconoce (10 frases)</summary>
-
-`dos servos` · `como sabe que lado` · `quien elige el lado` · `por que ese lado` · `como decide` · `abre sola` · `como sabe donde va` · `por que se abrio ese lado` · `como elige` · `se abre automaticamente`
-
-</details>
-
-## ¿Y si la compuerta se queda abierta?
-
-Hay tres cierres encadenados. La página cierra a los cinco segundos. Si eso falla, el Arduino cierra cualquier lado que lleve más de quince segundos abierto. Y si se pierde la conexión, cierra todo de inmediato.
-
-<details><summary>Cómo se reconoce (8 frases)</summary>
-
-`se queda abierta` · `y si no cierra` · `se olvida abierta` · `no se cierra` · `quedo abierta` · `que pasa si no cierra` · `cierre de seguridad` · `cierre automatico`
-
-</details>
-
 ## Me equivoqué en un registro
 
 En la pestaña Historial cada registro tiene un botón para eliminarlo. El dato no se pierde del todo: queda marcado como eliminado, para que el conteo no se descuadre.
@@ -299,19 +265,9 @@ En la pestaña Historial cada registro tiene un botón para eliminarlo. El dato 
 
 </details>
 
-## ¿Cuánto tiempo queda abierta la compuerta?
-
-La compuerta se queda abierta cinco segundos y se cierra sola. Si necesitas cerrarla antes, hay un botón para hacerlo. Y si algo se traba, el Arduino la cierra solo a los quince segundos.
-
-<details><summary>Cómo se reconoce (8 frases)</summary>
-
-`cuanto tiempo` · `cuantos segundos` · `se cierra` · `cierra sola` · `cuanto dura abierta` · `se cierra rapido` · `cuanto tiempo abierta` · `cuanto tarda en cerrar`
-
-</details>
-
 ## ¿Qué es D.I.R.T.?
 
-Esto es D.I.R.T. Comunitario, una despensa de alimentos compartida. Cualquiera puede dejar alimentos que le sobran y cualquiera puede tomar los que necesita. La aplicación lleva el registro y abre la compuerta sola según el tipo de alimento.
+Esto es D.I.R.T. Comunitario, una despensa de alimentos compartida. Cualquiera puede dejar alimentos que le sobran y cualquiera puede tomar los que necesita. La página lleva el registro de lo que entra y sale, y dice en qué lado va cada alimento.
 
 <details><summary>Cómo se reconoce (15 frases)</summary>
 
@@ -404,6 +360,6 @@ inventarse algo:
 - ¿Cómo dono alimentos?
 - ¿Cómo retiro algo?
 - ¿Qué hay disponible?
-- ¿Por qué hay dos puertas?
+- ¿Por qué hay dos lados?
 - ¿Cómo se creó el proyecto?
 - El Arduino no se conecta

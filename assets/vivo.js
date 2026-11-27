@@ -1,24 +1,24 @@
 /* =========================================================================
-   MODO EN VIVO — Beta, solo en la página de prueba
+   MODO EN VIVO — Beta
    -------------------------------------------------------------------------
    Pantalla completa para conversar con Bob por voz, como en una llamada:
    tocas el micrófono, hablas, Bob piensa y te responde en voz alta, y
    vuelve a escucharte solo (conversación continua).
 
    Por ahora NO usa IA: responde con el mismo "cerebro" programado del chat
-   (entender() de assets/bot.js). Cuando haya IA, solo cambia la función
+   (entender() de bot.js). Cuando haya IA, solo cambia la función
    obtenerRespuesta() de abajo; la pantalla, la voz y Bob 3D quedan igual.
 
    Estados de Bob:  reposo → escuchando → pensando → hablando → escuchando…
    Bob 3D (bob3d.js) cambia de gesto en cada uno. Si el 3D no carga, se
    muestra el Bob dibujado con gestos más simples.
 
-   Para abrirlo directo (útil en una presentación): prueba/?vivo
+   Para abrirlo directo (útil en una presentación): ?vivo al final de la dirección
    ========================================================================= */
 
-import { entender, SUGERENCIAS } from "../../assets/bot.js";
-import { plantarBob } from "../../assets/bob.js";
-import { MARCA } from "../../marca/config.js";
+import { entender, SUGERENCIAS } from "./bot.js";
+import { plantarBob } from "./bob.js";
+import { MARCA } from "../marca/config.js";
 import { estadoDespensa } from "./app.js";
 import { crearBob3D } from "./bob3d.js";
 
@@ -340,7 +340,7 @@ export function iniciarVivo() {
     b.addEventListener("click", (ev) => { ev.stopPropagation(); abrir(); });
   });
 
-  // prueba/?vivo abre directo (sin saludo en voz: el navegador no lo permite
+  // ?vivo en la dirección abre directo (sin saludo en voz: el navegador no lo permite
   // hasta que la persona toque algo).
   if (new URLSearchParams(location.search).has("vivo")) abrir({ saludar: false });
 

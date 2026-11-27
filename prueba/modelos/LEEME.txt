@@ -1,1 +1,0 @@
-Aquí va el modelo 3D de Bob exportado de Meshy (bob.glb). Ver prueba/LEEME.md.

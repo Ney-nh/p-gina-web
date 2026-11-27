@@ -1,5 +1,4 @@
-/* Pestaña "Nutrición" — solo en la página de prueba.
-   Usa las variables de ../assets/app.css (colores de categoría, radios). */
+/* Pestaña "Nutrición". Usa las variables de app.css (colores de categoría, radios). */
 
 .nut-intro { margin: -14px 0 0; color: var(--tinta-2); font-size: 14px; }
 

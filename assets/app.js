@@ -2,21 +2,24 @@
    D.I.R.T. Comunitario — lógica de la aplicación
    -------------------------------------------------------------------------
    Tres partes:
-     1. CATEGORÍAS  — qué alimentos hay y a qué lado de la compuerta van.
+     1. CATEGORÍAS  — qué alimentos hay y en qué lado de la despensa van.
      2. ALMACÉN     — Firestore, con respaldo local si no hay configuración.
-     3. COMPUERTA   — Bluetooth LE contra el Arduino UNO R4 WiFi (dos servos).
+     3. ARDUINO     — prueba de conexión por Bluetooth LE con el UNO R4 WiFi.
    Al final, el cableado de la interfaz.
+
+   La página de prueba (prueba/) usa este mismo archivo: antes de cargarlo
+   define window.DIRT_CONFIG con otra colección, para no mezclar datos.
    ========================================================================= */
 
 import { firebaseConfig, sinConfigurar } from "./firebase-config.js";
 import { iniciarBot } from "./bot.js";
 
 /* =========================================================================
-   1. CATEGORÍAS Y LADOS DE LA COMPUERTA
+   1. CATEGORÍAS Y LADOS DE LA DESPENSA
    ========================================================================= */
 
 /**
- * Cada alimento se dirige a un lado de la compuerta:
+ * Cada alimento va en uno de los dos lados de la despensa:
  *   frio     → productos que necesitan refrigeración
  *   caliente → productos que se conservan calientes o secos
  * Para cambiar el destino de una categoría basta con editar su campo `lado`.
@@ -35,9 +38,6 @@ const LADOS = {
   caliente: { nombre: "Lado caliente", emoji: "🔥", clase: "caliente" },
 };
 
-/** Segundos que la compuerta permanece abierta antes de cerrarse sola. */
-const SEGUNDOS_CIERRE = 5;
-
 /* =========================================================================
    2. ALMACÉN DE DATOS
    -------------------------------------------------------------------------
@@ -46,8 +46,9 @@ const SEGUNDOS_CIERRE = 5;
    demostrable aunque Firebase todavía no esté conectado.
    ========================================================================= */
 
-const COLECCION = "movimientos";
-const CLAVE_LOCAL = "dirt_movimientos";
+const CONFIG = (typeof window !== "undefined" && window.DIRT_CONFIG) || {};
+const COLECCION = CONFIG.coleccion || "movimientos";
+const CLAVE_LOCAL = CONFIG.claveLocal || "dirt_movimientos";
 
 const almacen = {
   modo: "local",     // "firestore" | "local"
@@ -176,7 +177,9 @@ almacen.crear = async function (datos) {
     cantidad: datos.cantidad,
     nota: datos.nota || null,
     lado: CAT[datos.categoria].lado,
-    compuerta_abierta: !!datos.compuerta_abierta,
+    // La compuerta automática se retiró, pero las reglas publicadas de
+    // Firestore todavía exigen este campo: se manda siempre en falso.
+    compuerta_abierta: false,
     deleted_at: null,
   };
 
@@ -227,10 +230,11 @@ almacen.eliminar = async function (id) {
 };
 
 /* =========================================================================
-   3. COMPUERTA — Bluetooth LE contra el Arduino
+   3. ARDUINO — prueba de conexión por Bluetooth LE
    -------------------------------------------------------------------------
-   Los UUID y los comandos coinciden con el sketch
-   arduino/dirt_dos_compuertas/dirt_dos_compuertas.ino
+   La despensa ya no mueve compuertas: el Arduino solo responde para
+   comprobar que el enlace funciona. Los UUID y el comando coinciden con el
+   sketch arduino/dirt_conexion/dirt_conexion.ino
    ========================================================================= */
 
 const BLE = {
@@ -240,15 +244,16 @@ const BLE = {
   ESTADO:   "19b10002-e8f2-537e-4f6c-d104768a1214",
 };
 
-const compuerta = {
+/** Cuánto se espera la respuesta del Arduino antes de darla por perdida. */
+const ESPERA_RESPUESTA_MS = 3000;
+
+const arduino = {
   soportado: typeof navigator !== "undefined" && !!navigator.bluetooth,
   conectado: false,
-  angulo: 90,
-  abiertos: { frio: false, caliente: false },
   _dispositivo: null,
   _comando: null,
-  _temporizador: null,
-  _cuenta: null,
+  _conRespuesta: false,   // el sketch expone la característica de estado
+  _esperando: null,       // función que recibe la próxima respuesta
 };
 
 const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -268,7 +273,7 @@ function explicarError(e) {
   }
   if (/No Services matching|Service .* not found/i.test(m)) {
     return "El dispositivo respondió pero no expone el servicio esperado. "
-         + "¿Está cargado el sketch dirt_dos_compuertas?";
+         + "¿Está cargado el sketch dirt_conexion?";
   }
   if (/user gesture|permission/i.test(m)) {
     return "El navegador bloqueó la petición. Vuelve a pulsar el botón.";
@@ -279,7 +284,7 @@ function explicarError(e) {
   return m;
 }
 
-compuerta.conectar = async function (alProgresar = () => {}) {
+arduino.conectar = async function (alProgresar = () => {}) {
   if (!this.soportado) throw new Error("Este navegador no puede usar Bluetooth.");
 
   const dispositivo = await navigator.bluetooth.requestDevice({
@@ -288,10 +293,8 @@ compuerta.conectar = async function (alProgresar = () => {}) {
   });
   dispositivo.addEventListener("gattserverdisconnected", () => {
     this.conectado = false;
-    this.abiertos = { frio: false, caliente: false };
     this._comando = null;
-    this._pararCuenta();
-    ui.pintarCompuerta("El Arduino se desconectó.");
+    ui.pintarArduino("El Arduino se desconectó.");
   });
 
   /* En Android el primer intento de conexión GATT falla a menudo, sobre todo
@@ -308,8 +311,6 @@ compuerta.conectar = async function (alProgresar = () => {}) {
       if (servidor.connected) break;
     } catch (e) {
       ultimo = e;
-      // El dispositivo puede quedar medio conectado: se suelta antes de
-      // volver a intentarlo, si no el siguiente intento falla igual.
       try { dispositivo.gatt.disconnect(); } catch { /* ya estaba suelto */ }
       if (i < INTENTOS) await esperar(400 * i);
     }
@@ -321,94 +322,67 @@ compuerta.conectar = async function (alProgresar = () => {}) {
   const servicio = await servidor.getPrimaryService(BLE.SERVICIO);
   this._comando = await servicio.getCharacteristic(BLE.COMANDO);
 
-  // La característica de estado es opcional: sin ella se pierde el aviso
-  // de vuelta del Arduino, pero la compuerta funciona igual.
+  // Por la característica de estado llega la respuesta del Arduino. Sin ella
+  // la prueba solo puede confirmar que el envío llegó.
   try {
     const estado = await servicio.getCharacteristic(BLE.ESTADO);
     await estado.startNotifications();
     estado.addEventListener("characteristicvaluechanged", (ev) => {
       const texto = new TextDecoder().decode(ev.target.value).trim();
-      if (texto) ui.pintarCompuerta(`Arduino: ${texto}`);
+      // "LISTO" y "CONECTADO" son avisos de arranque, no la respuesta a la
+      // prueba. Cualquier otra cosa sí cuenta: también lo que responda el
+      // sketch anterior de las compuertas, si la placa todavía lo tiene.
+      if (/^(LISTO|CONECTADO)$/i.test(texto)) return;
+      if (this._esperando) this._esperando(texto);
     });
-  } catch { /* el sketch no expone notificaciones */ }
+    this._conRespuesta = true;
+  } catch {
+    this._conRespuesta = false;
+  }
 
   this._dispositivo = dispositivo;
   this.conectado = true;
 };
 
-compuerta.desconectar = function () {
-  this._pararCuenta();
+arduino.desconectar = function () {
   if (this._dispositivo?.gatt?.connected) this._dispositivo.gatt.disconnect();
   this._dispositivo = null;
   this._comando = null;
   this.conectado = false;
-  this.abiertos = { frio: false, caliente: false };
 };
 
-compuerta._enviar = async function (texto) {
-  if (!this._comando) throw new Error("La compuerta no está conectada.");
-  const datos = new TextEncoder().encode(texto);
+/**
+ * Manda "?" y espera la respuesta. Devuelve { texto, ms }; texto es null si
+ * el Arduino no respondió a tiempo (o si su sketch no tiene respuesta).
+ */
+arduino.probar = async function () {
+  if (!this._comando) throw new Error("El Arduino no está conectado.");
+  const inicio = performance.now();
+  const respuesta = this._conRespuesta
+    ? new Promise((ok) => {
+        const reloj = setTimeout(() => { this._esperando = null; ok(null); }, ESPERA_RESPUESTA_MS);
+        this._esperando = (texto) => { clearTimeout(reloj); this._esperando = null; ok(texto); };
+      })
+    : Promise.resolve(null);
+
+  const datos = new TextEncoder().encode("?");
   if (typeof this._comando.writeValueWithResponse === "function") {
     await this._comando.writeValueWithResponse(datos);
   } else {
     await this._comando.writeValue(datos);
   }
-};
-
-/** Abre uno de los dos lados en el ángulo configurado. */
-compuerta.abrir = async function (lado) {
-  await this._enviar(`${lado.toUpperCase()}:${Math.round(this.angulo)}`);
-  this.abiertos[lado] = true;
-};
-
-compuerta.cerrarLado = async function (lado) {
-  await this._enviar(`${lado.toUpperCase()}:0`);
-  this.abiertos[lado] = false;
-};
-
-compuerta.cerrarTodo = async function () {
-  this._pararCuenta();
-  await this._enviar("CERRAR");
-  this.abiertos = { frio: false, caliente: false };
-};
-
-compuerta._pararCuenta = function () {
-  if (this._temporizador) clearInterval(this._temporizador);
-  this._temporizador = null;
-  this._cuenta = null;
-};
-
-/**
- * Abre un lado y programa el cierre automático.
- * `alContar` recibe los segundos restantes, y null al terminar.
- */
-compuerta.abrirConCierre = async function (lado, alContar) {
-  await this.abrir(lado);
-  this._pararCuenta();
-  this._cuenta = SEGUNDOS_CIERRE;
-  alContar(this._cuenta);
-
-  this._temporizador = setInterval(async () => {
-    this._cuenta -= 1;
-    if (this._cuenta > 0) {
-      alContar(this._cuenta);
-      return;
-    }
-    this._pararCuenta();
-    alContar(null);
-    try { await this.cerrarLado(lado); } catch { /* ya desconectado */ }
-    ui.pintarCompuerta("Compuerta cerrada automáticamente.");
-  }, 1000);
+  const texto = await respuesta;
+  return { texto, ms: Math.round(performance.now() - inicio) };
 };
 
 
 /* =========================================================================
    5. DATOS PARA LA ASISTENTE
    -------------------------------------------------------------------------
-   Dora responde con los números reales de la despensa, no con un guion.
+   Bob responde con los números reales de la despensa, no con un guion.
    ========================================================================= */
 
-function estadoDespensa() {
+export function estadoDespensa() {
   const movimientos = almacen._cache;
   let entradasHoy = 0, salidasHoy = 0, total = 0;
 
@@ -520,38 +494,22 @@ ui.estadoNube = function (tipo, texto) {
   $("#estado-nube-texto").textContent = texto;
 };
 
-/* ------------------------------- compuerta ------------------------------ */
+/* -------------------------------- arduino ------------------------------- */
 
-ui.pintarCompuerta = function (mensaje) {
+ui.pintarArduino = function (mensaje) {
   const pill = $("#bt-estado");
-  const conectado = compuerta.conectado;
+  const conectado = arduino.conectado;
 
   pill.className = "pill " + (conectado ? "pill-ok" : "pill-muted");
-  pill.innerHTML = `<span class="dot"></span>${conectado ? "Conectada" : "Sin conexión"}`;
+  pill.innerHTML = `<span class="dot"></span>${conectado ? "Arduino conectado" : "Sin conexión"}`;
 
-  $("#btn-conectar").hidden = conectado || !compuerta.soportado;
-  $("#bt-controles").hidden = !conectado;
-  $("#bt-no-soportado").hidden = compuerta.soportado;
-
-  for (const lado of ["frio", "caliente"]) {
-    const puerta = document.querySelector(`.puerta[data-lado="${lado}"]`);
-    const abierto = compuerta.abiertos[lado];
-    puerta.classList.toggle("abierta", abierto);
-    puerta.querySelector(`[data-estado="${lado}"]`).textContent =
-      abierto ? `Abierta a ${Math.round(compuerta.angulo)}°` : "Cerrada";
-  }
+  $("#btn-probar-arduino").hidden = !arduino.soportado;
+  $("#btn-probar-arduino").textContent = conectado ? "Probar de nuevo" : "Probar conexión con el Arduino";
+  $("#btn-desconectar").hidden = !conectado;
+  $("#bt-no-soportado").hidden = arduino.soportado;
 
   if (mensaje !== undefined) $("#bt-mensaje").textContent = mensaje;
 };
-
-function fijarAngulo(valor) {
-  compuerta.angulo = Number(valor);
-  $("#rango-angulo").value = compuerta.angulo;
-  $("#valor-angulo").textContent = `${compuerta.angulo}°`;
-  $$("#chips-angulo .chip").forEach((c) =>
-    c.classList.toggle("chip-on", Number(c.dataset.angulo) === compuerta.angulo),
-  );
-}
 
 /* -------------------------------- vistas -------------------------------- */
 
@@ -581,7 +539,7 @@ function tarjetaMovimiento(m, conBorrar) {
     <span class="mov-cuerpo">
       <span class="mov-nombre">${escapar(m.nombre)}</span>
       <span class="mov-meta">
-        ${cat.nombre}, documento ${escapar(enmascararDocumento(m.documento, m.documento_largo))}${m.compuerta_abierta && lado ? `, ${lado.emoji} lado ${m.lado}` : ""}
+        ${cat.nombre}, documento ${escapar(enmascararDocumento(m.documento, m.documento_largo))}${lado ? `, ${lado.emoji} ${lado.nombre.toLowerCase()}` : ""}
         <br>${fechaCorta(m.created_at)}
       </span>
     </span>
@@ -723,9 +681,8 @@ function cerrarModal() {
 function actualizarBotonGuardar() {
   const boton = $("#btn-guardar");
   const esEntrada = estado.tipo === "entrada";
-  boton.className = `btn btn-lg ${esEntrada ? "btn-entrada" : "btn-salida"}`;
-  const accion = esEntrada ? "Guardar entrada" : "Guardar salida";
-  boton.textContent = compuerta.conectado ? `${accion} y abrir compuerta` : accion;
+  boton.className = `btn btn-ancho btn-grande ${esEntrada ? "btn-entrada" : "btn-salida"}`;
+  boton.textContent = esEntrada ? "Guardar entrada" : "Guardar salida";
 }
 
 function mostrarLadoElegido() {
@@ -734,8 +691,8 @@ function mostrarLadoElegido() {
   const cat = CAT[estado.categoria];
   const lado = LADOS[cat.lado];
   aviso.hidden = false;
-  aviso.className = `lado-aviso ${lado.clase}`;
-  aviso.innerHTML = `<span>${lado.emoji}</span><span>${cat.nombre} va al <b>${lado.nombre.toLowerCase()}</b> de la compuerta.</span>`;
+  aviso.className = `aviso-lado ${lado.clase}`;
+  aviso.innerHTML = `<span>${lado.emoji}</span><span>${cat.nombre} va en el <b>${lado.nombre.toLowerCase()}</b> de la despensa.</span>`;
 }
 
 /* ------------------------------ guardar ---------------------------------- */
@@ -772,28 +729,10 @@ async function guardar() {
       categoria: estado.categoria,
       cantidad: estado.cantidad,
       nota: $("#in-nota").value.trim() || null,
-      compuerta_abierta: compuerta.conectado,
     });
 
     cerrarModal();
-
-    if (compuerta.conectado) {
-      mostrarExito(movimiento);
-      const lado = CAT[movimiento.categoria].lado;
-      try {
-        await compuerta.abrirConCierre(lado, (segundos) => {
-          $("#exito-cuenta").textContent =
-            segundos === null ? "Compuerta cerrada." : `Se cierra sola en ${segundos} s`;
-          ui.pintarCompuerta();
-        });
-        ui.pintarCompuerta(`Compuerta abierta · ${LADOS[lado].nombre}`);
-      } catch (e) {
-        $("#exito-cuenta").textContent = "El registro quedó guardado, pero la compuerta no respondió.";
-        console.error(e);
-      }
-    } else {
-      toast(agradecer(estado.tipo));
-    }
+    mostrarExito(movimiento);
   } catch (e) {
     console.error(e);
     fallar("No se pudo guardar. Revisa la conexión e intenta de nuevo.");
@@ -803,52 +742,81 @@ async function guardar() {
   }
 }
 
-/* Un agradecimiento distinto cada vez. Quien dona merece reconocimiento y
+/* Un mensaje distinto en cada registro. Quien dona merece reconocimiento y
    quien retira merece que nadie le haga sentir que está pidiendo favores:
-   la despensa es de todos, y los dos gestos la sostienen por igual. */
-const GRACIAS = {
+   la despensa es de todos, y los dos gestos la sostienen por igual.
+   Para cambiar o añadir mensajes, edita estas listas: cada uno tiene un
+   título y una frase. */
+const MENSAJES = {
   entrada: [
-    "Gracias por donar",
-    "Gracias, la despensa crece",
-    "Gracias por compartir",
-    "Un aporte más para el barrio",
-    "Gracias, esto alimenta a alguien",
+    ["¡Gracias por donar!", "Lo que dejas hoy le sirve a alguien mañana."],
+    ["La despensa crece contigo", "Cada aporte cuenta, por pequeño que parezca."],
+    ["Gracias por compartir", "Compartir también es una forma de cuidar."],
+    ["Un aporte más para todos", "Con gestos como este, la despensa no se queda vacía."],
+    ["¡Eso es comunidad!", "Gracias por pensar en los demás."],
+    ["Gracias, de verdad", "Alguien va a tener una tarde mejor gracias a ti."],
+    ["Donación registrada", "Bob ya la anotó en el inventario."],
+    ["¡Mil gracias!", "Hoy la despensa está un poco más llena."],
+    ["Gracias por tu generosidad", "Lo que sobra en una casa puede faltar en otra."],
+    ["¡Qué buen gesto!", "Ayudar no debería costarle la dignidad a nadie, y tú lo haces fácil."],
   ],
   salida: [
-    "Que te aproveche",
-    "La despensa es tuya también",
-    "Buen provecho",
-    "Vuelve cuando lo necesites",
-    "Para eso está la despensa",
+    ["Buen provecho", "La despensa es de todos, también tuya."],
+    ["Que te aproveche", "Toma lo que necesitas: para eso está."],
+    ["Listo, ya quedó", "No tienes que explicarle nada a nadie."],
+    ["Para eso está la despensa", "Vuelve cuando lo necesites."],
+    ["¡Que te rinda!", "Ojalá te dé energía para lo que queda del día."],
+    ["Retiro registrado", "Bob ya actualizó el inventario."],
+    ["Aquí estamos", "Mañana puede que seas tú quien comparta."],
+    ["Disfrútalo", "Una tarde con energía rinde mucho más."],
+    ["Todo en orden", "Recibir también es parte de cómo funciona esto."],
+    ["Con mucho gusto", "La despensa funciona porque la usamos entre todos."],
   ],
 };
 
-const FRASE = {
-  entrada: "Lo que dejas hoy le sirve a alguien mañana.",
-  salida: "Tomar lo que necesitas es parte de cómo funciona esto.",
-};
+/* Se sacan como de una bolsa: no se repite ninguno hasta que salen todos, y
+   al rellenarla el primero nunca es igual al último que se mostró. */
+const bolsaMensajes = { entrada: [], salida: [] };
+let ultimoMensaje = { entrada: -1, salida: -1 };
 
-function agradecer(tipo) {
-  const lista = GRACIAS[tipo];
-  return lista[Math.floor(Math.random() * lista.length)];
+function siguienteMensaje(tipo) {
+  const lista = MENSAJES[tipo];
+  let bolsa = bolsaMensajes[tipo];
+  if (!bolsa.length) {
+    bolsa = lista.map((_, i) => i);
+    for (let i = bolsa.length - 1; i > 0; i--) {
+      const k = Math.floor(Math.random() * (i + 1));
+      [bolsa[i], bolsa[k]] = [bolsa[k], bolsa[i]];
+    }
+    if (bolsa.length > 1 && bolsa[bolsa.length - 1] === ultimoMensaje[tipo]) {
+      [bolsa[0], bolsa[bolsa.length - 1]] = [bolsa[bolsa.length - 1], bolsa[0]];
+    }
+    bolsaMensajes[tipo] = bolsa;
+  }
+  const i = bolsa.pop();
+  ultimoMensaje[tipo] = i;
+  return lista[i];
 }
 
 function mostrarExito(m) {
   const cat = CAT[m.categoria];
   const lado = LADOS[cat.lado];
+  const [titulo, frase] = siguienteMensaje(m.tipo);
 
   $("#exito-icono").className = "exito-sello" + (m.tipo === "salida" ? " salida" : "");
-  $("#exito-titulo").textContent = agradecer(m.tipo);
+  $("#exito-titulo").textContent = titulo;
   $("#exito-detalle").textContent =
-    `${m.nombre}, ${m.cantidad} de ${cat.nombre.toLowerCase()}. ${FRASE[m.tipo]}`;
+    `${m.nombre}, ${m.cantidad} de ${cat.nombre.toLowerCase()}. ${frase}`;
 
   const avisoLado = $("#exito-lado");
   avisoLado.className = `aviso-lado ${lado.clase}`;
-  avisoLado.innerHTML = `<span>${lado.emoji}</span><span>Se abre el <b>${lado.nombre.toLowerCase()}</b></span>`;
+  avisoLado.innerHTML = m.tipo === "entrada"
+    ? `<span>${lado.emoji}</span><span>Déjalo en el <b>${lado.nombre.toLowerCase()}</b></span>`
+    : `<span>${lado.emoji}</span><span>Lo encuentras en el <b>${lado.nombre.toLowerCase()}</b></span>`;
 
-  $("#exito-cuenta").textContent = "";
   $("#exito").hidden = false;
   document.body.style.overflow = "hidden";
+  $("#btn-listo").focus();
 }
 
 function cerrarExito() {
@@ -881,7 +849,7 @@ function exportarCSV() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `dirt-historial-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.download = `${CONFIG.prefijoCSV || "dirt"}-historial-${new Date().toISOString().slice(0, 10)}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -972,62 +940,35 @@ function conectarEventos() {
 
   /* pantalla de éxito */
   $("#btn-listo").onclick = cerrarExito;
-  $("#btn-cerrar-ahora").onclick = async () => {
-    compuerta._pararCuenta();
-    try {
-      await compuerta.cerrarTodo();
-      $("#exito-cuenta").textContent = "Compuerta cerrada.";
-      ui.pintarCompuerta("Compuerta cerrada manualmente.");
-    } catch (e) {
-      console.error(e);
-    }
-  };
 
-  /* compuerta */
-  $("#btn-conectar").onclick = async () => {
-    const boton = $("#btn-conectar");
+  /* prueba de conexión con el Arduino */
+  $("#btn-probar-arduino").onclick = async () => {
+    const boton = $("#btn-probar-arduino");
     boton.disabled = true;
-    ui.pintarCompuerta("Buscando el Arduino…");
     try {
-      await compuerta.conectar((paso) => ui.pintarCompuerta(paso));
-      ui.pintarCompuerta("Conectado con el Arduino.");
-      actualizarBotonGuardar();
-      toast("Compuerta conectada");
+      if (!arduino.conectado) {
+        ui.pintarArduino("Buscando el Arduino…");
+        await arduino.conectar((paso) => ui.pintarArduino(paso));
+      }
+      ui.pintarArduino("Enviando la prueba…");
+      const { texto, ms } = await arduino.probar();
+      ui.pintarArduino(texto
+        ? `El Arduino respondió en ${ms} ms: ${texto}`
+        : arduino._conRespuesta
+          ? "Conectado, pero el Arduino no respondió a la prueba. ¿Está cargado el sketch dirt_conexion?"
+          : `Conectado. La prueba llegó al Arduino en ${ms} ms.`);
+      if (texto) toast("Conexión con el Arduino correcta");
     } catch (e) {
       console.error("Conexión Bluetooth:", e);
-      ui.pintarCompuerta(explicarError(e));
+      ui.pintarArduino(explicarError(e));
     } finally {
       boton.disabled = false;
     }
   };
 
   $("#btn-desconectar").onclick = () => {
-    compuerta.desconectar();
-    ui.pintarCompuerta("Desconectado.");
-    actualizarBotonGuardar();
-  };
-
-  $("#btn-cerrar-todo").onclick = async () => {
-    try {
-      await compuerta.cerrarTodo();
-      ui.pintarCompuerta("Ambos lados cerrados.");
-    } catch (e) { ui.pintarCompuerta(e.message); }
-  };
-
-  const probar = (lado) => async () => {
-    try {
-      await compuerta.abrirConCierre(lado, (s) =>
-        ui.pintarCompuerta(s === null ? "Cerrando…" : `Prueba de ${LADOS[lado].nombre.toLowerCase()}: ${s} s`),
-      );
-    } catch (e) { ui.pintarCompuerta(e.message); }
-  };
-  $("#btn-probar-frio").onclick     = probar("frio");
-  $("#btn-probar-caliente").onclick = probar("caliente");
-
-  $("#rango-angulo").oninput = (ev) => fijarAngulo(ev.target.value);
-  $("#chips-angulo").onclick = (ev) => {
-    const chip = ev.target.closest(".chip");
-    if (chip) fijarAngulo(chip.dataset.angulo);
+    arduino.desconectar();
+    ui.pintarArduino("Desconectado.");
   };
 
   /* historial */
@@ -1055,8 +996,7 @@ function conectarEventos() {
 async function iniciar() {
   construirCategorias();
   conectarEventos();
-  fijarAngulo(90);
-  ui.pintarCompuerta("");
+  ui.pintarArduino("");
   almacen.alCambiar(pintarTodo);
   iniciarBot({ estadoDespensa });
 

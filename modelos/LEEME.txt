@@ -1,0 +1,2 @@
+Aquí va el modelo 3D de Bob exportado de Meshy (bob.glb).
+Para activarlo: en assets/bob3d.js, MODELO_3D.url = "../modelos/bob.glb".

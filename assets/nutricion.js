@@ -1,5 +1,5 @@
 /* =========================================================================
-   INFORMACIÓN NUTRICIONAL — pestaña "Nutrición" (solo en la página de prueba)
+   INFORMACIÓN NUTRICIONAL — pestaña "Nutrición"
    -------------------------------------------------------------------------
    Tres alimentos de referencia por cada categoría de la despensa. Los
    valores son aproximados, por 100 g o 100 ml, tomados de tablas de

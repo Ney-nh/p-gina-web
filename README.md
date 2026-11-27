@@ -1,39 +1,39 @@
 # D.I.R.T. Comunitario
 
-Control de donaciones de alimentos con registro de entradas y salidas, y una
-compuerta física de **doble lado** que se abre sola según el tipo de alimento.
+Despensa comunitaria de alimentos con registro de entradas y salidas, dos
+lados para conservar mejor la comida (frío y caliente), información
+nutricional y **Bob**, el pelícano que resuelve dudas por escrito, por voz o en
+una conversación en vivo.
 
 La página es estática: no hay servidor que mantener. El navegador habla
-directamente con Firestore para los datos y con el Arduino por Bluetooth para
-la compuerta.
+directamente con Firestore para los datos y, para la prueba de conexión, con
+el Arduino por Bluetooth.
 
 ---
 
-## 1. Las dos versiones
+## 1. Las dos páginas
 
 | | Dirección | Para qué |
 |---|---|---|
-| **Principal** | https://ney-nh.github.io/p-gina-web/ | Azul y amarillo, con Bob el pelícano |
-| Respaldo | https://ney-nh.github.io/p-gina-web/verde/ | La versión verde anterior |
+| **Real** | https://ney-nh.github.io/p-gina-web/ | La que se presenta |
+| Prueba | https://ney-nh.github.io/p-gina-web/prueba/ | Para probar cambios antes de pasarlos a la real |
 
-Comparten `assets/app.js`, `assets/bot.js` y `assets/firebase-config.js`, así
-que **escriben en la misma base de datos** y un arreglo de lógica llega a las
-dos. Lo único propio de cada una es su hoja de estilos y su `index.html`.
+Las dos cargan **el mismo código** de `assets/`. La de prueba solo cambia la
+colección de Firestore (`movimientos_prueba`), para no mezclar datos, y lleva
+una cinta roja arriba. Ver [prueba/LEEME.md](prueba/LEEME.md).
 
 ## 2. Cómo funciona
 
 ```
-   Navegador (Chrome)
+   Navegador (cualquier teléfono, tableta o computador)
         │
         ├── Firestore  ──────► historial, inventario y resumen
         │
-        └── Bluetooth LE ────► Arduino UNO R4 WiFi
-                                    ├── servo D9  → lado FRÍO
-                                    └── servo D10 → lado CALIENTE
+        └── Bluetooth LE ────► Arduino UNO R4 WiFi  (solo la prueba de conexión)
 ```
 
-Al registrar un movimiento, la categoría del alimento decide qué lado de la
-compuerta se abre:
+Cada categoría de alimento va en uno de los dos lados de la despensa. Al
+registrar, la página dice en cuál:
 
 | Categoría | Lado |
 |---|---|
@@ -42,11 +42,16 @@ compuerta se abre:
 | 🧃 Bebidas | ❄️ Frío |
 | 🍟 Fritos | 🔥 Caliente |
 
-Para cambiar este destino basta con editar el campo `lado` de la categoría en
-`assets/app.js`; no hay que tocar nada más.
+Para cambiar el lado de una categoría basta con editar su campo `lado` en
+`assets/app.js`.
 
-El orden de las operaciones importa: **primero se guarda el registro y solo
-después se mueve el servo.** Si el servo falla, el dato ya quedó guardado.
+Después de cada entrada o salida aparece un mensaje distinto: hay diez para
+quien dona y diez para quien retira, y no se repite ninguno hasta que salen
+todos. Se cambian en la lista `MENSAJES` de `assets/app.js`.
+
+La despensa ya **no mueve compuertas ni servomotores**. Los registros siguen
+guardando el campo `compuerta_abierta`, siempre en `false`, porque las reglas
+de Firestore publicadas lo exigen.
 
 ---
 
@@ -64,32 +69,23 @@ después se mueve el servo.** Si el servo falla, el dato ya quedó guardado.
    `firestore.rules` de este repositorio. Publícalas.
 
 Hasta que pegues la configuración, la app arranca en **modo local**: los
-registros se guardan solo en ese navegador y la compuerta funciona igual. Sirve
-para probar sin tener Firebase listo.
+registros se guardan solo en ese navegador. Sirve para probar sin tener
+Firebase listo.
 
-### 3.2 Arduino
+### 3.2 Arduino (prueba de conexión)
 
-1. Abre `arduino/dirt_dos_compuertas/dirt_dos_compuertas.ino` en el IDE.
+1. Abre `arduino/dirt_conexion/dirt_conexion.ino` en el IDE.
 2. Instala la librería **ArduinoBLE** desde Herramientas → Administrar Bibliotecas.
 3. Selecciona la placa **Arduino UNO R4 WiFi** y súbelo.
 4. Abre el Monitor Serie a **115200**. Debe anunciarse como `DIRT`.
 
-Conexiones:
+No hay que conectarle nada más que el cable USB. En la página, el botón
+**Probar conexión con el Arduino** lo busca, le manda una prueba y muestra
+la respuesta y cuánto tardó. El LED de la placa queda encendido mientras hay
+una página conectada y parpadea tres veces con cada prueba.
 
-| Elemento | Pin |
-|---|---|
-| Servo frío, señal | D9 |
-| Servo caliente, señal | D10 |
-| Ambos servos, +5 V | fuente externa de 5 V · 2 A (dos SG90) |
-| Ambos servos, GND | riel negativo, unido al GND del Arduino |
-
-La masa común entre la fuente y el Arduino es obligatoria. Con dos servos el
-consumo se duplica: no los alimentes desde el pin de 5 V de la placa, y pon un
-capacitor de 1000 µF entre los rieles, cerca de los servos.
-
-El diagrama de la protoboard, hueco por hueco, está en
-**[docs/conexion-servos.svg](docs/conexion-servos.svg)**. Es vectorial, así que
-se puede ampliar o imprimir sin que se pixele.
+Si la placa todavía tiene cargado el sketch anterior de las compuertas, la
+prueba funciona igual: la página acepta cualquier respuesta.
 
 ### 3.3 Publicar la página
 
@@ -100,24 +96,18 @@ No hay nada que compilar: lo que está en el repositorio es lo que se sirve.
 
 ---
 
-## 4. Dónde funciona el Bluetooth
+## 4. Dónde funciona cada cosa
 
-El control usa **Web Bluetooth**, que solo existe en navegadores Chromium.
+| Entorno | Registro, inventario, nutrición, Bob | Prueba del Arduino | Hablarle a Bob |
+|---|---|---|---|
+| Chrome en Android | Sí | Sí | Sí |
+| Chrome o Edge en computador | Sí | Sí | Sí |
+| Safari, iPhone, iPad | Sí | No | Escribiendo |
+| Firefox | Sí | No | Escribiendo |
 
-| Entorno | Registro | Compuerta |
-|---|---|---|
-| Chrome en Android | Sí | Sí |
-| Chrome o Edge en computador | Sí | Sí |
-| Safari, iPhone, iPad | Sí | No |
-| Firefox | Sí | No |
-
-La app detecta el entorno: donde no hay soporte, el panel de la compuerta se
-sustituye por un aviso y todo lo demás sigue funcionando. **Para la
-demostración, usa Chrome en Android.**
-
-Web Bluetooth exige HTTPS, que GitHub Pages ya da. Si abres el archivo con
-doble clic (`file://`) el Bluetooth no aparece; usa la URL de GitHub Pages o
-levanta un servidor local con `python3 -m http.server`.
+La prueba del Arduino usa **Web Bluetooth**, que solo existe en navegadores
+Chromium y exige HTTPS (GitHub Pages ya lo da). Donde no hay soporte, el botón
+se cambia por un aviso y todo lo demás sigue funcionando.
 
 ---
 
@@ -130,24 +120,8 @@ levanta un servidor local con `python3 -m http.server`.
 | Comando (escritura) | `19b10001-e8f2-537e-4f6c-d104768a1214` |
 | Estado (notificación) | `19b10002-e8f2-537e-4f6c-d104768a1214` |
 
-Comandos:
-
-| Comando | Efecto |
-|---|---|
-| `FRIO:90` | Lado frío a 90° |
-| `CALIENTE:120` | Lado caliente a 120° |
-| `FRIO:0` | Cierra el lado frío |
-| `CERRAR` | Cierra ambos lados |
-| `?` | Devuelve el ángulo de cada lado |
-
-El sketch acepta además `A`, `C` y un número suelto, por compatibilidad con la
-versión anterior de un solo servo.
-
-**Tres cierres automáticos**, por si alguno falla:
-
-1. La página cierra el lado a los 5 segundos.
-2. El Arduino cierra cualquier lado que lleve más de 15 segundos abierto.
-3. El Arduino cierra todo al perder la conexión Bluetooth.
+La página escribe `?` y el Arduino responde `OK D1RT` por la característica de
+estado. Si no responde en tres segundos, la página lo avisa.
 
 ---
 
@@ -155,8 +129,8 @@ versión anterior de un solo servo.
 
 El botón **Pregúntale a Bob** abre un chat que responde dudas sobre la
 despensa y sobre el proyecto, por escrito o hablando. Entiende preguntas como
-«cómo dono», «qué hay disponible», «por qué hay dos puertas», «cómo se creó el
-proyecto» o «la compuerta no abre», y responde con los **datos reales**: si
+«cómo dono», «qué hay disponible», «por qué hay dos lados», «cómo se creó el
+proyecto» o «el Arduino no se conecta», y responde con los **datos reales**: si
 alguien pregunta si hay frutas (o leche, o jugos), lee el inventario y contesta
 cuántas hay y en qué lado.
 
@@ -166,7 +140,7 @@ cuántas hay y en qué lado.
 |---|---|---|
 | 1. Normaliza | Quita tildes, signos y mayúsculas, letras estiradas, abreviaturas, muletillas, el nombre al inicio y palabras repetidas | «Oye Bob, ¿cómo cómo se creóóó?» → «como se creo» |
 | 2. Tolera errores | Compara por raíz, por sonido y con uno o dos errores de letra | «komo se kreo el proyeto» → creación |
-| 3. Catálogo | 34 temas y unas 580 frases clave | ver [docs/PREGUNTAS.md](docs/PREGUNTAS.md) |
+| 3. Catálogo | 30 temas y unas 540 frases clave | ver [docs/PREGUNTAS.md](docs/PREGUNTAS.md) |
 | 4. Rescate | Si no está seguro, pregunta «¿Te refieres a…?» con botones y entiende un «sí» | «la idea» → ¿Te refieres a cómo se creó el proyecto? |
 
 Nunca inventa: si nada se acerca, lo dice y ofrece los temas que sí conoce.
@@ -177,6 +151,21 @@ La voz la pone el propio navegador, así que no cuesta nada. Para transcribir
 lo que se dice, Chrome usa el servicio de reconocimiento de voz de Google. El
 micrófono pide permiso la primera vez. El botón del altavoz silencia las
 respuestas habladas.
+
+### Bob 3D y el modo en vivo (Beta)
+
+Al abrir el chat aparece Bob en 3D, que abre el pico al ritmo de lo que dice.
+Con **Hablar en vivo** (o `?vivo` al final de la dirección) se abre una
+pantalla completa para conversar por voz como en una llamada: Bob escucha,
+piensa y responde, y vuelve a escuchar solo. Tocarlo mientras habla lo
+interrumpe. Responde con el mismo catálogo del chat; no usa IA.
+
+- `assets/voz-bob.js`: voz de Bob y apertura de la boca, sílaba por sílaba.
+- `assets/bob3d.js`: Bob en 3D con three.js (se descarga de jsDelivr). Si no
+  carga, queda el Bob dibujado. Es un Bob provisional hecho de piezas; para
+  poner el modelo de Meshy, ver el comentario al inicio del archivo y
+  `modelos/LEEME.txt`.
+- `assets/vivo.js`: la pantalla del modo en vivo.
 
 ### Datos del proyecto
 
@@ -230,25 +219,32 @@ que responde igual las preguntas del catálogo.
 ## 7. Estructura
 
 ```
-index.html                          la aplicación: tema azul con Bob
+index.html                          la página real
+prueba/index.html                   la página de prueba (mismo código, otra colección)
 assets/
-├── app.css                         estilos del tema azul, claro y oscuro
-├── app.js                          categorías, Firestore, Bluetooth, interfaz
+├── app.css                         estilos, claro y oscuro
+├── app.js                          categorías, Firestore, prueba del Arduino, interfaz
 ├── bot.js                          el bot: datos del proyecto, catálogo, voz y Ollama
 ├── bob.js                          el pelícano en SVG y su animación
+├── nutricion.js / .css             pestaña de información nutricional
+├── voz-bob.js                      voz de Bob y boca sincronizada (Beta)
+├── bob3d.js / .css                 Bob en 3D (Beta)
+├── vivo.js / .css                  modo en vivo (Beta)
 └── firebase-config.js              ← aquí va tu configuración
 marca/                              tus imágenes propias, si las pones
-verde/                              la versión verde anterior, de respaldo
+modelos/                            aquí va el modelo 3D de Bob, cuando exista
+azul/                               dirección vieja: redirige a la página real
 arduino/
-└── dirt_dos_compuertas/
-    └── dirt_dos_compuertas.ino     sketch de los dos servos
+└── dirt_conexion/
+    └── dirt_conexion.ino           sketch de la prueba de conexión
 firestore.rules                     reglas de seguridad de la base
 docs/
 ├── PREGUNTAS.md                    todo lo que el bot sabe responder
-└── HISTORIAL.md                    qué cambió respecto a versiones anteriores
+├── HISTORIAL.md                    qué cambió respecto a versiones anteriores
+└── bob.png                         Bob en PNG, para el material de la presentación
 herramientas/
 ├── revisar.mjs                     sintaxis, documento al día y pruebas del bot
-├── probar-bot.mjs                  110 preguntas reales que el bot debe entender
+├── probar-bot.mjs                  preguntas reales que el bot debe entender
 ├── generar-preguntas.mjs           rehace PREGUNTAS.md desde bot.js
 └── reglas/                         prueba firestore.rules con el emulador
 ```

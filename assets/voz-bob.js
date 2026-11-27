@@ -1,11 +1,11 @@
 /* =========================================================================
-   VOZ Y BOCA DE BOB — Beta, solo en la página de prueba
+   VOZ Y BOCA DE BOB — Beta
    -------------------------------------------------------------------------
    Convierte lo que Bob dice en un número entre 0 (boca cerrada) y 1 (boca
    abierta del todo), sesenta veces por segundo. Lo usan el Bob 3D
    (bob3d.js) y el Bob dibujado de la página.
 
-   No toca assets/bot.js, que es compartido con la página real: se pone
+   No toca bot.js: se pone
    delante de speechSynthesis.speak() y lee el texto que el bot va a decir.
 
    CÓMO SABE CUÁNDO ABRIR LA BOCA
