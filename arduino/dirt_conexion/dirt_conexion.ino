@@ -1,20 +1,25 @@
 /*
- * D.I.R.T. — prueba de conexión con la página web
+ * D.I.R.T. — conexión con la página web y LED de cada lado
  * ---------------------------------------------------------------------------
  * Arduino UNO R4 WiFi. La página se conecta por el Bluetooth LE que la placa
- * ya trae integrado y le manda "?". El Arduino responde "OK D1RT" y hace
- * parpadear su LED, para ver en la placa que la prueba llegó.
+ * ya trae integrado.
  *
- * Esta versión ya NO mueve compuertas ni servomotores: no hace falta
- * conectarle nada, solo el cable USB.
+ *  - Prueba de conexión: la página manda "?" y el Arduino responde "OK D1RT".
+ *    Los dos LED parpadean para ver en la placa que la prueba llegó.
+ *  - Cuando alguien registra un alimento, la página manda el lado:
+ *      FRIO      enciende el LED AZUL  (lácteos, frutas, bebidas)
+ *      CALIENTE  enciende el LED ROJO  (fritos)
+ *      APAGAR    apaga los dos (cuando se toca "Listo" en la página)
+ *    Si nadie toca "Listo", el LED se apaga solo a los 15 segundos.
+ *
+ * CONEXIÓN DE LOS LED (cada uno con su resistencia de 220 Ω)
+ *   Pin 1 ──[220 Ω]──▶|── GND    LED azul  (lado frío)
+ *   Pin 2 ──[220 Ω]──▶|── GND    LED rojo  (lado caliente)
+ *   La pata larga del LED (+) va hacia el pin; la corta (−) a GND.
+ *   En el UNO R4 el pin 1 está libre: el monitor serie va por el USB.
  *
  * REQUISITO: instalar la librería "ArduinoBLE"
  *   Herramientas -> Administrar Bibliotecas -> buscar "ArduinoBLE" -> Instalar
- *
- * PROTOCOLO (texto plano)
- *   ?  o  PING     responde "OK D1RT"
- *   cualquier otro responde "OK D1RT" igual, para que la prueba no falle
- *                  por un comando viejo
  *
  * UUID (coinciden con assets/app.js de la página web)
  *   Servicio:        19b10000-e8f2-537e-4f6c-d104768a1214
@@ -23,6 +28,13 @@
  */
 
 #include <ArduinoBLE.h>
+
+// ------------------------------ LED ----------------------------------------
+const int LED_AZUL = 1;   // lado frío
+const int LED_ROJO = 2;   // lado caliente
+const unsigned long LED_MAX_MS = 15000;   // se apaga solo después de esto
+
+unsigned long ledDesde = 0;   // cuándo se encendió (0 = apagados)
 
 // ------------------------------- BLE ---------------------------------------
 BLEService servicioDirt("19b10000-e8f2-537e-4f6c-d104768a1214");
@@ -44,7 +56,15 @@ void setup() {
   while (!Serial && millis() - inicio < 3000) { }
 
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LED_AZUL, OUTPUT);
+  pinMode(LED_ROJO, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
+  apagarLados();
+
+  // Al arrancar se prenden los dos un momento, para comprobar los cables.
+  digitalWrite(LED_AZUL, HIGH); digitalWrite(LED_ROJO, HIGH);
+  delay(600);
+  apagarLados();
 
   if (!BLE.begin()) {
     Serial.println("ERROR: no se pudo iniciar el Bluetooth del Arduino.");
@@ -67,7 +87,7 @@ void setup() {
   BLE.advertise();
 
   Serial.println("------------------------------------------");
-  Serial.println("D.I.R.T. - prueba de conexion");
+  Serial.println("D.I.R.T. - conexion y LED de cada lado");
   Serial.println("Dispositivo Bluetooth: DIRT");
   Serial.print("Direccion MAC: ");
   Serial.println(BLE.address());
@@ -82,17 +102,19 @@ void loop() {
   if (central) {
     Serial.print("Pagina conectada desde: ");
     Serial.println(central.address());
-    digitalWrite(LED_BUILTIN, HIGH);   // LED encendido = hay una página conectada
+    digitalWrite(LED_BUILTIN, HIGH);   // LED de la placa = hay una página conectada
     caracEstado.writeValue("CONECTADO");
 
     while (central.connected()) {
       if (caracComando.written()) {
-        responder(caracComando.value());
+        atender(caracComando.value());
       }
+      revisarApagado();
     }
 
     Serial.println("Pagina desconectada.");
     digitalWrite(LED_BUILTIN, LOW);
+    apagarLados();
 
     // Volver a anunciarse explícitamente. Sin esto, tras una desconexión
     // brusca la placa puede quedar visible en la lista del teléfono pero
@@ -101,25 +123,65 @@ void loop() {
     BLE.advertise();
     Serial.println("Anunciandose de nuevo como DIRT.");
   }
+
+  revisarApagado();
 }
 
 
 // ---------------------------------------------------------------------------
-// Responde a la prueba de la página y parpadea el LED tres veces.
+// Lo que manda la página.
 // ---------------------------------------------------------------------------
-void responder(String cmd) {
+void atender(String cmd) {
   cmd.trim();
-  pruebas++;
-  Serial.print("Prueba #");
-  Serial.print(pruebas);
-  Serial.print(" recibida: '");
+  cmd.toUpperCase();
+  Serial.print("Recibido: '");
   Serial.print(cmd);
   Serial.println("'");
 
+  if (cmd == "FRIO") {
+    encenderLado(LED_AZUL);
+    caracEstado.writeValue("OK FRIO");
+  } else if (cmd == "CALIENTE") {
+    encenderLado(LED_ROJO);
+    caracEstado.writeValue("OK CALIENTE");
+  } else if (cmd == "APAGAR") {
+    apagarLados();
+    caracEstado.writeValue("OK APAGAR");
+  } else {
+    // "?" o cualquier otra cosa: es la prueba de conexión.
+    pruebaConexion();
+  }
+}
+
+void encenderLado(int pin) {
+  apagarLados();               // solo un lado encendido a la vez
+  digitalWrite(pin, HIGH);
+  ledDesde = millis();
+  if (ledDesde == 0) ledDesde = 1;
+}
+
+void apagarLados() {
+  digitalWrite(LED_AZUL, LOW);
+  digitalWrite(LED_ROJO, LOW);
+  ledDesde = 0;
+}
+
+void revisarApagado() {
+  if (ledDesde != 0 && millis() - ledDesde >= LED_MAX_MS) {
+    apagarLados();
+  }
+}
+
+// Responde "OK D1RT" y hace parpadear los dos LED tres veces.
+void pruebaConexion() {
+  pruebas++;
+  Serial.print("Prueba de conexion #");
+  Serial.println(pruebas);
   caracEstado.writeValue("OK D1RT");
 
   for (int i = 0; i < 3; i++) {
-    digitalWrite(LED_BUILTIN, LOW);  delay(90);
-    digitalWrite(LED_BUILTIN, HIGH); delay(90);
+    digitalWrite(LED_AZUL, HIGH); digitalWrite(LED_ROJO, HIGH); delay(120);
+    digitalWrite(LED_AZUL, LOW);  digitalWrite(LED_ROJO, LOW);  delay(120);
   }
+  ledDesde = 0;
 }

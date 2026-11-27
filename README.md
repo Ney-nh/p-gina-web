@@ -123,6 +123,17 @@ se cambia por un aviso y todo lo demás sigue funcionando.
 La página escribe `?` y el Arduino responde `OK D1RT` por la característica de
 estado. Si no responde en tres segundos, la página lo avisa.
 
+Al registrar un alimento, la página manda el lado y el Arduino enciende su LED:
+
+| Comando | LED |
+|---|---|
+| `FRIO` | azul, pin 1 (lácteos, frutas, bebidas) |
+| `CALIENTE` | rojo, pin 2 (fritos) |
+| `APAGAR` | los apaga (al tocar **Listo**; si no, se apagan solos a los 15 s) |
+
+Cada LED va con una resistencia de 220 Ω: pin → resistencia → pata larga del
+LED; pata corta → GND.
+
 ---
 
 ## 6. El bot

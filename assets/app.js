@@ -332,7 +332,7 @@ arduino.conectar = async function (alProgresar = () => {}) {
       // "LISTO" y "CONECTADO" son avisos de arranque, no la respuesta a la
       // prueba. Cualquier otra cosa sí cuenta: también lo que responda el
       // sketch anterior de las compuertas, si la placa todavía lo tiene.
-      if (/^(LISTO|CONECTADO)$/i.test(texto)) return;
+      if (/^(LISTO|CONECTADO|OK (FRIO|CALIENTE|APAGAR))$/i.test(texto)) return;
       if (this._esperando) this._esperando(texto);
     });
     this._conRespuesta = true;
@@ -373,6 +373,21 @@ arduino.probar = async function () {
   }
   const texto = await respuesta;
   return { texto, ms: Math.round(performance.now() - inicio) };
+};
+
+/**
+ * Enciende el LED del lado donde va el alimento: azul = frío, rojo =
+ * caliente. "APAGAR" los apaga. Si el Arduino no está conectado no hace
+ * nada: la página funciona igual sin él.
+ */
+arduino.lado = async function (lado) {
+  if (!this._comando) return;
+  const cmd = lado === "frio" ? "FRIO" : lado === "caliente" ? "CALIENTE" : "APAGAR";
+  try {
+    await this._comando.writeValue(new TextEncoder().encode(cmd));
+  } catch (e) {
+    console.warn("No se pudo avisar al Arduino:", e.message);
+  }
 };
 
 
@@ -817,9 +832,11 @@ function mostrarExito(m) {
   $("#exito").hidden = false;
   document.body.style.overflow = "hidden";
   $("#btn-listo").focus();
+  arduino.lado(cat.lado);   // LED azul (frío) o rojo (caliente)
 }
 
 function cerrarExito() {
+  arduino.lado(null);       // apaga los LED
   $("#exito").hidden = true;
   document.body.style.overflow = "";
 }
