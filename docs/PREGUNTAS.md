@@ -6,8 +6,7 @@ No lo edites a mano: cambia los temas en ese archivo y vuelve a correr
 
 Última generación: 2026-11-27 · 30 temas · 537 frases clave
 
-Las respuestas se muestran como las dice Bob; en la versión verde las dice
-Dora, con el nombre y el género ajustados.
+Las respuestas se muestran como las dice Bob.
 
 ## Cómo entiende una pregunta
 
@@ -167,7 +166,7 @@ Soy Bob, el asistente de D.I.R.T. Comunitario. Te ayudo a donar, a retirar alime
 
 ## ¿En qué me puedes ayudar?
 
-Te puedo explicar cómo donar o retirar alimentos, decirte qué hay disponible ahora mismo, por qué la despensa tiene dos lados, qué hacer si el Arduino no se conecta, y contarte cómo se creó el proyecto y cómo funciona por dentro.
+Te puedo explicar cómo donar o retirar alimentos, decirte qué hay disponible ahora mismo, qué vitaminas o cuántas calorías tiene cada alimento, por qué la despensa tiene dos lados, y contarte cómo se creó el proyecto y cómo funciona por dentro.
 
 <details><summary>Cómo se reconoce (15 frases)</summary>
 
@@ -345,13 +344,47 @@ en el día. Se reconoce con:
 
 ---
 
+## Preguntas de nutrición
+
+Se responden con los datos de `assets/nutricion.js`, los mismos de la pestaña
+Nutrición. Bob contesta cuando la frase nombra un alimento o una categoría **y**
+pide algo de nutrición: vitaminas o minerales, calorías, proteína, grasa,
+carbohidratos, azúcar, o qué aporta, si es sano, sus beneficios. Si solo nombra
+el alimento («¿hay leche?»), es una pregunta de inventario.
+
+| Alimento | Cómo lo puede llamar la gente |
+|---|---|
+| Leche entera (lácteos) | leche |
+| Yogur natural (lácteos) | yogur, yogurt, yogourt |
+| Queso fresco (lácteos) | queso, quesito |
+| Manzana (frutas) | manzana, manzanas |
+| Banano (frutas) | banano, banana, guineo |
+| Mango (frutas) | mango, mangos |
+| Papas fritas de paquete (fritos) | papas, papitas, chips |
+| Platanitos (fritos) | platanitos, platanito |
+| Chicharrón de paquete (fritos) | chicharron, chicharrones |
+| Jugo de naranja (bebidas) | jugo, jugos, naranja, naranjas |
+| Agua (bebidas) | agua |
+| Gaseosa (bebidas) | gaseosa, gaseosas, cola, refresco, soda |
+
+Ejemplos, con la respuesta que da hoy:
+
+- **¿Qué vitaminas aporta la manzana?** La manzana no es fuerte en vitaminas: trae un poco de vitamina C y de potasio. Lo que más aporta es fibra, 2,4 g por cada 100 g, sobre todo en la cáscara.
+- **¿Cuántas calorías tiene el mango?** El mango tiene 60 kcal por cada 100 g. Lo ves completo en la pestaña Nutrición.
+- **¿Qué tiene más azúcar, el jugo o la gaseosa?** La gaseosa es la que más azúcar tiene. Por cada 100 g o 100 ml: la gaseosa, 9 g; el jugo de naranja, 8,4 g.
+- **¿Cuál fruta tiene más azúcar?** Entre las frutas de la despensa, el mango es el que más azúcar tiene: 13,7 g de azúcares por cada 100 g.
+- **¿Los fritos son saludables?** Dan mucha energía en poca cantidad, pero tienen bastante grasa y sal. Mejor como antojo ocasional que como comida principal. En la despensa: papas fritas (sodio: 525 mg), platanitos (sodio: ~200 mg) y chicharrón (sodio: 1.818 mg). Pregúntame por uno en concreto, o mira la pestaña Nutrición.
+- **¿Qué vitaminas tiene la pera?** Ese alimento no lo tengo en la tabla, pero te cuento de las frutas. Aportan fibra, vitaminas y agua, con muy poca grasa. Se guardan en el lado frío para que duren más días frescas. En la despensa: manzana (fibra: 2,4 g), banano (potasio: 358 mg) y mango (vitamina C: 36 mg). Pregúntame por uno en concreto, o mira la pestaña Nutrición.
+
+---
+
 ## Cuando no entiende
 
 Si algún tema se acerca, ofrece hasta dos con botones: «No estoy del todo
 seguro. ¿Te refieres a…?». Si nada se acerca, responde esto en lugar de
 inventarse algo:
 
-> Todavía no tengo respuesta para eso. Puedo ayudarte con cómo donar, cómo retirar alimentos, qué hay disponible, por qué la despensa tiene dos lados o cómo se creó el proyecto.
+> Todavía no tengo respuesta para eso. Puedo ayudarte con cómo donar, cómo retirar alimentos, qué hay disponible, qué aporta cada alimento o cómo se creó el proyecto.
 
 ---
 
@@ -360,6 +393,7 @@ inventarse algo:
 - ¿Cómo dono alimentos?
 - ¿Cómo retiro algo?
 - ¿Qué hay disponible?
+- ¿Qué vitaminas tiene la manzana?
 - ¿Por qué hay dos lados?
 - ¿Cómo se creó el proyecto?
 - El Arduino no se conecta

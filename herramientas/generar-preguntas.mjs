@@ -6,7 +6,8 @@
 */
 import { writeFileSync } from "node:fs";
 import { TEMAS, CLAVES_INVENTARIO, CLAVES_MOVIMIENTOS, SUGERENCIAS, SIN_RESPUESTA,
-         PROYECTO, textoDe } from "../assets/bot.js";
+         PROYECTO, textoDe, entender } from "../assets/bot.js";
+import { CATEGORIAS_NUTRICION } from "../assets/nutricion.js";
 
 const hoy = new Date().toISOString().slice(0, 10);
 const totalClaves = TEMAS.reduce((a, t) => a + t.claves.length, 0)
@@ -28,8 +29,7 @@ const lineas = [
   "",
   `Última generación: ${hoy} · ${TEMAS.length} temas · ${totalClaves} frases clave`,
   "",
-  "Las respuestas se muestran como las dice Bob; en la versión verde las dice",
-  "Dora, con el nombre y el género ajustados.",
+  "Las respuestas se muestran como las dice Bob.",
   "",
 ];
 
@@ -82,6 +82,27 @@ lineas.push(CLAVES_INVENTARIO.map((c) => `\`${c}\``).join(" · "), "");
 lineas.push("**Movimientos de hoy.** Responde cuántas donaciones y cuántos retiros van");
 lineas.push("en el día. Se reconoce con:", "");
 lineas.push(CLAVES_MOVIMIENTOS.map((c) => `\`${c}\``).join(" · "), "");
+
+lineas.push("---", "");
+lineas.push("## Preguntas de nutrición", "");
+lineas.push("Se responden con los datos de `assets/nutricion.js`, los mismos de la pestaña");
+lineas.push("Nutrición. Bob contesta cuando la frase nombra un alimento o una categoría **y**");
+lineas.push("pide algo de nutrición: vitaminas o minerales, calorías, proteína, grasa,");
+lineas.push("carbohidratos, azúcar, o qué aporta, si es sano, sus beneficios. Si solo nombra");
+lineas.push("el alimento («¿hay leche?»), es una pregunta de inventario.", "");
+lineas.push("| Alimento | Cómo lo puede llamar la gente |", "|---|---|");
+for (const c of CATEGORIAS_NUTRICION) {
+  for (const a of c.alimentos) lineas.push(`| ${a.nombre} (${c.nombre.toLowerCase()}) | ${a.alias.join(", ")} |`);
+}
+lineas.push("");
+lineas.push("Ejemplos, con la respuesta que da hoy:", "");
+const vacio = { categorias: [], total: 0, hoy: { entradas: 0, salidas: 0 } };
+for (const q of ["¿Qué vitaminas aporta la manzana?", "¿Cuántas calorías tiene el mango?",
+                 "¿Qué tiene más azúcar, el jugo o la gaseosa?", "¿Cuál fruta tiene más azúcar?",
+                 "¿Los fritos son saludables?", "¿Qué vitaminas tiene la pera?"]) {
+  lineas.push(`- **${q}** ${entender(q, vacio, { nombre: "Bob" }).texto}`);
+}
+lineas.push("");
 
 lineas.push("---", "");
 lineas.push("## Cuando no entiende", "");

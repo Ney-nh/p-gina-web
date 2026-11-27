@@ -8,6 +8,11 @@
 
    Para añadir un alimento, agrega un objeto a la lista de su categoría.
    La imagen es un dibujo SVG propio (sección DIBUJOS, abajo).
+
+   Bob (bot.js) responde con estos mismos datos preguntas como «¿qué vitaminas
+   tiene la manzana?» o «¿qué tiene más azúcar, el jugo o la gaseosa?».
+   Para eso usa `alias` (cómo lo llama la gente), `articulo`, `corto` y
+   `vitaminas`.
    ========================================================================= */
 
 /* Filas de la tabla: qué nutriente, en qué unidad. */
@@ -29,6 +34,9 @@ const CATEGORIAS_NUTRICION = [
         id: "leche", nombre: "Leche entera", porcion: "100 ml",
         kcal: 61, prot: 3.2, grasa: 3.3, carb: 4.8, azucar: 5.1,
         destaca: "Calcio: 113 mg",
+                articulo: "la", corto: "leche entera",
+        alias: ["leche"],
+        vitaminas: "La leche entera es rica en calcio (113 mg por cada 100 ml) y aporta vitamina B12, vitamina B2 y fósforo, que ayudan a los huesos y a tener energía. Muchas marcas le añaden vitaminas A y D.",
         descripcion: "Un vaso (250 ml) aporta cerca de un tercio del calcio que " +
                      "necesita al día un adulto. Una vez abierta, consúmela en dos " +
                      "o tres días y mantenla siempre en frío.",
@@ -37,6 +45,9 @@ const CATEGORIAS_NUTRICION = [
         id: "yogur", nombre: "Yogur natural", porcion: "100 g",
         kcal: 61, prot: 3.5, grasa: 3.3, carb: 4.7, azucar: 4.7,
         destaca: "Calcio: 121 mg",
+                articulo: "el", corto: "yogur natural",
+        alias: ["yogur", "yogurt", "yogourt"],
+        vitaminas: "El yogur natural aporta calcio (121 mg por cada 100 g), fósforo y vitaminas B2 y B12, y además bacterias buenas para la digestión.",
         descripcion: "Trae bacterias buenas para la digestión. El natural tiene " +
                      "mucho menos azúcar que el saborizado: si lo quieres dulce, " +
                      "agrégale fruta picada.",
@@ -45,6 +56,9 @@ const CATEGORIAS_NUTRICION = [
         id: "queso", nombre: "Queso fresco", porcion: "100 g",
         kcal: 299, prot: 18.1, grasa: 23.8, carb: 3.0, azucar: 2.3,
         destaca: "Calcio: 566 mg",
+                articulo: "el", corto: "queso fresco",
+        alias: ["queso", "quesito"],
+        vitaminas: "El queso fresco es de los alimentos con más calcio: 566 mg por cada 100 g. También trae fósforo y vitamina B12. Eso sí, tiene bastante grasa y sal.",
         descripcion: "Muy rico en proteína y calcio, pero también en grasa y sal. " +
                      "Una tajada delgada (unos 30 g) es una buena porción para " +
                      "acompañar la arepa.",
@@ -60,6 +74,9 @@ const CATEGORIAS_NUTRICION = [
         id: "manzana", nombre: "Manzana", porcion: "100 g",
         kcal: 52, prot: 0.3, grasa: 0.2, carb: 13.8, azucar: 10.4,
         destaca: "Fibra: 2,4 g",
+                articulo: "la", corto: "manzana",
+        alias: ["manzana", "manzanas"],
+        vitaminas: "La manzana no es fuerte en vitaminas: trae un poco de vitamina C y de potasio. Lo que más aporta es fibra, 2,4 g por cada 100 g, sobre todo en la cáscara.",
         descripcion: "Cómela con cáscara: ahí está buena parte de la fibra, que " +
                      "ayuda a la digestión y da sensación de llenura. Lávala bien " +
                      "antes.",
@@ -68,6 +85,9 @@ const CATEGORIAS_NUTRICION = [
         id: "banano", nombre: "Banano", porcion: "100 g",
         kcal: 89, prot: 1.1, grasa: 0.3, carb: 22.8, azucar: 12.2,
         destaca: "Potasio: 358 mg",
+                articulo: "el", corto: "banano",
+        alias: ["banano", "banana", "guineo"],
+        vitaminas: "El banano es famoso por el potasio, 358 mg por cada 100 g, que ayuda a los músculos. También aporta vitamina B6, vitamina C y magnesio.",
         descripcion: "Energía rápida y fácil de llevar, ideal antes de hacer " +
                      "ejercicio. El potasio ayuda a los músculos. Si tiene manchas " +
                      "cafés está más dulce, no dañado.",
@@ -76,6 +96,9 @@ const CATEGORIAS_NUTRICION = [
         id: "mango", nombre: "Mango", porcion: "100 g",
         kcal: 60, prot: 0.8, grasa: 0.4, carb: 15.0, azucar: 13.7,
         destaca: "Vitamina C: 36 mg",
+                articulo: "el", corto: "mango",
+        alias: ["mango", "mangos"],
+        vitaminas: "El mango es de las frutas con más vitamina C: 36 mg por cada 100 g, casi la mitad de lo que se necesita al día. También aporta vitamina A, que ayuda a la vista y a la piel.",
         descripcion: "Una porción cubre casi la mitad de la vitamina C del día, " +
                      "que ayuda a las defensas. Es de las frutas más dulces: mejor " +
                      "entero que en jugo con azúcar.",
@@ -91,6 +114,9 @@ const CATEGORIAS_NUTRICION = [
         id: "papas", nombre: "Papas fritas de paquete", porcion: "100 g",
         kcal: 536, prot: 7.0, grasa: 34.6, carb: 52.9, azucar: 0.3,
         destaca: "Sodio: 525 mg",
+                articulo: "las", corto: "papas fritas",
+        alias: ["papas", "papitas", "chips"],
+        vitaminas: "Las papas fritas de paquete conservan algo de potasio y vitamina B6 de la papa, y vitamina E del aceite, pero no son una buena fuente de vitaminas: tienen mucha grasa, 34,6 g por cada 100 g, y bastante sal.",
         descripcion: "Un paquete pequeño (unos 30 g) ya suma unas 160 kcal. " +
                      "Revisa en la etiqueta el sodio, y acompáñalas con agua en " +
                      "vez de gaseosa.",
@@ -99,6 +125,9 @@ const CATEGORIAS_NUTRICION = [
         id: "platanitos", nombre: "Platanitos", porcion: "100 g",
         kcal: 520, prot: 2.0, grasa: 30.0, carb: 62.0, azucar: 2.0,
         destaca: "Sodio: ~200 mg",
+                articulo: "los", corto: "platanitos",
+        alias: ["platanitos", "platanito"],
+        vitaminas: "Los platanitos conservan algo del potasio del plátano, pero al freírse pierden buena parte de sus vitaminas y ganan mucha grasa.",
         descripcion: "Hechos de plátano verde frito. Llenan más que las papas " +
                      "porque tienen más almidón, pero la grasa es parecida. Los " +
                      "valores varían bastante entre marcas.",
@@ -107,6 +136,9 @@ const CATEGORIAS_NUTRICION = [
         id: "chicharron", nombre: "Chicharrón de paquete", porcion: "100 g",
         kcal: 544, prot: 61.3, grasa: 31.3, carb: 0, azucar: 0,
         destaca: "Sodio: 1.818 mg",
+                articulo: "el", corto: "chicharrón",
+        alias: ["chicharron", "chicharrones"],
+        vitaminas: "El chicharrón casi no tiene vitaminas. Lo que aporta es proteína, 61 g por cada 100 g, junto con mucha grasa y mucha sal.",
         descripcion: "Tiene mucha proteína y nada de azúcar, pero es de los " +
                      "productos más salados: 100 g pasan de la mitad del sodio " +
                      "recomendado en un día.",
@@ -122,6 +154,9 @@ const CATEGORIAS_NUTRICION = [
         id: "jugo", nombre: "Jugo de naranja", porcion: "100 ml",
         kcal: 45, prot: 0.7, grasa: 0.2, carb: 10.4, azucar: 8.4,
         destaca: "Vitamina C: 50 mg",
+                articulo: "el", corto: "jugo de naranja",
+        alias: ["jugo", "jugos", "naranja", "naranjas"],
+        vitaminas: "El jugo de naranja es muy rico en vitamina C: 50 mg por cada 100 ml, así que un vaso cubre lo del día. También aporta folato y potasio.",
         descripcion: "Un vaso cubre la vitamina C del día. Al exprimirla se pierde " +
                      "la fibra de la fruta, así que un vaso al día es suficiente; " +
                      "mejor sin azúcar añadida.",
@@ -130,6 +165,9 @@ const CATEGORIAS_NUTRICION = [
         id: "agua", nombre: "Agua", porcion: "100 ml",
         kcal: 0, prot: 0, grasa: 0, carb: 0, azucar: 0,
         destaca: "Sin calorías",
+                articulo: "el", corto: "agua",
+        alias: ["agua"],
+        vitaminas: "El agua no tiene vitaminas ni calorías, pero es lo mejor para hidratarse, sobre todo con el calor de Santa Marta.",
         descripcion: "La mejor bebida para calmar la sed. Con el calor de Santa " +
                      "Marta conviene tomar varios vasos al día, aunque no se " +
                      "sienta sed.",
@@ -138,6 +176,9 @@ const CATEGORIAS_NUTRICION = [
         id: "gaseosa", nombre: "Gaseosa", porcion: "100 ml",
         kcal: 37, prot: 0, grasa: 0, carb: 9.6, azucar: 9.0,
         destaca: "Azúcar añadida",
+                articulo: "la", corto: "gaseosa",
+        alias: ["gaseosa", "gaseosas", "cola", "refresco", "soda"],
+        vitaminas: "La gaseosa no aporta vitaminas ni minerales: casi todo lo que tiene es azúcar, unos 9 g por cada 100 ml.",
         descripcion: "Una botella personal (400 ml) trae unos 36 g de azúcar, " +
                      "cerca de nueve cucharaditas. Tómala de vez en cuando y " +
                      "prefiere el agua para el día a día.",

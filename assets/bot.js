@@ -1,9 +1,9 @@
 /* =========================================================================
-   EL ASISTENTE DE LA DESPENSA (Bob en la versión azul, Dora en la verde)
+   EL ASISTENTE DE LA DESPENSA: Bob
    -------------------------------------------------------------------------
-   Responde dudas sobre la despensa y sobre el proyecto, por escrito o
-   hablando. El nombre lo pone cada página (.bot-nombre strong), así que
-   este archivo sirve para las dos versiones.
+   Responde dudas sobre la despensa, sobre el proyecto y sobre lo que aporta
+   cada alimento, por escrito o hablando. El nombre lo pone la página
+   (.bot-nombre strong).
 
    Cómo entiende una pregunta, en cuatro capas:
 
@@ -18,9 +18,15 @@
      4. RESCATE     si no está seguro, pregunta "¿Te refieres a…?" con
                     botones, y entiende un "sí" como respuesta.
 
+   Las preguntas de nutrición («¿qué vitaminas tiene la manzana?») se
+   responden con los datos de nutricion.js (sección 4b), los mismos de la
+   pestaña Nutrición.
+
    Ollama es opcional (sección 6): solo se consulta cuando las capas
    anteriores no están seguras, y si falla se sigue con el rescate.
    ========================================================================= */
+
+import { CATEGORIAS_NUTRICION } from "./nutricion.js";
 
 /* =========================================================================
    0. DATOS DEL PROYECTO — llenar con los datos reales del equipo
@@ -288,8 +294,8 @@ export const TEMAS = [
              "para que sirves", "que sabes", "no se que preguntar", "instrucciones", "como te uso"],
     respuesta:
       "Te puedo explicar cómo donar o retirar alimentos, decirte qué hay disponible " +
-      "ahora mismo, por qué la despensa tiene dos lados, qué hacer si el Arduino no se " +
-      "conecta, y contarte cómo se creó el proyecto y cómo funciona por dentro.",
+      "ahora mismo, qué vitaminas o cuántas calorías tiene cada alimento, por qué la " +
+      "despensa tiene dos lados, y contarte cómo se creó el proyecto y cómo funciona por dentro.",
   },
   {
     id: "como_entiende",
@@ -503,13 +509,13 @@ const SINONIMOS_CATEGORIA = {
 
 export const SIN_RESPUESTA =
   "Todavía no tengo respuesta para eso. Puedo ayudarte con cómo donar, cómo retirar " +
-  "alimentos, qué hay disponible, por qué la despensa tiene dos lados o cómo se creó " +
-  "el proyecto.";
+  "alimentos, qué hay disponible, qué aporta cada alimento o cómo se creó el proyecto.";
 
 export const SUGERENCIAS = [
   "¿Cómo dono alimentos?",
   "¿Cómo retiro algo?",
   "¿Qué hay disponible?",
+  "¿Qué vitaminas tiene la manzana?",
   "¿Por qué hay dos lados?",
   "¿Cómo se creó el proyecto?",
   "El Arduino no se conecta",
@@ -820,6 +826,133 @@ function pideExistencia(frase) {
   return /\bcuant[oa]s?\b/.test(t) && !/\b(tiempo|dura|cuesta|vale|tarda|demora|segundos|puedo)\b/.test(t);
 }
 
+/* =========================================================================
+   4b. NUTRICIÓN — «¿qué vitaminas tiene la manzana?»
+   -------------------------------------------------------------------------
+   Se responde cuando la frase nombra un alimento (o una categoría) Y pide
+   algo de nutrición. Si solo nombra el alimento («¿hay leche?»), es una
+   pregunta de inventario y la responde la parte de arriba.
+   ========================================================================= */
+
+const ALIMENTOS = CATEGORIAS_NUTRICION.flatMap((c) =>
+  c.alimentos.map((a) => ({ ...a, cat: c })));
+
+/* Qué pide la frase. "general" = qué aporta, si es sano, sus beneficios… */
+const PIDE_NUTRIENTE = [
+  ["vitaminas", /\b[bv]itamin|\bminerale?s?\b|\bcalcio\b|\bpotasio\b|\bhierro\b|\bfibra\b/],
+  ["kcal", /\bcalori|\benergia\b|\bengord|\bkcal\b/],
+  ["prot", /\bprotein/],
+  ["grasa", /\bgrasa/],
+  ["carb", /\bcarbohidrat|\bharinas?\b/],
+  ["azucar", /\bazucar/],
+  ["general", /\bnutri|\baporta|\bbenefici|\bsaludabl|\bes (bueno|buena|sano|sana)\b|\bson (buenos|buenas|sanos|sanas)\b|\bpropiedades\b|\bque contiene\b|\bque tiene\b|\bpara que sirve\b|\bhace bien\b|\bhace dano\b|\bes malo\b|\bes mala\b/],
+];
+
+/* Nutriente → cómo decirlo. */
+const DECIR = {
+  kcal:   { nombre: "calorías", unidad: "kcal", mas: "más calorías tiene", sinDe: true },
+  prot:   { nombre: "proteína", unidad: "g", mas: "más proteína tiene" },
+  grasa:  { nombre: "grasa", unidad: "g", mas: "más grasa tiene" },
+  carb:   { nombre: "carbohidratos", unidad: "g", mas: "más carbohidratos tiene" },
+  azucar: { nombre: "azúcares", unidad: "g", mas: "más azúcar tiene" },
+};
+
+const ARTICULO_CATEGORIA = { lacteos: "los", frutas: "las", fritos: "los", bebidas: "las" };
+
+const PALABRAS_CATEGORIA = {
+  lacteos: ["lacteos", "lacteo"],
+  frutas:  ["frutas", "fruta"],
+  fritos:  ["fritos", "frito", "mecato", "paquetes"],
+  bebidas: ["bebidas", "bebida"],
+};
+
+const cifra = (v) => (Number.isInteger(v) ? String(v) : v.toFixed(1).replace(".", ","));
+const porcion = (a) => `por cada ${a.porcion.replace("100 ", "100 ")}`;
+const conArticulo = (a) => `${a.articulo} ${a.corto}`;
+const mayuscula = (t) => t.charAt(0).toUpperCase() + t.slice(1);
+const minuscula = (t) => t.charAt(0).toLowerCase() + t.slice(1);
+const cantidad = (v, d) => (d.sinDe ? `${cifra(v)} ${d.unidad}` : `${cifra(v)} ${d.unidad} de ${d.nombre}`);
+/** "el mango es el que…", "la gaseosa es la que…" */
+const elQue = (a) => `${conArticulo(a)} es ${a.articulo === "la" || a.articulo === "las" ? "la" : "el"} que`;
+
+function nombra(frase, palabra, tope = 0.8) {
+  const k = ficha(palabra);
+  return frase.fichas.some((u) => parecido(k, u) >= tope);
+}
+
+function alimentosNombrados(frase) {
+  return ALIMENTOS.filter((a) => a.alias.some((w) => nombra(frase, w)));
+}
+
+/** La categoría nombrada por su nombre, o por un alimento que no tiene ficha. */
+function categoriaNutricion(frase) {
+  for (const [id, palabras] of Object.entries(PALABRAS_CATEGORIA)) {
+    if (palabras.some((w) => nombra(frase, w))) return { id, palabra: null };
+  }
+  for (const [id, palabras] of Object.entries(SINONIMOS_CATEGORIA)) {
+    for (const w of palabras) {
+      if (nombra(frase, w, 0.85)) return { id, palabra: w };
+    }
+  }
+  return null;
+}
+
+function fichaAlimento(a, nutriente) {
+  if (nutriente === "vitaminas") return a.vitaminas;
+  const d = DECIR[nutriente];
+  if (d) {
+    return `${mayuscula(conArticulo(a))} tiene ${cantidad(a[nutriente], d)} ${porcion(a)}. ` +
+           "Lo ves completo en la pestaña Nutrición.";
+  }
+  // general: lo que dice la ficha para el consumidor y sus cifras principales
+  return `${a.descripcion} ${mayuscula(porcion(a))}: ${cifra(a.kcal)} kcal, ` +
+         `${cifra(a.prot)} g de proteína y ${cifra(a.azucar)} g de azúcares. ` +
+         "Lo ves completo en la pestaña Nutrición.";
+}
+
+function compararAlimentos(lista, nutriente) {
+  const d = DECIR[nutriente];
+  const orden = [...lista].sort((a, b) => b[nutriente] - a[nutriente]);
+  const partes = orden.map((a) => `${conArticulo(a)}, ${cifra(a[nutriente])} ${d.unidad}`);
+  const primero = orden[0];
+  if (orden.length > 1 && primero[nutriente] === orden[1][nutriente]) {
+    return `Tienen lo mismo de ${d.nombre}. Por cada 100 g o 100 ml: ${partes.join("; ")}.`;
+  }
+  return `${mayuscula(elQue(primero))} ${d.mas}. Por cada 100 g o 100 ml: ${partes.join("; ")}.`;
+}
+
+function resumenCategoria(cat, nutriente, palabra) {
+  const c = CATEGORIAS_NUTRICION.find((x) => x.id === cat);
+  const grupo = `${ARTICULO_CATEGORIA[cat]} ${c.nombre.toLowerCase()}`;
+  const previo = palabra
+    ? `Ese alimento no lo tengo en la tabla, pero te cuento de ${grupo}. `
+    : "";
+  const d = DECIR[nutriente];
+  if (d) {
+    const max = [...c.alimentos].sort((a, b) => b[nutriente] - a[nutriente])[0];
+    return `${previo}Entre ${grupo} de la despensa, ${elQue(max)} ${d.mas}: ` +
+           `${cantidad(max[nutriente], d)} ${porcion(max)}.`;
+  }
+  const destacan = c.alimentos.map((a) => `${a.corto} (${minuscula(a.destaca)})`);
+  return `${previo}${c.resumen} En la despensa: ${listar(destacan)}. ` +
+         "Pregúntame por uno en concreto, o mira la pestaña Nutrición.";
+}
+
+function responderNutricion(frase) {
+  const pide = PIDE_NUTRIENTE.filter(([, re]) => re.test(frase.texto)).map(([k]) => k);
+  if (!pide.length) return null;
+  const nutriente = pide.find((k) => k !== "general") || "general";
+
+  const lista = alimentosNombrados(frase);
+  if (lista.length >= 2 && DECIR[nutriente]) return compararAlimentos(lista, nutriente);
+  if (lista.length >= 2) return lista.slice(0, 2).map((a) => fichaAlimento(a, nutriente)).join(" ");
+  if (lista.length === 1) return fichaAlimento(lista[0], nutriente);
+
+  const cat = categoriaNutricion(frase);
+  if (cat) return resumenCategoria(cat.id, nutriente, cat.palabra);
+  return null;
+}
+
 export function textoDe(tema, nombre = "Bob") {
   const r = typeof tema.respuesta === "function" ? tema.respuesta({ nombre }) : tema.respuesta;
   return r
@@ -857,6 +990,11 @@ export function entender(pregunta, datos, contexto = {}) {
                seguro: false, opciones: TEMAS.filter((t) => ["donar", "retirar", "creacion", "como_funciona"].includes(t.id)) };
     }
   }
+
+  // ¿Pregunta qué aporta un alimento? ("¿qué vitaminas tiene la manzana?")
+  // Va antes del inventario: "¿cuántas calorías tiene…?" no pide existencias.
+  const nutricion = responderNutricion(frase);
+  if (nutricion) return { texto: nutricion, seguro: true, tema: "nutricion" };
 
   // ¿Pregunta por una categoría concreta? ("¿hay leche?", "¿quedan frutas?")
   const cat = categoriaNombrada(frase, datos);
@@ -972,6 +1110,11 @@ function instrucciones(datos, nombre) {
     .filter((t) => !["saludo", "gracias", "despedida"].includes(t.id))
     .map((t) => `- ${t.titulo}: ${textoDe(t, nombre)}`)
     .join("\n");
+  const nutricion = ALIMENTOS
+    .map((a) => `- ${a.nombre} (${a.cat.nombre.toLowerCase()}, ${a.porcion}): ${a.kcal} kcal, ` +
+                `${a.prot} g proteína, ${a.grasa} g grasa, ${a.carb} g carbohidratos, ` +
+                `${a.azucar} g azúcares. ${a.vitaminas}`)
+    .join("\n");
   return (
     `Eres ${nombre}, ${genero(nombre, "el asistente", "la asistente")} de una despensa comunitaria de alimentos llamada ` +
     "D.I.R.T. Comunitario, en Santa Marta, Colombia. Respondes en español, en dos " +
@@ -980,6 +1123,7 @@ function instrucciones(datos, nombre) {
     "con amabilidad que no tienes ese dato y que el equipo del proyecto puede " +
     "contarlo. Nunca inventes nombres, fechas, cifras ni datos.\n\n" +
     `Lo que sabes:\n${conocimiento}\n\n` +
+    `Nutrición de los alimentos de la despensa (valores aproximados):\n${nutricion}\n\n` +
     `Inventario ahora mismo: ${inventario}. Hoy ha habido ${datos.hoy.entradas} ` +
     `donaciones y ${datos.hoy.salidas} retiros.`
   );
