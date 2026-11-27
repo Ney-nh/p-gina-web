@@ -301,11 +301,10 @@ export const TEMAS = [
     id: "como_entiende",
     titulo: "cómo entiendo lo que dices",
     pregunta: "¿Cómo entiendes lo que te digo?",
-    claves: ["como me entiendes", "como entiendes", "eres inteligencia artificial", "usas ia",
-             "inteligencia artificial", "usas chatgpt", "chatgpt", "como funciona el bot",
+    claves: ["como me entiendes", "como entiendes", "como funciona el bot",
              "como funciona el asistente", "como funcionas", "reconocimiento de voz",
-             "como me escuchas", "eres una ia", "tienes ia", "ollama", "modelo de lenguaje",
-             "palabras clave", "como respondes"],
+             "como me escuchas", "palabras clave", "como respondes", "como piensas",
+             "como estas programado", "como te programaron"],
     respuesta:
       "Comparo tu pregunta con una lista de temas y de frases que los disparan. Antes de " +
       "comparar quito tildes, signos y muletillas, y tolero errores de escritura, letras " +
@@ -313,6 +312,113 @@ export const TEMAS = [
       "refieres en vez de inventar. La voz la transcribe y la pronuncia el propio navegador. " +
       "Opcionalmente puedo apoyarme en un modelo de lenguaje que corre en el mismo computador " +
       "con Ollama.",
+  },
+
+  /* --- Preguntas sobre la IA. Bob dice la verdad sobre lo que es: casi
+         siempre responde con reglas escritas por el equipo, y solo usa un
+         modelo de lenguaje cuando alguien enciende la IA (sección 6). --- */
+  {
+    id: "es_ia",
+    titulo: "si soy una inteligencia artificial",
+    pregunta: "¿Eres una IA?",
+    claves: ["eres una ia", "eres ia", "eres inteligencia artificial", "eres una inteligencia artificial",
+             "usas ia", "tienes ia", "usas inteligencia artificial", "eres una ia personalizada",
+             "eres un chatbot", "eres un bot", "eres chatgpt", "usas chatgpt", "chatgpt",
+             "eres de verdad", "eres real", "eres humano", "hay alguien escribiendo"],
+    respuesta: () => OLLAMA.activo
+      ? "Sí, soy una inteligencia artificial hecha a la medida de esta despensa. Mis respuestas " +
+        "básicas las escribió el equipo, y cuando no estoy {seguro} me apoyo en un modelo de " +
+        "lenguaje que corre en un computador del equipo. No hay ninguna persona escribiendo."
+      : "Soy un asistente virtual personalizado para esta despensa. Ahora mismo respondo con " +
+        "reglas y respuestas que escribió el equipo, no con un modelo que invente frases. " +
+        "También puedo funcionar con inteligencia artificial cuando el equipo la enciende. " +
+        "No hay ninguna persona escribiendo.",
+  },
+  {
+    id: "ayudante_personal",
+    titulo: "si soy tu ayudante personal",
+    pregunta: "¿Eres mi ayudante personal?",
+    claves: ["eres mi ayudante", "ayudante personal", "asistente personal", "eres mi asistente",
+             "eres solo mio", "trabajas para mi", "eres mi amigo", "me conoces", "sabes quien soy"],
+    respuesta:
+      "Soy tu ayudante mientras estés en la despensa: te guío para donar o retirar y te cuento " +
+      "qué hay y qué aporta cada alimento. No sé quién eres ni guardo nada de lo que me cuentas, " +
+      "así que con todos hablo igual.",
+  },
+  {
+    id: "que_es_ia",
+    titulo: "qué es la inteligencia artificial",
+    pregunta: "¿Qué es la inteligencia artificial?",
+    claves: ["que es la ia", "que es la inteligencia artificial", "que es una ia", "que es ia",
+             "que es inteligencia artificial", "como funciona la ia", "como funciona una ia",
+             "como funciona la inteligencia artificial", "que es un modelo de lenguaje",
+             "modelo de lenguaje", "que es un llm", "llm", "que es machine learning",
+             "aprendizaje automatico", "red neuronal", "redes neuronales"],
+    respuesta:
+      "La inteligencia artificial es hacer que una máquina resuelva tareas que parecen " +
+      "requerir pensar, como entender lo que dices o responder. Un modelo de lenguaje aprende " +
+      "de muchísimos textos y luego predice, palabra por palabra, qué respuesta sigue. No " +
+      "piensa como una persona: calcula probabilidades, por eso a veces se equivoca.",
+  },
+  {
+    id: "que_modelo",
+    titulo: "qué modelo de IA uso",
+    pregunta: "¿Qué modelo de IA usas?",
+    claves: ["que modelo usas", "que modelo eres", "que ia usas", "que inteligencia usas",
+             "ollama", "que es ollama", "llama", "llama 3", "eres gemini", "eres claude",
+             "en que estas hecho", "con que te hicieron", "que tecnologia usas", "en que lenguaje estas"],
+    respuesta: () =>
+      "Estoy hecho en JavaScript, dentro de la misma página web. Mis respuestas fijas son " +
+      "reglas que escribió el equipo. La IA opcional es Ollama, un programa gratuito que corre " +
+      `modelos de lenguaje en un computador propio; uso el modelo ${OLLAMA.modelo}, de Meta. ` +
+      "No soy ChatGPT, Gemini ni Claude." +
+      (OLLAMA.activo ? " Ahora mismo la IA está encendida." : " Ahora mismo la IA está apagada."),
+  },
+  {
+    id: "ia_aprende",
+    titulo: "si aprendo o recuerdo",
+    pregunta: "¿Aprendes de lo que te digo?",
+    claves: ["aprendes", "estas aprendiendo", "aprendes solo", "te entrenaron", "como te entrenaron",
+             "entrenamiento", "recuerdas", "tienes memoria", "te acuerdas", "guardas lo que digo",
+             "guardas mis datos", "me grabas", "me estas grabando", "escuchas siempre"],
+    respuesta:
+      "No aprendo de lo que me dices: cuando cierras la página olvido la conversación. Solo " +
+      "recuerdo los últimos mensajes mientras hablamos, para entender el contexto. Tampoco " +
+      "grabo tu voz: el navegador la convierte en texto y solo te escucho cuando tocas el micrófono.",
+  },
+  {
+    id: "ia_equivoca",
+    titulo: "si me puedo equivocar",
+    pregunta: "¿Te puedes equivocar?",
+    claves: ["te equivocas", "te puedes equivocar", "puedes fallar", "inventas", "mientes",
+             "dices mentiras", "eres confiable", "puedo confiar en ti", "alucinas", "alucinacion",
+             "siempre tienes razon", "sabes todo"],
+    respuesta:
+      "Sí, me puedo equivocar. Por eso solo hablo de la despensa, de sus alimentos y del " +
+      "proyecto, y si no estoy {seguro} te pregunto en vez de inventar. Los datos de nutrición " +
+      "son aproximados. Para algo importante, como una alergia, pregúntale a un adulto o a un médico.",
+  },
+  {
+    id: "ia_internet",
+    titulo: "si estoy conectado a internet",
+    pregunta: "¿Estás conectado a internet?",
+    claves: ["estas conectado a internet", "buscas en internet", "usas internet", "sabes las noticias",
+             "puedes buscar en google", "busca en google", "sabes de todo", "funcionas sin internet"],
+    respuesta:
+      "No busco en internet. Sé lo que el equipo me enseñó sobre la despensa y leo el " +
+      "inventario de la página. Si no hay internet, sigo respondiendo con lo que tengo guardado.",
+  },
+  {
+    id: "ia_limites",
+    titulo: "qué no hago",
+    pregunta: "¿Qué cosas no puedes hacer?",
+    claves: ["que no puedes hacer", "tienes limites", "tienes restricciones", "por que no respondes",
+             "hazme la tarea", "haz mi tarea", "cuentame un chiste", "de que no hablas",
+             "puedes hablar de cualquier cosa", "por que solo hablas de la despensa"],
+    respuesta:
+      "Me hicieron para la despensa, así que no hago tareas ni hablo de cualquier tema. " +
+      "Tampoco pido datos personales. Así es más difícil que me equivoque o que alguien me use " +
+      "para algo que no toca.",
   },
   {
     id: "materiales",
