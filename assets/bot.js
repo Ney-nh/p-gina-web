@@ -624,6 +624,7 @@ export const SUGERENCIAS = [
   "¿Qué vitaminas tiene la manzana?",
   "¿Por qué hay dos lados?",
   "¿Cómo se creó el proyecto?",
+  "¿Eres una IA?",
   "El Arduino no se conecta",
 ];
 
