@@ -302,3 +302,37 @@ Comprueba la sintaxis de todos los módulos, que `docs/PREGUNTAS.md` esté al
 día y que el bot siga entendiendo las preguntas del banco de pruebas. Un error de sintaxis en un solo archivo deja la página entera sin
 funcionar, y en el navegador solo se ve una línea en la consola que nadie
 mira.
+
+## IA opcional para Bob (Ollama)
+
+Bob responde con sus propias reglas. Si se enciende la IA, solo se le pregunta
+a Ollama cuando Bob no está seguro. Se enciende **solo en el navegador donde se
+abre el enlace**: los demás no notan nada.
+
+| Enlace | Qué hace |
+|---|---|
+| `…/p-gina-web/?ia=local` | usa Ollama en este mismo computador |
+| `…/p-gina-web/?ia=https://xxxx.trycloudflare.com` | usa Ollama en otro computador, a través de un túnel |
+| `…/p-gina-web/?ia=off` | apaga la IA |
+
+Cuando la IA está encendida, el chat dice "Asistente · con IA" (o "IA sin conexión").
+
+### Presentar desde un computador que no es tuyo (túnel)
+
+En **tu portátil** (Windows, PowerShell):
+
+```powershell
+ollama pull llama3.2
+setx OLLAMA_ORIGINS "https://ney-nh.github.io"
+# cerrar Ollama desde la bandeja y volver a abrirlo
+winget install Cloudflare.cloudflared
+cloudflared tunnel --url http://localhost:11434 --http-host-header localhost:11434
+```
+
+Copia la dirección `https://….trycloudflare.com` que aparece y, en el computador
+de la presentación, abre:
+`https://ney-nh.github.io/p-gina-web/?ia=https://….trycloudflare.com`
+
+El portátil debe seguir encendido y con internet. **Al terminar, cierra
+cloudflared (Ctrl+C)**: mientras esté abierto, cualquiera con la dirección
+puede usar tu Ollama. La dirección cambia cada vez que se abre el túnel.

@@ -1078,34 +1078,73 @@ function anotarDuda(pregunta) {
 }
 
 /* =========================================================================
-   6. OLLAMA — opcional, para tu propio computador
+   6. OLLAMA — IA opcional, que corre en un computador propio
    -------------------------------------------------------------------------
-   Para encenderlo:
-
-     1. Instala Ollama desde ollama.com y descarga un modelo:
-            ollama pull llama3.2
-     2. Deja que Ollama acepte peticiones desde la página. En Windows,
-        PowerShell como administrador:
-            setx OLLAMA_ORIGINS "https://ney-nh.github.io,http://localhost"
-        Cierra Ollama desde la bandeja del sistema y vuelve a abrirlo.
-     3. Cambia `activo` a true aquí abajo.
-
    Solo se le pregunta cuando el conocimiento propio no está seguro. Lleva
-   como contexto todas las respuestas de este archivo y la orden de no salir
-   de ellas. Si no responde en 8 segundos, se sigue con el "¿Te refieres a…?".
+   como contexto todas las respuestas de este archivo y la tabla de
+   nutrición, con la orden de no salir de ellas. Si no responde a tiempo,
+   se sigue con el "¿Te refieres a…?" y nadie lo nota.
+
+   SE ENCIENDE CON UN ENLACE, solo en el navegador donde se abre (queda
+   guardado ahí; los demás teléfonos no se enteran):
+
+     …/p-gina-web/?ia=local                 Ollama en este mismo computador
+     …/p-gina-web/?ia=https://xxxx.trycloudflare.com
+                                            Ollama en otro computador, a
+                                            través de un túnel (ver README)
+     …/p-gina-web/?ia=off                   lo apaga
+
+   Opcional: &modelo=qwen2.5:3b para usar otro modelo (por defecto llama3.2).
+
+   En el computador que corre Ollama, hay que dejar que la página le hable.
+   En Windows, PowerShell:
+       setx OLLAMA_ORIGINS "https://ney-nh.github.io,http://localhost:8000"
+   y cerrar y volver a abrir Ollama desde la bandeja del sistema.
    ========================================================================= */
 
 const OLLAMA = {
   activo: false,
   url: "http://localhost:11434/api/chat",
   modelo: "llama3.2",
-  esperaMs: 8000,
+  esperaMs: 25000,   // un portátil sin tarjeta gráfica puede tardar
+  remoto: false,
 };
 
-function instrucciones(datos, nombre) {
-  const inventario = datos.categorias
-    .map((c) => `${c.nombre}: ${c.stock} unidades (lado ${c.lado})`)
-    .join("; ");
+/** Lee ?ia= y ?modelo= de la dirección, o lo que quedó guardado antes. */
+function configurarIA() {
+  if (typeof window === "undefined" || typeof localStorage === "undefined") return;
+  let destino = null, modelo = null;
+  try {
+    const p = new URLSearchParams(location.search);
+    if (p.has("ia")) {
+      const v = (p.get("ia") || "local").trim();
+      if (["off", "0", "no", "apagar"].includes(v.toLowerCase())) localStorage.removeItem("bot:ia");
+      else localStorage.setItem("bot:ia", v);
+    }
+    if (p.has("modelo")) localStorage.setItem("bot:ia-modelo", p.get("modelo"));
+    destino = localStorage.getItem("bot:ia");
+    modelo = localStorage.getItem("bot:ia-modelo");
+  } catch { return; }
+  if (!destino) return;
+  const base = destino === "local"
+    ? "http://localhost:11434"
+    : destino.replace(/\/+$/, "").replace(/\/api\/chat$/, "");
+  OLLAMA.activo = true;
+  OLLAMA.remoto = destino !== "local";
+  OLLAMA.url = `${base}/api/chat`;
+  if (modelo) OLLAMA.modelo = modelo;
+  console.info(`[Bob] IA activa: ${OLLAMA.modelo} en ${base}`);
+}
+configurarIA();
+
+export const iaActiva = () => OLLAMA.activo;
+
+/* Lo que sabe Bob, siempre igual: así Ollama lo guarda en memoria después
+   de la primera pregunta y las siguientes salen mucho más rápido. El
+   inventario, que cambia, va aparte en cada pregunta. */
+let instruccionesFijas = null;
+function instrucciones(nombre) {
+  if (instruccionesFijas) return instruccionesFijas;
   const conocimiento = TEMAS
     .filter((t) => !["saludo", "gracias", "despedida"].includes(t.id))
     .map((t) => `- ${t.titulo}: ${textoDe(t, nombre)}`)
@@ -1115,21 +1154,31 @@ function instrucciones(datos, nombre) {
                 `${a.prot} g proteína, ${a.grasa} g grasa, ${a.carb} g carbohidratos, ` +
                 `${a.azucar} g azúcares. ${a.vitaminas}`)
     .join("\n");
-  return (
+  instruccionesFijas =
     `Eres ${nombre}, ${genero(nombre, "el asistente", "la asistente")} de una despensa comunitaria de alimentos llamada ` +
-    "D.I.R.T. Comunitario, en Santa Marta, Colombia. Respondes en español, en dos " +
-    "o tres frases como máximo, con calidez y sin tecnicismos.\n\n" +
+    "D.I.R.T., en el IED Liceo Samario de Santa Marta, Colombia. Hablas con estudiantes " +
+    "de colegio. Respondes en español, en dos o tres frases como máximo, con calidez, " +
+    "sin tecnicismos y con lenguaje apropiado para jóvenes.\n\n" +
     "Responde SOLO con la información de abajo. Si la pregunta no está cubierta, di " +
     "con amabilidad que no tienes ese dato y que el equipo del proyecto puede " +
-    "contarlo. Nunca inventes nombres, fechas, cifras ni datos.\n\n" +
+    "contarlo. Nunca inventes nombres, fechas, cifras ni datos. No pidas datos " +
+    "personales. Si te preguntan algo que no tiene que ver con la despensa, la " +
+    "comida o el proyecto, redirige la conversación con amabilidad. Si te preguntan, " +
+    "di que eres una inteligencia artificial.\n\n" +
     `Lo que sabes:\n${conocimiento}\n\n` +
-    `Nutrición de los alimentos de la despensa (valores aproximados):\n${nutricion}\n\n` +
-    `Inventario ahora mismo: ${inventario}. Hoy ha habido ${datos.hoy.entradas} ` +
-    `donaciones y ${datos.hoy.salidas} retiros.`
-  );
+    `Nutrición de los alimentos de la despensa (valores aproximados):\n${nutricion}`;
+  return instruccionesFijas;
 }
 
-async function preguntarAOllama(pregunta, datos, historial, nombre) {
+function contextoDelMomento(datos) {
+  const inventario = datos.categorias
+    .map((c) => `${c.nombre}: ${c.stock} unidades (lado ${c.lado})`)
+    .join("; ");
+  return `[Inventario ahora mismo: ${inventario || "sin datos"}. Hoy: ` +
+         `${datos.hoy?.entradas ?? 0} donaciones y ${datos.hoy?.salidas ?? 0} retiros.]`;
+}
+
+export async function preguntarAOllama(pregunta, datos, historial, nombre) {
   const corte = new AbortController();
   const reloj = setTimeout(() => corte.abort(), OLLAMA.esperaMs);
   try {
@@ -1140,11 +1189,12 @@ async function preguntarAOllama(pregunta, datos, historial, nombre) {
       body: JSON.stringify({
         model: OLLAMA.modelo,
         stream: false,
-        options: { temperature: 0.2 },
+        keep_alive: "60m",
+        options: { temperature: 0.2, num_ctx: 8192 },
         messages: [
-          { role: "system", content: instrucciones(datos, nombre) },
+          { role: "system", content: instrucciones(nombre) },
           ...historial.slice(-4),
-          { role: "user", content: pregunta },
+          { role: "user", content: `${contextoDelMomento(datos)}\n\n${pregunta}` },
         ],
       }),
     });
@@ -1155,6 +1205,27 @@ async function preguntarAOllama(pregunta, datos, historial, nombre) {
     return texto;
   } finally {
     clearTimeout(reloj);
+  }
+}
+
+/** Carga el modelo y lo que sabe Bob antes de la primera pregunta. */
+export async function calentarIA(nombre = "Bob") {
+  if (!OLLAMA.activo) return false;
+  try {
+    const r = await fetch(OLLAMA.url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: OLLAMA.modelo, stream: false, keep_alive: "60m",
+        options: { num_ctx: 8192, num_predict: 1 },
+        messages: [{ role: "system", content: instrucciones(nombre) },
+                   { role: "user", content: "hola" }],
+      }),
+    });
+    return r.ok;
+  } catch (e) {
+    console.warn("[Bob] La IA no respondió al calentar:", e.message);
+    return false;
   }
 }
 
@@ -1231,6 +1302,16 @@ export function iniciarBot({ estadoDespensa }) {
   // El nombre sale de la propia página, así cada tema puede llamarlo
   // como quiera sin tocar este archivo.
   const NOMBRE = $(".bot-nombre strong")?.textContent.trim() || "Bob";
+
+  // Con la IA encendida en este navegador, se avisa en la cabecera del chat
+  // y se carga el modelo de una vez, para que la primera respuesta no tarde.
+  if (OLLAMA.activo) {
+    const sub = $(".bot-nombre small");
+    if (sub) sub.textContent = "Asistente · con IA";
+    calentarIA(NOMBRE).then((ok) => {
+      if (sub) sub.textContent = ok ? "Asistente · con IA" : "Asistente · IA sin conexión";
+    });
+  }
 
   let hablando = true;           // responder también en voz alta
   let escuchando = false;
