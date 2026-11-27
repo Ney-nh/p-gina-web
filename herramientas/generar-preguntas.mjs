@@ -61,7 +61,12 @@ lineas.push(
 for (const tema of TEMAS) {
   lineas.push(`## ${tema.pregunta}`);
   lineas.push("");
-  lineas.push(textoDe(tema, "Bob"));
+  if (Array.isArray(tema.respuesta)) {
+    lineas.push(`Responde una de estas, al azar (${tema.respuesta.length}):`, "");
+    for (const r of tema.respuesta) lineas.push(`- ${textoDe({ ...tema, respuesta: r }, "Bob")}`);
+  } else {
+    lineas.push(textoDe(tema, "Bob"));
+  }
   lineas.push("");
   lineas.push(`<details><summary>Cómo se reconoce (${tema.claves.length} frases)</summary>`);
   lineas.push("");

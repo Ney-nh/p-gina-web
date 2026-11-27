@@ -4,7 +4,7 @@ Este documento se genera solo a partir de `assets/bot.js`.
 No lo edites a mano: cambia los temas en ese archivo y vuelve a correr
 `node herramientas/generar-preguntas.mjs`.
 
-Última generación: 2026-11-27 · 38 temas · 631 frases clave
+Última generación: 2026-11-27 · 39 temas · 652 frases clave
 
 Las respuestas se muestran como las dice Bob.
 
@@ -376,17 +376,45 @@ No hay un límite fijo. La idea es que tomes lo que necesitas y dejes para los q
 
 ## Hola
 
-Hola, bienvenido. Soy Bob, el asistente de D.I.R.T., la despensa comunitaria. ¿En qué te puedo ayudar hoy? Puedo explicarte cómo donar, cómo retirar alimentos, o decirte qué hay disponible ahora mismo.
+Responde una de estas, al azar (6):
 
-<details><summary>Cómo se reconoce (27 frases)</summary>
+- ¡Hola! Soy Bob, el asistente de D.I.R.T., la despensa comunitaria. ¿En qué te ayudo? Puedo explicarte cómo donar, cómo retirar o qué hay disponible.
+- ¡Holi! Aquí Bob. ¿Vienes a dejar algo o a llevarte algo?
+- ¡Hola, hola! Qué bueno verte por la despensa. Pregúntame lo que quieras sobre D.I.R.T.
+- ¡Buenas! Soy Bob. Te puedo contar qué hay hoy, cómo donar o qué vitaminas tiene cada alimento.
+- ¡Hola! Bienvenido a D.I.R.T. ¿Qué necesitas saber?
+- ¡Quiubo! Soy Bob, el asistente de la despensa. ¿En qué te echo una mano?
 
-`hola como estas` · `y que mas` · `que mas` · `q tal` · `como estas` · `que tal bro` · `buenas tardes como estas` · `buenos dias como estas` · `hola` · `buenas` · `buenos dias` · `buenas tardes` · `buenas noches` · `que tal` · `saludos` · `hey` · `como vas` · `como te va` · `que hubo` · `quiubo` · `epa` · `hello` · `hi` · `bob` · `dora` · `como esta usted` · `como esta bob`
+<details><summary>Cómo se reconoce (29 frases)</summary>
+
+`hola` · `holi` · `holis` · `holaa` · `ola` · `buenas` · `buenos dias` · `buenas tardes` · `buenas noches` · `saludos` · `hey` · `ey` · `epa` · `hello` · `hi` · `hola bob` · `hola dora` · `bob` · `dora` · `que hubo` · `quiubo` · `q hubo` · `que onda` · `que se dice` · `buenas buenas` · `que mas pues` · `y que mas` · `que mas` · `alo`
+
+</details>
+
+## ¿Cómo estás?
+
+Responde una de estas, al azar (5):
+
+- ¡Muy bien, gracias por preguntar! Aquí cuidando la despensa. ¿Y tú, en qué te ayudo?
+- ¡Todo bien por aquí! La despensa sigue funcionando. ¿Qué necesitas?
+- La cosa va bien: la gente dona, la gente lleva y yo llevo la cuenta. ¿Y a ti cómo te va?
+- ¡Súper! Con ganas de ayudar. ¿Quieres saber qué hay disponible hoy?
+- ¡Bien, bien! Listo para ayudarte. ¿Qué quieres saber?
+
+<details><summary>Cómo se reconoce (19 frases)</summary>
+
+`como estas` · `hola como estas` · `como esta usted` · `como esta bob` · `como vas` · `como te va` · `como va la cosa` · `como va todo` · `como andas` · `como te sientes` · `que tal` · `q tal` · `que tal bro` · `hola que tal` · `todo bien` · `como amaneciste` · `buenas tardes como estas` · `buenos dias como estas` · `como va el dia`
 
 </details>
 
 ## Gracias
 
-Con mucho gusto, gracias por usar D.I.R.T. Si te queda alguna otra duda, aquí estoy para ayudarte.
+Responde una de estas, al azar (4):
+
+- Con mucho gusto, gracias por usar D.I.R.T. Si te queda alguna otra duda, aquí estoy.
+- ¡Con gusto! Para eso estoy.
+- ¡De nada! Si necesitas algo más, pregúntame.
+- ¡A la orden! Gracias a ti por usar la despensa.
 
 <details><summary>Cómo se reconoce (22 frases)</summary>
 
@@ -396,7 +424,12 @@ Con mucho gusto, gracias por usar D.I.R.T. Si te queda alguna otra duda, aquí e
 
 ## Adiós
 
-Hasta luego, ha sido un gusto ayudarte. Espero que disfrutes tu experiencia en D.I.R.T. ¡Que te vaya muy bien!
+Responde una de estas, al azar (4):
+
+- Hasta luego, ha sido un gusto ayudarte. ¡Que te vaya muy bien!
+- ¡Chao! Vuelve cuando quieras.
+- ¡Nos vemos! Y recuerda: lo que te sobra, a otro le sirve.
+- ¡Hasta pronto! Aquí estaré cuidando la despensa.
 
 <details><summary>Cómo se reconoce (11 frases)</summary>
 
@@ -476,4 +509,5 @@ inventarse algo:
 - ¿Qué vitaminas tiene la manzana?
 - ¿Por qué hay dos lados?
 - ¿Cómo se creó el proyecto?
+- ¿Eres una IA?
 - El Arduino no se conecta

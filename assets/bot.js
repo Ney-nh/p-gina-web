@@ -560,15 +560,36 @@ export const TEMAS = [
     id: "saludo",
     titulo: "saludar",
     pregunta: "Hola",
-    claves: ["hola como estas", "y que mas", "que mas", "q tal", "como estas", "que tal bro",
-             "buenas tardes como estas", "buenos dias como estas", "hola", "buenas", "buenos dias",
-             "buenas tardes", "buenas noches", "que tal", "saludos", "hey", "como vas", "como te va",
-             "que hubo", "quiubo", "epa", "hello", "hi", "bob", "dora", "como esta usted",
-             "como esta bob"],
-    respuesta:
-      "Hola, bienvenido. Soy {nombre}, {el asistente} de D.I.R.T., la despensa comunitaria. " +
-      "¿En qué te puedo ayudar hoy? Puedo explicarte cómo donar, cómo " +
-      "retirar alimentos, o decirte qué hay disponible ahora mismo.",
+    claves: ["hola", "holi", "holis", "holaa", "ola", "buenas", "buenos dias", "buenas tardes",
+             "buenas noches", "saludos", "hey", "ey", "epa", "hello", "hi", "hola bob", "hola dora",
+             "bob", "dora", "que hubo", "quiubo", "q hubo", "que onda", "que se dice", "buenas buenas",
+             "que mas pues", "y que mas", "que mas", "alo"],
+    // Varias respuestas: se elige una al azar, sin repetir la anterior.
+    respuesta: [
+      "¡Hola! Soy {nombre}, {el asistente} de D.I.R.T., la despensa comunitaria. ¿En qué te ayudo? " +
+        "Puedo explicarte cómo donar, cómo retirar o qué hay disponible.",
+      "¡Holi! Aquí {nombre}. ¿Vienes a dejar algo o a llevarte algo?",
+      "¡Hola, hola! Qué bueno verte por la despensa. Pregúntame lo que quieras sobre D.I.R.T.",
+      "¡Buenas! Soy {nombre}. Te puedo contar qué hay hoy, cómo donar o qué vitaminas tiene cada alimento.",
+      "¡Hola! Bienvenido a D.I.R.T. ¿Qué necesitas saber?",
+      "¡Quiubo! Soy {nombre}, {el asistente} de la despensa. ¿En qué te echo una mano?",
+    ],
+  },
+  {
+    id: "como_estas",
+    titulo: "cómo estoy",
+    pregunta: "¿Cómo estás?",
+    claves: ["como estas", "hola como estas", "como esta usted", "como esta bob", "como vas",
+             "como te va", "como va la cosa", "como va todo", "como andas", "como te sientes",
+             "que tal", "q tal", "que tal bro", "hola que tal", "todo bien", "como amaneciste",
+             "buenas tardes como estas", "buenos dias como estas", "como va el dia"],
+    respuesta: [
+      "¡Muy bien, gracias por preguntar! Aquí cuidando la despensa. ¿Y tú, en qué te ayudo?",
+      "¡Todo bien por aquí! La despensa sigue funcionando. ¿Qué necesitas?",
+      "La cosa va bien: la gente dona, la gente lleva y yo llevo la cuenta. ¿Y a ti cómo te va?",
+      "¡Súper! Con ganas de ayudar. ¿Quieres saber qué hay disponible hoy?",
+      "¡Bien, bien! Listo para ayudarte. ¿Qué quieres saber?",
+    ],
   },
   {
     id: "gracias",
@@ -578,7 +599,12 @@ export const TEMAS = [
              "perfecto", "listo", "listo muchas gracias", "excelente", "chevere", "bacano",
              "muy amable", "te lo agradezco", "mil gracias", "buenisimo", "thank you", "ok", "vale",
              "entendido", "ya entendi"],
-    respuesta: "Con mucho gusto, gracias por usar D.I.R.T. Si te queda alguna otra duda, aquí estoy para ayudarte.",
+    respuesta: [
+      "Con mucho gusto, gracias por usar D.I.R.T. Si te queda alguna otra duda, aquí estoy.",
+      "¡Con gusto! Para eso estoy.",
+      "¡De nada! Si necesitas algo más, pregúntame.",
+      "¡A la orden! Gracias a ti por usar la despensa.",
+    ],
   },
   {
     id: "despedida",
@@ -586,7 +612,12 @@ export const TEMAS = [
     pregunta: "Adiós",
     claves: ["adios", "chao", "chao bob", "adios bob", "hasta luego", "nos vemos", "bye", "hasta pronto", "me voy",
              "hasta mañana", "nos hablamos"],
-    respuesta: "Hasta luego, ha sido un gusto ayudarte. Espero que disfrutes tu experiencia en D.I.R.T. ¡Que te vaya muy bien!",
+    respuesta: [
+      "Hasta luego, ha sido un gusto ayudarte. ¡Que te vaya muy bien!",
+      "¡Chao! Vuelve cuando quieras.",
+      "¡Nos vemos! Y recuerda: lo que te sobra, a otro le sirve.",
+      "¡Hasta pronto! Aquí estaré cuidando la despensa.",
+    ],
   },
 ];
 
@@ -1060,8 +1091,30 @@ function responderNutricion(frase) {
   return null;
 }
 
-export function textoDe(tema, nombre = "Bob") {
-  const r = typeof tema.respuesta === "function" ? tema.respuesta({ nombre }) : tema.respuesta;
+/* Si una respuesta es una lista, se escoge una al azar como de una bolsa:
+   salen todas antes de repetir, y nunca la misma dos veces seguidas. */
+const bolsas = new Map();
+function sacarDeBolsa(id, lista) {
+  let b = bolsas.get(id);
+  if (!b || !b.quedan.length) {
+    const quedan = lista.map((_, i) => i);
+    for (let i = quedan.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [quedan[i], quedan[j]] = [quedan[j], quedan[i]];
+    }
+    if (b && quedan.length > 1 && quedan[quedan.length - 1] === b.ultima) {
+      [quedan[0], quedan[quedan.length - 1]] = [quedan[quedan.length - 1], quedan[0]];
+    }
+    b = { quedan, ultima: b?.ultima };
+    bolsas.set(id, b);
+  }
+  b.ultima = b.quedan.pop();
+  return lista[b.ultima];
+}
+
+export function textoDe(tema, nombre = "Bob", { fija = false } = {}) {
+  let r = typeof tema.respuesta === "function" ? tema.respuesta({ nombre }) : tema.respuesta;
+  if (Array.isArray(r)) r = fija ? r[0] : sacarDeBolsa(tema.id, r);
   return r
     .replaceAll("{nombre}", nombre)
     .replaceAll("{el asistente}", genero(nombre, "el asistente", "la asistente"))
@@ -1213,7 +1266,7 @@ const OLLAMA = {
   activo: false,
   url: "http://localhost:11434/api/chat",
   modelo: "llama3.2",
-  esperaMs: 25000,   // un portátil sin tarjeta gráfica puede tardar
+  esperaMs: 60000,   // un portátil sin tarjeta gráfica puede tardar bastante
   remoto: false,
 };
 
@@ -1253,8 +1306,8 @@ let instruccionesFijas = null;
 function instrucciones(nombre) {
   if (instruccionesFijas) return instruccionesFijas;
   const conocimiento = TEMAS
-    .filter((t) => !["saludo", "gracias", "despedida"].includes(t.id))
-    .map((t) => `- ${t.titulo}: ${textoDe(t, nombre)}`)
+    .filter((t) => !["saludo", "como_estas", "gracias", "despedida"].includes(t.id))
+    .map((t) => `- ${t.titulo}: ${textoDe(t, nombre, { fija: true })}`)
     .join("\n");
   const nutricion = ALIMENTOS
     .map((a) => `- ${a.nombre} (${a.cat.nombre.toLowerCase()}, ${a.porcion}): ${a.kcal} kcal, ` +
@@ -1412,11 +1465,17 @@ export function iniciarBot({ estadoDespensa }) {
 
   // Con la IA encendida en este navegador, se avisa en la cabecera del chat
   // y se carga el modelo de una vez, para que la primera respuesta no tarde.
+  const sub = $(".bot-nombre small");
+  const avisoIA = (t, detalle = "") => { if (sub) { sub.textContent = `Asistente · ${t}`; sub.title = detalle; } };
+  let calentando = Promise.resolve();
   if (OLLAMA.activo) {
-    const sub = $(".bot-nombre small");
-    if (sub) sub.textContent = "Asistente · con IA";
-    calentarIA(NOMBRE).then((ok) => {
-      if (sub) sub.textContent = ok ? "Asistente · con IA" : "Asistente · IA sin conexión";
+    avisoIA("cargando IA…", "Ollama está cargando el modelo. La primera vez puede tardar un minuto.");
+    const inicio = performance.now();
+    calentando = calentarIA(NOMBRE).then((ok) => {
+      const s = Math.round((performance.now() - inicio) / 1000);
+      console.info(`[Bob] IA ${ok ? "lista" : "sin conexión"} en ${s} s`);
+      avisoIA(ok ? "con IA" : "IA sin conexión",
+              ok ? `Modelo ${OLLAMA.modelo} listo (tardó ${s} s en cargar)` : `No se pudo hablar con ${OLLAMA.url}`);
     });
   }
 
@@ -1488,10 +1547,21 @@ export function iniciarBot({ estadoDespensa }) {
     let r = entender(texto, datos, { nombre: NOMBRE, pendiente });
 
     if (!r.seguro && OLLAMA.activo) {
+      const aviso = setTimeout(() => { esperando.textContent = "Pensando…"; }, 2500);
+      const inicio = performance.now();
       try {
+        await calentando;   // si el modelo aún carga, se espera a que termine
         r = { texto: await preguntarAOllama(texto, datos, historial, NOMBRE), seguro: true };
+        console.info(`[Bob] La IA respondió en ${Math.round((performance.now() - inicio) / 1000)} s`);
+        avisoIA("con IA", `Modelo ${OLLAMA.modelo}`);
       } catch (e) {
-        console.warn("Ollama no respondió, sigo con el conocimiento propio:", e.message);
+        const motivo = e.name === "AbortError"
+          ? `tardó más de ${OLLAMA.esperaMs / 1000} s`
+          : e.message;
+        console.warn(`[Bob] La IA no respondió (${motivo}); sigo con el conocimiento propio.`);
+        avisoIA("IA no respondió", motivo);
+      } finally {
+        clearTimeout(aviso);
       }
     } else {
       // Una pausa mínima para que no parezca que la respuesta estaba escrita.
